@@ -1,0 +1,208 @@
+/* Base styles and content styles */
+
+@import "variables.css";
+
+:root {
+	/* Browser default font-size is 16px, this way 1 rem = 10px */
+	font-size: 62.5%;
+}
+
+html {
+	font-family: "Open Sans", sans-serif;
+	color: var(--text-primary);
+	text-size-adjust: none;
+}
+
+body {
+	margin: 0;
+	font-size: 1.6rem;
+	overflow-x: hidden;
+	min-height: 100vh;
+}
+
+code {
+	font-family: "Source Code Pro", Consolas, "Ubuntu Mono", Menlo,
+		"DejaVu Sans Mono", monospace, monospace !important;
+	font-size: 0.875em;
+}
+
+.left {
+	float: left;
+}
+.right {
+	float: right;
+}
+.boring {
+	opacity: 0.6;
+}
+.hide-boring .boring {
+	display: none;
+}
+.hidden {
+	display: none;
+}
+
+h1 {
+	margin-top: 2%;
+}
+
+h2,
+h3 {
+	margin-top: 5%;
+}
+
+h4,
+h5 {
+	margin-top: 2em;
+}
+
+.header + .header h3,
+.header + .header h4,
+.header + .header h5 {
+	margin-top: 1em;
+}
+
+h1 a.header:target::before,
+h2 a.header:target::before,
+h3 a.header:target::before,
+h4 a.header:target::before {
+	display: inline-block;
+	content: "»";
+	margin-left: -30px;
+	width: 30px;
+}
+
+h1 a.header:target,
+h2 a.header:target,
+h3 a.header:target,
+h4 a.header:target {
+	scroll-margin-top: calc(70px + 0.5em);
+}
+
+.page {
+	outline: 0;
+	padding: 0 5px;
+}
+.page-wrapper {
+	box-sizing: border-box;
+}
+
+.content {
+	overflow-y: auto;
+	padding: 0 15px;
+	padding-bottom: 50px;
+}
+
+.content main {
+	margin-left: auto;
+	margin-right: auto;
+	max-width: 750px;
+}
+
+.content a {
+	text-decoration: none;
+}
+.content a:hover {
+	text-decoration: underline;
+}
+.content img {
+	max-width: 100%;
+}
+.content .header:link,
+.content .header:visited {
+	color: #fff;
+}
+.content .header:link,
+.content .header:visited:hover {
+	text-decoration: none;
+}
+
+table {
+	border-collapse: separate;
+	border-spacing: 0;
+	border-radius: 10px;
+	overflow: hidden;
+	box-shadow: 2px 10px 10px rgba(0, 0, 0, 0.3);
+}
+
+table td {
+	padding: 6px 25px;
+	border: 0;
+	border-radius: 0px !important;
+}
+
+table thead {
+	background: var(--card-bg);
+	border-radius: 10px 10px 0 0;
+}
+
+table thead td {
+	font-weight: bold;
+}
+
+table thead th {
+	padding: 3px 20px;
+}
+
+table thead tr {
+	border: 1px;
+	border-radius: 10px 10px 0 0;
+}
+
+table tbody tr:nth-child(2n) {
+	opacity: 0.9;
+	background: var(--card-bg);
+}
+
+table tbody tr:last-child td:first-child {
+	border-radius: 0 0 0 10px;
+}
+
+table tbody tr:last-child td:last-child {
+	border-radius: 0 0 10px 0;
+}
+
+blockquote {
+	margin: 20px 0;
+	padding: 0.1px 20px;
+	background-color: var(--card-bg);
+	border: solid !important;
+	border-radius: 0 10px 10px 0 !important;
+	border-width: 0 0 0 4px !important;
+	border-color: var(--link-color) !important;
+	box-shadow: 2.5px 2.5px 10px rgb(0 0 0 / 50%);
+}
+
+:not(.footnote-definition) + .footnote-definition,
+.footnote-definition + :not(.footnote-definition) {
+	margin-top: 2em;
+}
+.footnote-definition {
+	font-size: 0.9em;
+	margin: 0.5em 0;
+}
+.footnote-definition p {
+	display: inline;
+}
+
+.tooltiptext {
+	position: absolute;
+	visibility: hidden;
+	color: #fff;
+	background-color: var(--card-bg);
+	transform: translateX(-50%);
+	left: 80%;
+	top: -90%;
+	font-size: 80%;
+	font-style: normal;
+	font-family: system-ui;
+	text-align: center;
+	border-radius: 10px;
+	padding: 5px 8px;
+	margin: 5px;
+	z-index: 1000;
+}
+
+.tooltipped .tooltiptext {
+	visibility: visible;
+}

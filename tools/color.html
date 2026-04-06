@@ -1,0 +1,447 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js bdfd">
+
+<head>
+    <!-- Book generated using mdBook -->
+    <meta charset="UTF-8">
+    <title>Color - BDFD - Community Tools</title>
+
+
+
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+    <meta name="description" content="Improves the quality of BDFD usage.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <meta name="theme-color" content="#633fb3">
+    <meta name="og:image" content="https://app.botdesignerdiscord.com/icons/Icon-512.png">
+    <meta name="format-detection" content="telephone=no"/>
+
+    <link rel="icon" type="image/png" href="../favicon.png">
+    <link rel="apple-touch-icon" type="image/png" href="../favicon.png">
+
+    <link rel="stylesheet" href="../theme/css/variables.css">
+    <link rel="stylesheet" href="../theme/css/general.css">
+    <link rel="stylesheet" href="../theme/css/chrome.css">
+    <link rel="stylesheet" href="../theme/css/print.css" media="print">
+
+    <!-- Discord Components -->
+    <script type="module"
+            src="../assets/vendor/discord-components/skyra-discord-components-core.js"></script>
+
+    <!-- Fonts -->
+    <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
+
+    <!-- Highlight.js Stylesheets -->
+    <link rel="stylesheet" href="../highlight.css">
+    <link rel="stylesheet" href="../tomorrow-night.css">
+    <link rel="stylesheet" href="../ayu-highlight.css">
+
+    <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href=".././src/theme/mdbook-admonish.css">
+</head>
+
+<body>
+<!-- Provide site root to javascript -->
+<script>
+    var path_to_root = "../";
+    var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "bdfd" : "bdfd";
+</script>
+<!-- Start loading toc.js asap -->
+<script src="../toc.js"></script>
+
+<!-- Work around some values being stored in localStorage wrapped in quotes -->
+<script>
+    try {
+        var theme = localStorage.getItem('mdbook-theme');
+        var sidebar = localStorage.getItem('mdbook-sidebar');
+
+        if (theme.startsWith('"') && theme.endsWith('"')) {
+            localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+        }
+
+        if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+            localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+        }
+    } catch (e) {
+    }
+</script>
+
+<!-- Set the theme before any content is loaded, prevents flash -->
+<script>
+    var theme;
+    try {
+        theme = localStorage.getItem('mdbook-theme');
+    } catch (e) {
+    }
+    if (theme === null || theme === undefined) {
+        theme = default_theme;
+    }
+    const html = document.documentElement;
+    html.classList.remove('bdfd')
+    html.classList.add(theme);
+    html.classList.add("js");
+</script>
+
+<input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+<!-- Hide / unhide sidebar before it is displayed -->
+<script>
+    var sidebar = null;
+    var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+    if (document.body.clientWidth >= 1080) {
+        try {
+            sidebar = localStorage.getItem('mdbook-sidebar');
+        } catch (e) {
+        }
+        sidebar = sidebar || 'visible';
+    } else {
+        sidebar = 'hidden';
+    }
+    sidebar_toggle.checked = sidebar === 'visible';
+    html.classList.remove('sidebar-visible');
+    html.classList.add("sidebar-" + sidebar);
+</script>
+
+<nav id="sidebar" class="sidebar" aria-label="Table of contents">
+    <!-- populated by js -->
+    <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+    <noscript>
+        <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+    </noscript>
+    <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+        <div class="sidebar-resize-indicator"></div>
+    </div>
+</nav>
+
+<div id="menu-bar" class="menu-bar">
+    <div id="menu-bar-sticky-container">
+        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor"
+               title="Toggle Table of Contents" aria-label="Toggle Table of Contents"
+               aria-controls="sidebar">
+            <i class="fa fa-bars"></i>
+        </label>
+
+        <a href="../index.html" class="navbar-brand">
+            <img class="navbar-brand-icon" src="../assets/logo192.png" alt="BDFD Wiki Logo">
+            <span class="navbar-brand-text">BDFD Tools</span>
+        </a>
+
+        <div class="menu-buttons">
+            <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)"
+                    aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S"
+                    aria-controls="searchbar">
+                <i class="fa fa-search"></i>
+            </button>
+        </div>
+
+        <h1 class="menu-title">Bot Designer For Discord</h1>
+    </div>
+</div>
+
+<div class="navbar-spacer"></div>
+
+<div id="page-wrapper" class="page-wrapper">
+    <div class="page">
+
+            <div id="search-wrapper" class="hidden">
+                <form id="searchbar-outer" class="searchbar-outer">
+                    <input type="search" name="search" id="searchbar" name="searchbar" placeholder="Search tools..."
+                           aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    <div class="search-hint">Press <kbd>ESC</kbd> or click outside to close</div>
+                </form>
+                <div id="searchresults-outer" class="searchresults-outer hidden">
+                    <div id="searchresults-header" class="searchresults-header"></div>
+                    <ul id="searchresults">
+                    </ul>
+                </div>
+            </div>
+
+        <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+        <script>
+            document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+            document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+            Array.from(document.querySelectorAll('#sidebar a')).forEach(function (link) {
+                link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+            });
+        </script>
+
+        <div class="snowflakes">
+            <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+            <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+            <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+            <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+            <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+            <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+            <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+            <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+            <i></i><i></i><i></i><i></i>
+        </div>
+
+        <div id="content" class="content">
+            <main>
+                <nav class="breadcrumb">
+                    <script src="../theme/breadcrumbs.js"></script>
+                </nav>
+
+                <a href="https://github.com/NilPointer-Software/bdfd-wiki/edit/dev/src/tools/color.md" class="editPage">
+                    <i class='fa fa-edit' id="editPageIcon"></i>
+                </a>
+
+                <h1 id="color"><a class="header" href="#color">Color</a></h1>
+<style>
+.editPage {
+	visibility: hidden;
+}
+.picker-container {
+    background: var(--card-bg);
+	border-radius: var(--border-radius);
+	border: 1px solid rgba(255, 255, 255, 0.05);
+	margin-top: 1.5rem;
+	padding-bottom: 0rem;
+	padding-left: 1.5rem;
+	padding-right: 1.5rem;
+	box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+}
+.picker-container h2 {
+    margin-top: -.5rem;
+    padding-top: 1.5rem;
+}
+.picker-container p {
+	margin-top: -1.5rem;
+}
+.input-row {
+	display: flex;
+	gap: 1rem;
+	margin-top: -1rem;
+	margin-bottom: 1.5rem;
+	align-items: center;
+}
+.hex-input {
+    flex: 1 !important;
+    color: #ffffff;
+    padding-top: 2.25rem;
+	padding-bottom: 2.25rem;
+	padding-left: 1rem;
+    background: hsl(0deg 0% 100% / 7%);
+    border-radius: var(--border-radius);
+	border-width: 0;
+    font-family: monospace;
+    font-size: 1.5rem;
+    height: 3rem;
+    width: 65%;
+    outline: none;
+	touch-action: manipulation;
+	-webkit-user-select: none;
+	user-select: none;
+}
+.color-input {
+    background: hsl(0deg 0% 100% / 7%);
+	font-size: 1.5rem;
+	display: block;
+	outline: none;
+	border-radius: var(--border-radius);
+	border-width: 0;
+	height: 5.5rem;
+    padding: 0;
+    width: 5.5rem;
+    touch-action: manipulation;
+	-webkit-user-select: none;
+	user-select: none;
+}
+.color-input::-webkit-color-swatch {
+	border-radius: var(--border-radius);
+	border-width: 0;
+}
+.random-result {
+    display: flex;
+    align-items: center;
+}
+
+#randomColorResult {
+	padding: .9rem;
+	width: 100%;
+	border-radius: var(--border-radius);
+	margin-top: -2.5rem !important;
+	margin-bottom: 0 !important;
+	color: #fff;
+	font-weight: bold;
+	transition: .3s;
+}
+#randomColorResult:hover {
+	color: #000;
+	opacity: 0.6;
+	transition: .3s;
+}
+#randomColorButton {
+	outline: none;
+	touch-action: manipulation;
+	-webkit-user-select: none;
+	user-select: none;
+	padding-left: 1rem;
+	padding-right: 1rem;
+	height: 4rem;
+	border: none;
+	border-radius: var(--border-radius);
+	cursor: pointer;
+	margin-bottom: 1.5rem !important;
+	margin-top: -1rem !important;
+    margin-right: 1rem !important;
+	font-size: 1.5rem;
+	margin: 0.25%;
+	color: #fff;
+	background: hsl(0deg 0% 100% / 7%);
+	box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+}
+.error {
+	color: var(--error);
+	font-size: 1rem;
+	min-height: 1rem;
+	padding-bottom: 1rem;
+	margin-top: -1.5rem;
+}
+.valid-color {
+    color: white;
+    padding: 4px 8px;
+    border-radius: var(--border-radius);
+    font-weight: bold;
+    width: fit-content;
+    margin-left: -1.6rem;
+    margin-top: -.5rem;
+    display: flex;
+	text-shadow: 0px 0px 5px rgb(0 0 0 / 100%);
+}
+</style>
+<p>Here you can choose a color to use in your command.</p>
+<div id="admonition-note" class="admonition admonish-note" role="note" aria-labelledby="admonition-note-title">
+<div class="admonition-title">
+<div id="admonition-note-title">
+<p>Note</p>
+</div>
+<a class="admonition-anchor-link" href="#admonition-note"></a>
+</div>
+<div>
+<p>Hex colors are codes that represent colors using hexadecimal values for red, green, and blue. A shorthand like #090 is a compact version of #009900, meaning no red, full green, and no blue, resulting in a pure green. The format #RGB expands each digit to RRGGBB, making it easy to define web colors, including in BDFD’s color functions for customizing bot messages.</p>
+</div>
+</div>
+<div class="picker-container">
+	<h2 id="color-picker"><a class="header" href="#color-picker">Color Picker</a></h2>
+  	<p>Select the color.</p>
+  	<div class="input-row">
+    	<input type="text" id="hexInput" class="hex-input" maxlength="20" placeholder="#000000" oninput="hexInputChange()">
+    	<input type="color" id="colorPicker" class="color-input" value="#000000" oninput="colorPickerChange()">
+  	</div>
+  	<div class="error" id="errorText"></div>
+  	<div id="validColorDisplay"><div class="valid-color" style="background:#000000">#000000</div></div>
+</div>
+<div class="picker-container">
+  	<h2 id="random-color"><a class="header" href="#random-color">Random Color</a></h2>
+  	<p>Generate a random color.</p>
+	<div class="random-result">
+  		<button id="randomColorButton" onclick="generateRandomColor()">Generate</button>
+  		<div id="randomColorResult" class="random-color-result"></div>
+	</div>
+</div>
+<h2 id="functions"><a class="header" href="#functions">Functions</a></h2>
+<p>Here are all the functions related to hex colors.</p>
+<div id="admonition-note-1" class="admonition admonish-note" role="note" aria-labelledby="admonition-note-1-title">
+<div class="admonition-title">
+<div id="admonition-note-1-title">
+<p>Note</p>
+</div>
+<a class="admonition-anchor-link" href="#admonition-note-1"></a>
+</div>
+<div>
+<p>You can use color hex in the “Color hex” parameters.</p>
+</div>
+</div>
+<p><strong>SET</strong>:</p>
+<ul>
+<li><a href="https://wiki.botdesignerdiscord.com/nightl/bdscript/addContainer.md"><code>$addContainer[]</code></a></li>
+<li><a href="https://wiki.botdesignerdiscord.com/nightl/bdscript/color.md"><code>$color[]</code></a></li>
+<li><a href="https://wiki.botdesignerdiscord.com/nightl/bdscript/colorRole.md"><code>$colorRole[]</code></a></li>
+<li><a href="https://wiki.botdesignerdiscord.com/nightl/bdscript/createRole.md"><code>$createRole[]</code></a></li>
+<li><a href="https://wiki.botdesignerdiscord.com/nightl/bdscript/editEmbedIn.md"><code>$editEmbedIn[]</code></a></li>
+<li><a href="https://wiki.botdesignerdiscord.com/nightl/bdscript/editMessage.md"><code>$editMessage[]</code></a></li>
+<li><a href="https://wiki.botdesignerdiscord.com/nightl/bdscript/embedSuppressErrors.md"><code>$embedSuppressErrors[]</code></a></li>
+<li><a href="https://wiki.botdesignerdiscord.com/nightl/bdscript/modifyRole.md"><code>$modifyRole[]</code></a></li>
+<li><a href="https://wiki.botdesignerdiscord.com/nightl/bdscript/sendEmbedMessage.md"><code>$sendEmbedMessage[]</code></a></li>
+<li><a href="https://wiki.botdesignerdiscord.com/nightl/bdscript/webhookColor.md"><code>$webhookColor[]</code></a></li>
+<li><a href="https://wiki.botdesignerdiscord.com/nightl/bdscript/webhookSend.md"><code>$webhookSend[]</code></a></li>
+</ul>
+<p><strong>GET</strong>:</p>
+<ul>
+<li><a href="https://wiki.botdesignerdiscord.com/nightl/bdscript/getRoleColor.md"><code>$getRoleColor[]</code></a></li>
+<li><a href="https://wiki.botdesignerdiscord.com/nightl/bdscript/roleInfo.md"><code>$roleInfo[]</code></a></li>
+<li><a href="https://rainb0wkey.github.io/bdfd-wiki/nightly/bdscript/userBannerColor.md"><code>$userBannerColor[]</code></a></li>
+</ul>
+<p><strong>CHECK</strong>:</p>
+<ul>
+<li><a href="https://wiki.botdesignerdiscord.com/nightl/bdscript/isValidHex.md"><code>$isValidHex[]</code></a></li>
+</ul>
+<h2 id="example"><a class="header" href="#example">Example</a></h2>
+<pre><code>$nomention
+$description[⬅️ Border color hex]
+$color[#673ab7]
+</code></pre>
+<pre><code class="language-discord yaml">- user_id: 803569638084313098
+  username: RainbowKey
+  color: "#E67E22"
+  content: |
+    !example
+- user_id: 1009018156494368798
+  username: BDFD Support
+  color: "#378afa"
+  bot: true
+  verified: true
+  content: &lt;none&gt;
+  embed:
+    description: ⬅️ Border color hex
+    color: "#673ab7"
+</code></pre>
+<div id="admonition-what-is-this" class="admonition admonish-question" role="note" aria-labelledby="admonition-what-is-this-title">
+<div class="admonition-title">
+<div id="admonition-what-is-this-title">
+<p>What is this?</p>
+</div>
+<a class="admonition-anchor-link" href="#admonition-what-is-this"></a>
+</div>
+<div>
+<p>How <a href="https://wiki.botdesignerdiscord.com/nightl/bdscript/color.md"><code>$color[]</code></a> and <a href="https://wiki.botdesignerdiscord.com/nightl/bdscript/description.md"><code>$description[]</code></a> works?</p>
+</div>
+</div>
+
+            </main>
+
+        </div>
+    </div>
+
+</div>
+
+
+
+    <script>
+        window.playground_copyable = true;
+    </script>
+
+    <script src="../elasticlunr.min.js" charset="utf-8"></script>
+    <script src="../mark.min.js" charset="utf-8"></script>
+    <script src="../theme/searcher.js" charset="utf-8"></script>
+
+<script src="../clipboard.min.js" charset="utf-8"></script>
+<script src="../highlight.js" charset="utf-8"></script>
+<script src="../book.js" charset="utf-8"></script>
+<script src="../theme/playground.js"></script>
+
+<!-- Custom JS scripts -->
+
+
+<script src="../theme/settings/code-hg.js" defer></script>
+
+<!-- Override some theme attributes with the custom settings -->
+<script src="../theme/settings/apply-settings.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,209 @@
+/* Foreword (Home) page */
+
+.discord-messages {
+	margin-top: 1.7rem;
+}
+
+.discord-left-border {
+	background: var(--link-color) !important;
+}
+
+.editPage,
+.breadcrumb {
+	visibility: hidden;
+}
+
+.preview {
+	text-align: center;
+}
+
+.preview p {
+	margin-top: 0;
+	color: var(--fg);
+	opacity: 0.8;
+}
+.bdfd-is {
+	text-align: center;
+	font-size: 110%;
+	border: solid;
+	border-width: 0;
+	background: var(--card-bg);
+	margin-top: 1rem;
+	padding-bottom: 20px;
+	padding-top: 8px;
+    padding-left: 16px;
+    padding-right: 16px;
+	border-radius: 10px;
+	box-shadow: 0 12px 15px rgba(0, 0, 0, 0.3);
+}
+
+#bdfd-about {
+	padding: 1rem;
+}
+
+.download,
+.resources {
+	text-align: center;
+}
+
+.resources h1 {
+	font-size: 170%;
+}
+
+.resourcesButtons {
+	font-size: 80%;
+}
+
+.homeButtons,
+.downloadButtons,
+.resourcesButtons {
+	user-select: none;
+	-webkit-user-select: none;
+}
+
+.homeButtons {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	align-items: center;
+	gap: 1rem;
+}
+
+.downloadButtons,
+.resourcesButtons {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	align-items: center;
+	gap: 0.75rem;
+	margin-top: 0;
+}
+
+.getHelp,
+.createMyBot,
+.downButton,
+.resButton {
+	touch-action: manipulation;
+	outline: none;
+	border-radius: 50px;
+	font-size: 80%;
+	margin: 0;
+	border: solid;
+	border-width: 0;
+	background-color: var(--card-hover);
+	font-weight: 700;
+	padding: 0 15px;
+	box-shadow: 0 12px 15px rgba(0, 0, 0, 0.2);
+	transition: background-color 0.2s, opacity 0.2s;
+}
+
+.getHelp:hover,
+.createMyBot:hover,
+.downButton:hover,
+.resButton:hover {
+	opacity: 0.85;
+}
+
+.downButton,
+.resButton {
+	margin: 0;
+	font-size: 90%;
+	padding-left: 15px;
+	padding-right: 15px;
+}
+
+.getHelp i,
+.createMyBot i,
+button i {
+	padding-right: 0.3rem;
+}
+
+.getHelp a,
+.createMyBot a,
+button a {
+	color: #fff !important;
+	font-weight: 700;
+}
+
+.why-bdfd h1 {
+	text-align: center;
+}
+
+.why-bdfd-embed {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	justify-content: center;
+}
+
+.feature-card {
+	display: flex;
+	flex-direction: column;
+}
+
+.feature-header {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	margin-bottom: 1rem;
+}
+
+.feature-header i {
+	font-size: 1.5rem;
+	color: var(--link-color);
+}
+
+.feature-title {
+	font-weight: bold;
+	font-size: 1.1rem;
+}
+
+.feature-content {
+	margin: 0;
+	line-height: 1.6;
+	opacity: 0.9;
+}
+
+.hosting,
+.anywhere,
+.alotfunctions,
+.community {
+	touch-action: manipulation;
+	white-space: normal;
+	background: var(--card-bg);
+	width: calc(50% - 2rem);
+	min-height: 10rem;
+	margin: 0.75rem;
+	border-radius: 10px;
+	box-sizing: border-box;
+	padding: 1.5rem;
+	box-shadow: 0 12px 15px rgba(0, 0, 0, 0.3);
+	transition: background-color 0.2s;
+}
+
+.hosting:hover,
+.anywhere:hover,
+.alotfunctions:hover,
+.community:hover {
+	background: var(--card-hover);
+}
+
+@media (max-width: 1025px) {
+	.hosting,
+	.anywhere,
+	.alotfunctions,
+	.community {
+		min-height: auto;
+	}
+}
+
+@media (max-width: 900px) {
+	.hosting,
+	.anywhere,
+	.alotfunctions,
+	.community {
+		width: 100%;
+		min-height: auto;
+	}
+}
+

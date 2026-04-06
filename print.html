@@ -1,0 +1,4122 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js bdfd">
+
+<head>
+    <!-- Book generated using mdBook -->
+    <meta charset="UTF-8">
+    <title>BDFD - Community Tools</title>
+
+        <meta name="robots" content="noindex">
+
+
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+    <meta name="description" content="Improves the quality of BDFD usage.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <meta name="theme-color" content="#633fb3">
+    <meta name="og:image" content="https://app.botdesignerdiscord.com/icons/Icon-512.png">
+    <meta name="format-detection" content="telephone=no"/>
+
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="apple-touch-icon" type="image/png" href="favicon.png">
+
+    <link rel="stylesheet" href="theme/css/variables.css">
+    <link rel="stylesheet" href="theme/css/general.css">
+    <link rel="stylesheet" href="theme/css/chrome.css">
+    <link rel="stylesheet" href="theme/css/print.css" media="print">
+
+    <!-- Discord Components -->
+    <script type="module"
+            src="assets/vendor/discord-components/skyra-discord-components-core.js"></script>
+
+    <!-- Fonts -->
+    <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
+
+    <!-- Highlight.js Stylesheets -->
+    <link rel="stylesheet" href="highlight.css">
+    <link rel="stylesheet" href="tomorrow-night.css">
+    <link rel="stylesheet" href="ayu-highlight.css">
+
+    <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="./src/theme/mdbook-admonish.css">
+</head>
+
+<body>
+<!-- Provide site root to javascript -->
+<script>
+    var path_to_root = "";
+    var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "bdfd" : "bdfd";
+</script>
+<!-- Start loading toc.js asap -->
+<script src="toc.js"></script>
+
+<!-- Work around some values being stored in localStorage wrapped in quotes -->
+<script>
+    try {
+        var theme = localStorage.getItem('mdbook-theme');
+        var sidebar = localStorage.getItem('mdbook-sidebar');
+
+        if (theme.startsWith('"') && theme.endsWith('"')) {
+            localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+        }
+
+        if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+            localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+        }
+    } catch (e) {
+    }
+</script>
+
+<!-- Set the theme before any content is loaded, prevents flash -->
+<script>
+    var theme;
+    try {
+        theme = localStorage.getItem('mdbook-theme');
+    } catch (e) {
+    }
+    if (theme === null || theme === undefined) {
+        theme = default_theme;
+    }
+    const html = document.documentElement;
+    html.classList.remove('bdfd')
+    html.classList.add(theme);
+    html.classList.add("js");
+</script>
+
+<input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+<!-- Hide / unhide sidebar before it is displayed -->
+<script>
+    var sidebar = null;
+    var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+    if (document.body.clientWidth >= 1080) {
+        try {
+            sidebar = localStorage.getItem('mdbook-sidebar');
+        } catch (e) {
+        }
+        sidebar = sidebar || 'visible';
+    } else {
+        sidebar = 'hidden';
+    }
+    sidebar_toggle.checked = sidebar === 'visible';
+    html.classList.remove('sidebar-visible');
+    html.classList.add("sidebar-" + sidebar);
+</script>
+
+<nav id="sidebar" class="sidebar" aria-label="Table of contents">
+    <!-- populated by js -->
+    <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+    <noscript>
+        <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+    </noscript>
+    <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+        <div class="sidebar-resize-indicator"></div>
+    </div>
+</nav>
+
+<div id="menu-bar" class="menu-bar">
+    <div id="menu-bar-sticky-container">
+        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor"
+               title="Toggle Table of Contents" aria-label="Toggle Table of Contents"
+               aria-controls="sidebar">
+            <i class="fa fa-bars"></i>
+        </label>
+
+        <a href="index.html" class="navbar-brand">
+            <img class="navbar-brand-icon" src="assets/logo192.png" alt="BDFD Wiki Logo">
+            <span class="navbar-brand-text">BDFD Tools</span>
+        </a>
+
+        <div class="menu-buttons">
+            <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)"
+                    aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S"
+                    aria-controls="searchbar">
+                <i class="fa fa-search"></i>
+            </button>
+        </div>
+
+        <h1 class="menu-title">Bot Designer For Discord</h1>
+    </div>
+</div>
+
+<div class="navbar-spacer"></div>
+
+<div id="page-wrapper" class="page-wrapper">
+    <div class="page">
+
+            <div id="search-wrapper" class="hidden">
+                <form id="searchbar-outer" class="searchbar-outer">
+                    <input type="search" name="search" id="searchbar" name="searchbar" placeholder="Search tools..."
+                           aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    <div class="search-hint">Press <kbd>ESC</kbd> or click outside to close</div>
+                </form>
+                <div id="searchresults-outer" class="searchresults-outer hidden">
+                    <div id="searchresults-header" class="searchresults-header"></div>
+                    <ul id="searchresults">
+                    </ul>
+                </div>
+            </div>
+
+        <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+        <script>
+            document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+            document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+            Array.from(document.querySelectorAll('#sidebar a')).forEach(function (link) {
+                link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+            });
+        </script>
+
+        <div class="snowflakes">
+            <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+            <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+            <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+            <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+            <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+            <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+            <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+            <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+            <i></i><i></i><i></i><i></i>
+        </div>
+
+        <div id="content" class="content">
+            <main>
+                <nav class="breadcrumb">
+                    <script src="theme/breadcrumbs.js"></script>
+                </nav>
+
+                <a href="" class="editPage">
+                    <i class='fa fa-edit' id="editPageIcon"></i>
+                </a>
+
+                <link rel="stylesheet" href="./theme/css/home.css">
+<div class="bdfd-is">
+  <h1 id="bdfd-case"><a class="header" href="#bdfd-case">Community Tools</a></h1>
+  <p id="bdfd-about">Here you can find useful things for a pleasant BDFD coding experience.</p>
+  <div class="homeButtons">
+    <button class="getHelp">
+      <p><a href="https://wiki.botdesignerdiscord.com/"><i class="fa fa-comments" aria-hidden="true"></i> Back to wiki</a></p>
+    </button>
+  </div>
+</div>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="color"><a class="header" href="#color">Color</a></h1>
+<style>
+.editPage {
+	visibility: hidden;
+}
+.picker-container {
+    background: var(--card-bg);
+	border-radius: var(--border-radius);
+	border: 1px solid rgba(255, 255, 255, 0.05);
+	margin-top: 1.5rem;
+	padding-bottom: 0rem;
+	padding-left: 1.5rem;
+	padding-right: 1.5rem;
+	box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+}
+.picker-container h2 {
+    margin-top: -.5rem;
+    padding-top: 1.5rem;
+}
+.picker-container p {
+	margin-top: -1.5rem;
+}
+.input-row {
+	display: flex;
+	gap: 1rem;
+	margin-top: -1rem;
+	margin-bottom: 1.5rem;
+	align-items: center;
+}
+.hex-input {
+    flex: 1 !important;
+    color: #ffffff;
+    padding-top: 2.25rem;
+	padding-bottom: 2.25rem;
+	padding-left: 1rem;
+    background: hsl(0deg 0% 100% / 7%);
+    border-radius: var(--border-radius);
+	border-width: 0;
+    font-family: monospace;
+    font-size: 1.5rem;
+    height: 3rem;
+    width: 65%;
+    outline: none;
+	touch-action: manipulation;
+	-webkit-user-select: none;
+	user-select: none;
+}
+.color-input {
+    background: hsl(0deg 0% 100% / 7%);
+	font-size: 1.5rem;
+	display: block;
+	outline: none;
+	border-radius: var(--border-radius);
+	border-width: 0;
+	height: 5.5rem;
+    padding: 0;
+    width: 5.5rem;
+    touch-action: manipulation;
+	-webkit-user-select: none;
+	user-select: none;
+}
+.color-input::-webkit-color-swatch {
+	border-radius: var(--border-radius);
+	border-width: 0;
+}
+.random-result {
+    display: flex;
+    align-items: center;
+}
+
+#randomColorResult {
+	padding: .9rem;
+	width: 100%;
+	border-radius: var(--border-radius);
+	margin-top: -2.5rem !important;
+	margin-bottom: 0 !important;
+	color: #fff;
+	font-weight: bold;
+	transition: .3s;
+}
+#randomColorResult:hover {
+	color: #000;
+	opacity: 0.6;
+	transition: .3s;
+}
+#randomColorButton {
+	outline: none;
+	touch-action: manipulation;
+	-webkit-user-select: none;
+	user-select: none;
+	padding-left: 1rem;
+	padding-right: 1rem;
+	height: 4rem;
+	border: none;
+	border-radius: var(--border-radius);
+	cursor: pointer;
+	margin-bottom: 1.5rem !important;
+	margin-top: -1rem !important;
+    margin-right: 1rem !important;
+	font-size: 1.5rem;
+	margin: 0.25%;
+	color: #fff;
+	background: hsl(0deg 0% 100% / 7%);
+	box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+}
+.error {
+	color: var(--error);
+	font-size: 1rem;
+	min-height: 1rem;
+	padding-bottom: 1rem;
+	margin-top: -1.5rem;
+}
+.valid-color {
+    color: white;
+    padding: 4px 8px;
+    border-radius: var(--border-radius);
+    font-weight: bold;
+    width: fit-content;
+    margin-left: -1.6rem;
+    margin-top: -.5rem;
+    display: flex;
+	text-shadow: 0px 0px 5px rgb(0 0 0 / 100%);
+}
+</style>
+<p>Here you can choose a color to use in your command.</p>
+<div id="admonition-note" class="admonition admonish-note" role="note" aria-labelledby="admonition-note-title">
+<div class="admonition-title">
+<div id="admonition-note-title">
+<p>Note</p>
+</div>
+<a class="admonition-anchor-link" href="tools/color.html#admonition-note"></a>
+</div>
+<div>
+<p>Hex colors are codes that represent colors using hexadecimal values for red, green, and blue. A shorthand like #090 is a compact version of #009900, meaning no red, full green, and no blue, resulting in a pure green. The format #RGB expands each digit to RRGGBB, making it easy to define web colors, including in BDFD’s color functions for customizing bot messages.</p>
+</div>
+</div>
+<div class="picker-container">
+	<h2 id="color-picker"><a class="header" href="#color-picker">Color Picker</a></h2>
+  	<p>Select the color.</p>
+  	<div class="input-row">
+    	<input type="text" id="hexInput" class="hex-input" maxlength="20" placeholder="#000000" oninput="hexInputChange()">
+    	<input type="color" id="colorPicker" class="color-input" value="#000000" oninput="colorPickerChange()">
+  	</div>
+  	<div class="error" id="errorText"></div>
+  	<div id="validColorDisplay"><div class="valid-color" style="background:#000000">#000000</div></div>
+</div>
+<div class="picker-container">
+  	<h2 id="random-color"><a class="header" href="#random-color">Random Color</a></h2>
+  	<p>Generate a random color.</p>
+	<div class="random-result">
+  		<button id="randomColorButton" onclick="generateRandomColor()">Generate</button>
+  		<div id="randomColorResult" class="random-color-result"></div>
+	</div>
+</div>
+<h2 id="functions"><a class="header" href="#functions">Functions</a></h2>
+<p>Here are all the functions related to hex colors.</p>
+<div id="admonition-note-1" class="admonition admonish-note" role="note" aria-labelledby="admonition-note-1-title">
+<div class="admonition-title">
+<div id="admonition-note-1-title">
+<p>Note</p>
+</div>
+<a class="admonition-anchor-link" href="tools/color.html#admonition-note-1"></a>
+</div>
+<div>
+<p>You can use color hex in the “Color hex” parameters.</p>
+</div>
+</div>
+<p><strong>SET</strong>:</p>
+<ul>
+<li><a href="https://wiki.botdesignerdiscord.com/nightl/bdscript/addContainer.md"><code>$addContainer[]</code></a></li>
+<li><a href="https://wiki.botdesignerdiscord.com/nightl/bdscript/color.md"><code>$color[]</code></a></li>
+<li><a href="https://wiki.botdesignerdiscord.com/nightl/bdscript/colorRole.md"><code>$colorRole[]</code></a></li>
+<li><a href="https://wiki.botdesignerdiscord.com/nightl/bdscript/createRole.md"><code>$createRole[]</code></a></li>
+<li><a href="https://wiki.botdesignerdiscord.com/nightl/bdscript/editEmbedIn.md"><code>$editEmbedIn[]</code></a></li>
+<li><a href="https://wiki.botdesignerdiscord.com/nightl/bdscript/editMessage.md"><code>$editMessage[]</code></a></li>
+<li><a href="https://wiki.botdesignerdiscord.com/nightl/bdscript/embedSuppressErrors.md"><code>$embedSuppressErrors[]</code></a></li>
+<li><a href="https://wiki.botdesignerdiscord.com/nightl/bdscript/modifyRole.md"><code>$modifyRole[]</code></a></li>
+<li><a href="https://wiki.botdesignerdiscord.com/nightl/bdscript/sendEmbedMessage.md"><code>$sendEmbedMessage[]</code></a></li>
+<li><a href="https://wiki.botdesignerdiscord.com/nightl/bdscript/webhookColor.md"><code>$webhookColor[]</code></a></li>
+<li><a href="https://wiki.botdesignerdiscord.com/nightl/bdscript/webhookSend.md"><code>$webhookSend[]</code></a></li>
+</ul>
+<p><strong>GET</strong>:</p>
+<ul>
+<li><a href="https://wiki.botdesignerdiscord.com/nightl/bdscript/getRoleColor.md"><code>$getRoleColor[]</code></a></li>
+<li><a href="https://wiki.botdesignerdiscord.com/nightl/bdscript/roleInfo.md"><code>$roleInfo[]</code></a></li>
+<li><a href="https://rainb0wkey.github.io/bdfd-wiki/nightly/bdscript/userBannerColor.md"><code>$userBannerColor[]</code></a></li>
+</ul>
+<p><strong>CHECK</strong>:</p>
+<ul>
+<li><a href="https://wiki.botdesignerdiscord.com/nightl/bdscript/isValidHex.md"><code>$isValidHex[]</code></a></li>
+</ul>
+<h2 id="example"><a class="header" href="#example">Example</a></h2>
+<pre><code>$nomention
+$description[⬅️ Border color hex]
+$color[#673ab7]
+</code></pre>
+<pre><code class="language-discord yaml">- user_id: 803569638084313098
+  username: RainbowKey
+  color: "#E67E22"
+  content: |
+    !example
+- user_id: 1009018156494368798
+  username: BDFD Support
+  color: "#378afa"
+  bot: true
+  verified: true
+  content: &lt;none&gt;
+  embed:
+    description: ⬅️ Border color hex
+    color: "#673ab7"
+</code></pre>
+<div id="admonition-what-is-this" class="admonition admonish-question" role="note" aria-labelledby="admonition-what-is-this-title">
+<div class="admonition-title">
+<div id="admonition-what-is-this-title">
+<p>What is this?</p>
+</div>
+<a class="admonition-anchor-link" href="tools/color.html#admonition-what-is-this"></a>
+</div>
+<div>
+<p>How <a href="https://wiki.botdesignerdiscord.com/nightl/bdscript/color.md"><code>$color[]</code></a> and <a href="https://wiki.botdesignerdiscord.com/nightl/bdscript/description.md"><code>$description[]</code></a> works?</p>
+</div>
+</div>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="text-editor"><a class="header" href="#text-editor">Text Editor</a></h1>
+<p>Here you can use the basic editor features to write codes more conveniently.</p>
+<style>
+.editPage {
+	visibility: hidden;
+}
+#stats-container p, #another-info p {
+    display: inline-block;
+    margin-right: 7.5px;
+    background-color: var(--card-hover);
+    padding: 5px;
+    font-size: 1.5rem;
+    border-radius: 10px;
+	margin-top:  -.5rem;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+}
+
+#stats-container span {
+    font-weight: bold;
+}
+
+#stats-container, #another-info {
+    margin-top: 2rem; 
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+#stats-container {
+	margin-bottom: 1rem;
+}
+
+#another-info  {
+	margin-top: 1.25rem;
+	margin-bottom: -1rem;
+}
+
+#editor, #name {
+	width: 96%;
+	font-size: 1.5rem;
+	min-height: 1.3rem;
+	max-height: 100em;
+	border-radius: 10px;
+	border-width: 0;
+	color: #fff;
+	background: hsl(0deg 0% 100% / 7%);
+	padding: 7px;
+	font-size: 1.5rem;
+	margin: -2rem auto;
+	display: block;
+	outline: none;
+}
+
+#editor {
+	height: 40rem;
+	resize: vertical;
+}
+
+#name {
+	white-space: nowrap;
+	overflow: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+	height: 1.7rem;
+	margin-bottom: 2rem;
+	margin-top: -1rem;
+	resize: none;
+}
+
+#scriptType {
+	margin-top: -1.5rem;
+}
+
+#text-editorui {
+	user-select: none;
+	-webkit-user-select: none;
+	margin-top: 1rem;
+	margin-bottom: 1rem;
+	background-color: var(--card-bg);
+	padding: 10px;
+	border-radius: 10px;
+}
+
+#text-editorui p {
+	user-select: none;
+	-webkit-user-select: none;
+	margin-bottom: -.5rem;
+	margin-top: .5rem;
+	font-size: 1rem;
+	color: var(--text-secondary);
+}
+
+#searchText, #replaceText {
+	padding: 1rem;
+	background: hsl(0deg 0% 100% / 7%);
+	color: #fff;
+	font-size: 1.5rem;
+	display: block;
+	outline: none;
+	border-radius: 10px;
+	border-width: 0;
+	width: 99.5%;
+	height: 3rem;
+}
+
+#text-editorui button {
+	outline: none;
+	touch-action: manipulation;
+	-webkit-user-select: none;
+	user-select: none;
+	padding-left: 1rem;
+	padding-right: 1rem;
+	height: 4rem;
+	border: none;
+	border-radius: 10px;
+	cursor: pointer;
+	margin-top: -1rem !important;
+	font-size: 1.5rem;
+	margin: 0.25%;
+	color: #fff;
+	background: hsl(0deg 0% 100% / 7%);
+	box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+}
+
+#error-message {
+	margin-top: -1rem;
+	margin-bottom: 3rem;
+	display: flex;
+	flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+#highlightedText span {
+	color: var(--link-color);
+}
+
+#highlightedText a {
+	color: white !important;
+}
+
+#highlightedText {
+	overflow-x: auto;
+	color: #fff;
+	font-size: 1.5rem;
+	border-radius: 10px;
+	border-width: 0;
+	padding: 10px;
+	height: 100%;
+	word-break: break-all;
+	background: hsl(0deg 0% 100% / 7%);
+}
+
+#highlightedText p {
+	margin-top: -.3rem;
+	margin-bottom: .5rem;
+}
+
+#highlightedText h1 {
+  	display: inline;
+}
+
+#highlightedText h2 {
+  	display: inline;
+}
+
+#highlightedText h3 {
+  	display: inline;
+}
+
+#highlightedText spoiler {
+	user-select: none;
+	-webkit-user-select: none;
+	background: #111111;
+	color: #111111;
+	padding-left: .25rem;
+	padding-right: .25rem;
+	cursor: pointer !important;
+}
+
+#highlightedText spoiler.spoiler-active {
+  	background: #2e2e2e94;
+  	color: #ababab;
+  	cursor: text !important;
+  	user-select: auto;
+  	-webkit-user-select: auto;
+}
+
+#highlightedText quote::before {
+	content: "";
+	margin-right: 5px;
+	border-radius: 10px;
+	border-style: solid;
+	border-width: 2px;
+	border-color: #535353;
+}
+
+#highlightedText hgSCode {
+	background: #2a2a2a;
+	color: #919191;
+	padding-left: .3rem;
+	padding-right: .3rem;
+	border-style: solid;
+	border-width: 1px;
+	border-color: #4b4b4b;
+	border-radius: 5px;
+}
+
+.line-number {
+    border-right-width: 2px;
+	color: hsl(0deg 0% 100% / 30%) !important;
+    border-color: hsl(0deg 0% 100% / 30%);
+    border-right-style: solid;
+    display: inline-block;
+    width: 4.2rem;
+	margin-right: 1rem;
+	white-space: nowrap;
+	-webkit-user-select: none;
+	user-select: none;
+}
+
+.channel, .mention {
+    border-radius: 5px;
+    color: hsl(0deg 0% 100% / 50%) !important;
+    background-color: hsl(0deg 0% 100% / 10%) !important;  
+    font-weight: bold;  
+    padding: 2px;
+}
+
+.timestamp {
+	color: #bbb !important;
+	background-color: hsl(0deg 0% 100% / 5%) !important;  
+}
+
+.hg-code {
+    border-radius: 5px;
+    border-width: 2px;
+    border-style: solid;
+    border-color: hsl(0deg 0% 100% / 10%) !important;
+    color: hsl(0deg 0% 100% / 40%) !important;
+    background-color: hsl(0deg 0% 100% / 5%) !important;
+    padding: 1px;
+    display: inline-block;
+}
+
+.close-btn {
+	user-select: none;
+	-webkit-user-select: none;
+	outline: none;
+	transition: .3s;
+    color: hsl(0deg 0% 100% / 75%) !important;
+    padding: 1px 7px;
+	border-color: var(--link-color) !important;
+    width: 25px;
+	border-radius: 60px;
+	cursor: pointer;
+}
+
+.close-btn:hover {
+	transition: .3s;
+    background-color: var(--card-bg);
+    border-style: solid;
+	border-width: 1px;
+}
+
+.scriptdiv {
+    position: relative;
+}
+
+.scriptdiv button:hover {
+	color: var(--link-color);
+	border-color: var(--link-color);
+	border-radius: 9px;
+	opacity: 0.9;
+	transition: 0.2s;
+}
+
+.scriptdiv button {
+	outline: none;
+  	position: absolute;
+  	top: 0.3rem;
+ 	user-select: none;
+    -webkit-user-select: none;
+	touch-action: manipulation;
+ 	outline: none;
+ 	color: #fff;
+ 	margin: 1.5px 5px;
+	padding: 5px;
+	cursor: pointer;
+ 	width: 3.2rem;
+    height: 3.2rem;
+	font-size: 1.5rem;
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 10px;
+    border-color: #aeaeae;
+    background: rgb(255 255 255 / 10%);
+    opacity: 0.8;
+    transition: 0.2s;
+}
+	
+.scriptdiv button:nth-of-type(1) {
+	right: 4.4rem;
+}
+
+.scriptdiv button:nth-of-type(2) {
+  	right: 0.8rem;
+}
+
+#error-message {
+    display: block !important;
+	text-align: center;
+}
+
+#error-message button {
+	outline: none;
+	transition: .4s;
+	display: inline-block;
+	margin-right: 7.5px;
+	background-color: var(--card-bg);
+	padding: 1rem;
+	color: hsl(0deg 0% 100% / 70%);;
+	font-size: 1.5rem;
+	border-radius: 10px;
+	border: none;
+	border-width: .1px;
+	box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+}
+
+#error-message button:hover {
+	transition: .4s;
+	color: var(--error);
+	border-style: solid;
+}
+
+#nameScript {
+    position: relative;
+}
+
+#nameScript span {
+	user-select: none;
+	-webkit-user-select: none;
+    position: absolute;
+    top: 50%;
+    right: 2rem;
+    transform: translateY(-50%);
+    color: #888;
+    font-size: 0.8em;    
+}
+
+#nameScript textarea {
+	padding: 1rem;
+	border-radius: 10px;
+	font-size: 1.5rem;
+	height: 3.5rem;
+}
+
+@media (max-width: 950px) {
+	#nameScript span {
+    	top: -35%;
+  	}
+}
+
+#selectors {
+  outline: none;
+  user-select: none;
+  -webkit-user-select: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 1.5rem;
+  margin-top: -1rem;
+  flex-wrap: wrap;
+}
+
+#selectors select {
+	cursor: pointer;
+  	outline: none;
+  	text-decoration: none;
+  	touch-action: manipulation;
+  	-webkit-tap-highlight-color: transparent;
+  	width: 15rem;
+ 	padding: 8px 5px;
+  	background: var(--card-bg);
+  	color: rgb(255 255 255 / 80%);
+  	border-radius: 10px;
+  	box-sizing: border-box;
+  	border: 0;
+}
+
+@media (max-width: 350px) {
+	#selectors select {
+		width: 85%;
+	}
+}
+
+#selectors select option {
+	outline: none;
+	color: var(--text-primary);
+	background-color: var(--card-bg);
+}
+
+#settings, #tips {
+	margin-top: 1rem;
+	background-color: var(--card-bg);
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+#tips em, #tips strong, #tips a {
+  	display: block;
+}
+
+#tips h1 {
+	margin-top: -2.25rem;
+}
+
+#tips h2 {
+	margin-top: -1.9rem;
+}
+
+#tips h3 {
+	margin-top: .1rem;
+}
+
+#tips h3:hover {
+	border: 0;
+}
+
+#settings summary, #text-editorui summary, #tips summary {
+	user-select: none;
+	-webkit-user-select: none;
+	outline: none;
+	background-color: var(--card-bg);
+	border-radius: 10px;
+	cursor: pointer;
+	padding: 0rem;
+	padding-bottom: .75rem;
+	margin-bottom: -.5rem;
+	margin-top: -.1rem;
+	font-size: 2.5rem;
+}
+
+.setting-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+#settings .setting-item p {
+    flex: 1;
+    margin-right: 10px;
+    text-align: left;
+    word-wrap: break-word;
+    line-height: 1.4;
+}
+
+#settings .setting-item button {
+	cursor: pointer;
+	outline: none;
+	transition: 0.2s;
+    width: 15rem;
+	padding: .75rem;
+	border-radius: 10px;
+	border: 0;
+	background: linear-gradient(to right, rgb(255 255 255 / 40%), rgb(1 192 36 / 75%));
+    box-sizing: border-box;
+	color: rgb(255 255 255 / 90%);
+}
+
+#settings .setting-item #textWrappingButton, #settings .setting-item #brokeLinksButton, #settings .setting-item #caseSensitiveButton  {
+	background: linear-gradient(to left, rgb(255 255 255 / 40%), rgb(192 1 1 / 75%));
+}
+
+@media (max-width: 475px) {
+    .setting-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    #settings .setting-item p {
+		text-align: center;
+        margin-right: 0;
+        margin-bottom: 0.5rem;
+    }
+
+    #settings .setting-item button {
+        width: 100%;
+    }
+}
+
+#settings .setting-item button:hover {
+	transform: scale(1.025);
+	transition: 0.2s;
+	color: #fff;
+}
+
+#settings hr {
+    border: 0;
+    height: 1px;
+    background: hsl(0deg 0% 100% / 20%);
+	border-radius: 10px;
+	margin: 5px 0;
+}
+
+.setting-item:last-child {
+	user-select: none;
+	-webkit-user-select: none;
+	margin-top: -2.25rem;
+    margin-bottom: -1.25rem;
+    display: flex;
+    justify-content: center;
+	text-align: center;
+	font-size: 1.3rem;
+}
+
+#autocomplete {
+    white-space: normal;
+    width: auto;
+    margin-bottom: 3rem;
+    margin-top: -1.75rem;
+    display: block !important;
+	border-radius: 10px;
+	background: var(--card-bg);
+	border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+#autocomplete span {
+    display: block;
+    color: var(--text-secondary);
+	margin-top: .5rem;
+    margin-bottom: .5rem;
+	margin-left: .5rem;
+	margin-right: 1rem;
+    cursor: pointer;
+    padding: .5rem;
+    width: 100%;
+    transition: 0.2s;
+}
+
+#autocomplete span.selected, #autocomplete span:hover {
+	border-left-color: var(--link-color);
+	border-left-width: 2.5px;
+	border-top-left-radius: 0;
+	border-bottom-left-radius: 0;
+	border-left-style: solid;
+	transition: 0.2s;
+}
+</style>
+<script src="../theme/autocomplete.js" defer></script>
+<div id="stats-container">
+	<p>Words: <span id="wordCount">0</span></p>
+	<p>Spaces: <span id="spaceCount">0</span></p>
+    <p>Lines: <span id="lineCount">0</span></p>
+    <p>Characters: <span id="charCount">0</span></p>
+	<p>Bytes: <span id="byteCount">0</span></p>
+</div>
+<div id="command-editor">
+	<p id="scriptType">Name • Command</p>
+	<div id="nameScript">
+		<textarea id="name" oninput="nameScript(); typeScript()"></textarea>
+		<span>0/50</span>
+	</div>
+	<div id="selectors">
+  		<select name="type" onchange="typeScript()">
+			<option selected value="auto">Auto</option>
+			<option value="command">Command</option>
+			<option value="slash">Slash Command</option>
+			<option value="callback">Callback</option>
+			<option value="file">File</option>
+		</select>
+		<select name="language" onchange="bdscript2()">
+			<option selected value="bds2">BDScript 2</option>
+			<option value="bds">BDScript</option>
+			<option value="bdsu">BDScript Unstable</option>
+		</select>
+	</div>
+	<p id="error-message"></p>
+	<p id="autocomplete"></p>
+	<div class="scriptdiv">
+		<textarea id="editor" oninput="updateStats(); checkBrackets(); bdscript2()"></textarea><br>
+	 	<button class="fa fa-regular fa-paste clip-button" onclick="copyCodeText() title="Copy" aria-label="Copy"></button>
+	  	<button class="fa fa-file-word-o" onclick="saveFile()" title="Save as file" aria-label="Save as file"></button>
+	</div>
+</div>
+<div id="another-info">
+  <p>[<span id="openCount">0</span></p>
+  <p>]<span id="closeCount">0</span></p>
+		<p>Escaped Characters: <span id="escapesCount">0</span></p>
+		<p>Special Characters: <span id="specialChars">0</span></p>
+</div>
+<details id="text-editorui">
+  <summary>Editor</summary>
+	<label for="searchText">Find:</label>
+	<input type="text" id="searchText"><br>
+	<label for="replaceText">Replace:</label>
+	<input type="text" id="replaceText"><br>
+	<button id="highlightButton" onclick="toggleHighlight()">Find</button>
+	<button onclick="replaceOneText()">Replace</button>
+	<button onclick="replaceText()">Replace all</button>
+	<p><i class="fa fa-info" aria-hidden="true"></i> Regex is supported</p>
+</details>
+<div id="highlightedText"></div>
+<details id="settings">
+  <summary>Settings</summary>
+  <div class="setting-item">
+    <p>Toggles the visibility of the editor's useful buttons panel (save as file, copy text).</p>
+    <button onclick="editorAreaButtons()" id="usefulButtonsButton">Useful buttons</button>
+  </div>
+  <hr>
+  <div class="setting-item">
+    <p>Toggles case sensitivity for the find function in the editor.</p>
+    <button onclick="editorFindCase()" id="caseSensitiveButton">Sensitive case</button>
+  </div>
+  <hr>
+  <div class="setting-item">
+    <p>Disables all links on the page to avoid misclicking.</p>
+    <button onclick="editorBrokeLinks()" id="brokeLinksButton">Break all links</button>
+  </div>
+  <hr>
+  <div class="setting-item">
+    <p>Displaying warnings.</p>
+    <button onclick="editorWarning()" id="changeWarningsButton">Warnings</button>
+  </div>
+  <hr>
+  <div class="setting-item">
+    <p>Displaying errors.</p>
+    <button onclick="editorError()" id="changeErrorsButton">Errors</button>
+  </div>
+  <hr>
+  <div class="setting-item">
+    <p>Text wrapping in text editor.</p>
+    <button onclick="editorWrapping()" id="textWrappingButton">Text Wrapping</button>
+  </div>
+  <hr>
+  <div class="setting-item">
+    <p>Highlighting in  text editor.</p>
+    <button onclick="textHighlighting()" id="findHighlightingButton">Highlighting</button>
+  </div>
+  <hr>
+  <div class="setting-item">
+    <p>Suggest functions as you type.</p>
+    <button onclick="changeAutocomplete()" id="changeAutocompleteButton">Autocomplete</button>
+  </div>
+  <hr>
+  <div class="setting-item">
+    <p>Number each line.</p>
+    <button onclick="changeCodeLines()" id="changeCodeLines">Line Number</button>
+  </div>
+  <div class="setting-item">
+    <p id="internetConnection">Loading...</p>
+  </div>
+</details>
+<details id="tips">
+  <summary>Tips</summary>
+	<em>*Italics*</em>
+	<strong>**Bold**</strong>
+	<del>~~Line Through~~</del>
+	<a>[Hyperlink Text](Link)</a>
+	<a>[BDScript 2 Hyperlink Text\](Link)</a>
+	<h3 id="small-header"><a class="header" href="#small-header">### Small Header</a></h3>
+	<h2 id="header"><a class="header" href="#header">## Header</a></h2>
+	<h1 id="big-header"><a class="header" href="#big-header"># Big Header</a></h1>
+</details>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="json-editor"><a class="header" href="#json-editor">JSON Editor</a></h1>
+<style>
+.description {
+    background-color: var(--card-hover);
+    padding: 20px;
+    border-radius: var(--border-radius);
+    margin-bottom: 25px;
+    border-left: 4px solid var(--link-color);
+}
+
+.description p {
+    font-size: 1.5rem;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+    color: #dcddde;
+}
+
+.input-section {
+    margin: 2rem 0;
+}
+
+.json-input {
+    width: 100%;
+    min-height: 200px;
+    padding: 1.5rem;
+    font-size: 1.5rem;
+    background-color: var(--card-bg);
+    border: 2px solid var(--card-hover);
+    border-radius: var(--border-radius);
+    color: #ffffff;
+    box-sizing: border-box;
+    font-family: 'Consolas', monospace;
+    resize: vertical;
+}
+
+.json-input:focus {
+    outline: none;
+    border-color: var(--link-color);
+}
+
+.json-input.valid {
+    border-color: var(--success);
+}
+
+.json-input.invalid {
+    border-color: var(--error);
+}
+
+.control-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    justify-content: center;
+    align-items: center;
+}
+
+.control-button {
+    outline: none;
+    touch-action: manipulation;
+    -webkit-user-select: none;
+    user-select: none;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    height: 4rem;
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-size: 2.25rem;
+    margin: 0.25%;
+    color: #fff;
+    background: hsl(0deg 0% 100% / 7%);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+    flex: 1;
+    text-align: center;
+    transition: all 0.2s;
+}
+
+.control-button:hover {
+    transform: scale(1.05);
+    border-radius: 8px;
+    border-width: 1px;
+    transition: 0.2s;
+}
+
+.search-section {
+    margin: 1.5rem 0;
+    padding: 1rem;
+    background-color: var(--card-hover);
+    border-radius: var(--border-radius);
+}
+
+.search-row {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.search-input {
+    flex: 1;
+    padding: 1rem;
+    font-size: 1.5rem;
+    background-color: var(--card-bg);
+    border: 2px solid var(--card-hover);
+    border-radius: var(--border-radius);
+    color: #ffffff;
+    box-sizing: border-box;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: var(--link-color);
+}
+
+.search-type {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.search-radio {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.4rem;
+    cursor: pointer;
+}
+
+.search-radio input[type="radio"] {
+    transform: scale(1.2);
+    accent-color: var(--link-color);
+    cursor: pointer;
+}
+
+.search-stats {
+    color: var(--text-muted);
+    font-size: 1.4rem;
+    margin-top: 1rem;
+    text-align: center;
+}
+
+.advanced-controls {
+    display: flex;
+    gap: 1rem;
+    margin: 1.5rem 0;
+}
+
+.advanced-button {
+    outline: none;
+    touch-action: manipulation;
+    -webkit-user-select: none;
+    user-select: none;
+    padding: 1rem 1.5rem;
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-size: 1.5rem;
+    color: #fff;
+    background: hsl(0deg 0% 100% / 7%);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+    flex: 1;
+    text-align: center;
+    transition: all 0.2s;
+}
+
+.advanced-button:hover {
+    transform: scale(1.05);
+    border-radius: 8px;
+    border-width: 1px;
+    transition: 0.2s;
+}
+
+.advanced-button.add {
+    background-color: var(--success);
+}
+
+.advanced-button.delete {
+    background-color: var(--error);
+}
+
+.advanced-button.duplicate {
+    background-color: var(--warning);
+}
+
+.keys-section {
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    background-color: var(--card-bg);
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    margin-top: 2rem;
+}
+
+.keys-section h3 {
+    margin-top: 0;
+    color: #ffffff;
+    font-size: 2rem;
+    border-bottom: 2px solid var(--success);
+    padding-bottom: 0.75rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.keys-count {
+    background-color: var(--link-color);
+    color: white;
+    padding: 0.2rem 0.8rem;
+    border-radius: 10px;
+    font-size: 1.2rem;
+}
+
+.keys-container {
+    margin-top: 1rem;
+    max-height: 400px;
+    overflow-y: auto;
+    padding: 0.5rem;
+}
+
+.key-group {
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background-color: rgb(10 10 10 / 15%);
+    border-radius: var(--border-radius);
+    transition: all 0.2s;
+}
+
+.key-group:hover {
+    transform: translateY(-2px);
+}
+
+.key-group-title {
+    color: var(--link-color);
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.key-group-info {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.key-count {
+    background-color: var(--success);
+    color: white;
+    padding: 0.2rem 0.8rem;
+    border-radius: 10px;
+    font-size: 1.2rem;
+}
+
+.key-group-controls {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.group-button {
+    padding: 0.3rem 0.8rem;
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-size: 1.2rem;
+    background-color: var(--card-hover);
+    color: white;
+    transition: all 0.2s;
+}
+
+.group-button:hover {
+    transform: translateY(-1px);
+}
+
+.group-button.delete-all {
+    background-color: var(--error);
+}
+
+.keys-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.key-item {
+    background-color: var(--card-hover);
+    padding: 1rem;
+    border-radius: var(--border-radius);
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 1.4rem;
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    min-width: 250px;
+    flex: 1;
+    min-width: 200px;
+}
+
+.key-item:hover {
+    background-color: rgb(102 126 234 / 20%);
+    transform: translateY(-2px);
+}
+
+.key-item.editing {
+    background-color: var(--success);
+    border-color: var(--success);
+}
+
+.key-item.highlighted {
+    animation: highlight 1.5s ease-in-out;
+    border-color: var(--warning);
+}
+
+@keyframes highlight {
+    0%, 100% { 
+        border-color: var(--warning);
+        box-shadow: 0 0 0 rgba(250, 166, 26, 0);
+    }
+    50% { 
+        box-shadow: 0 0 15px rgba(250, 166, 26, 0.5);
+    }
+}
+
+.key-name {
+    font-weight: bold;
+    color: var(--link-color);
+    font-size: 1.6rem;
+}
+
+.key-path {
+    font-size: 1.2rem;
+    color: var(--text-muted);
+    font-family: 'Consolas', monospace;
+}
+
+.key-value {
+    font-size: 1.2rem;
+    color: var(--text-muted);
+    font-family: 'Consolas', monospace;
+    word-break: break-all;
+    margin-top: 0.5rem;
+}
+
+.key-value.string {
+    color: var(--success);
+}
+
+.key-value.number {
+    color: #faa61a;
+}
+
+.key-value.boolean {
+    color: var(--error);
+}
+
+.key-value.null {
+    color: var(--text-muted);
+}
+
+.key-value.object {
+    color: var(--link-color);
+    font-style: italic;
+}
+
+.key-value.array {
+    color: var(--link-color);
+    font-style: italic;
+}
+
+.key-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.key-button {
+    padding: 0.5rem;
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-size: 1.2rem;
+    background-color: var(--card-bg);
+    color: white;
+    transition: all 0.2s;
+    flex: 1;
+    text-align: center;
+}
+
+.key-button:hover {
+    transform: translateY(-1px);
+}
+
+.key-button.edit-name {
+    background-color: var(--success);
+}
+
+.key-button.edit-value {
+    background-color: var(--link-color);
+}
+
+.key-button.delete {
+    background-color: var(--error);
+}
+
+.key-button.duplicate {
+    background-color: var(--warning);
+}
+
+.key-input, .value-input {
+    background: transparent;
+    border: none;
+    color: #ffffff;
+    font-size: 1.4rem;
+    outline: none;
+    padding: 0.2rem 0.5rem;
+    border-bottom: 1px solid var(--success);
+    width: 100%;
+}
+
+.value-input {
+    border-bottom-color: var(--link-color);
+    font-family: 'Consolas', monospace;
+}
+
+.add-key-dialog {
+    background-color: var(--card-hover);
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    margin-top: 1rem;
+    display: none;
+}
+
+.add-key-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.form-row {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.form-label {
+    color: var(--text-muted);
+    font-size: 1.4rem;
+    min-width: 80px;
+}
+
+.form-input {
+    flex: 1;
+    padding: 0.8rem;
+    font-size: 1.4rem;
+    background-color: var(--card-bg);
+    border: 2px solid var(--card-hover);
+    border-radius: var(--border-radius);
+    color: #ffffff;
+    box-sizing: border-box;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: var(--link-color);
+}
+
+.form-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    margin-top: 1rem;
+}
+
+.form-button {
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-size: 1.4rem;
+    color: white;
+    transition: all 0.2s;
+}
+
+.form-button.save {
+    background-color: var(--success);
+}
+
+.form-button.cancel {
+    background-color: var(--error);
+}
+
+.stats-section, .errors-section, .results {
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    background-color: var(--card-bg);
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    margin-top: 2rem;
+}
+
+.stats-section h3, .errors-section h3, .results h3 {
+    margin-top: 0;
+    color: #ffffff;
+    font-size: 2rem;
+    border-bottom: 2px solid var(--link-color);
+    padding-bottom: 0.75rem;
+}
+
+.errors-section h3 {
+    border-bottom-color: var(--error);
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-top: 1rem;
+}
+
+.stat-item {
+    background-color: rgb(10 10 10 / 15%);
+    padding: 1rem;
+    border-radius: var(--border-radius);
+    border-left: 4px solid var(--success);
+    transition: all 0.2s;
+}
+
+.stat-item:hover {
+    transform: translateY(-2px);
+}
+
+.stat-label {
+    color: var(--text-muted);
+    font-size: 1.4rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 0.5rem;
+}
+
+.stat-value {
+    color: #ffffff;
+    font-size: 2rem;
+    font-weight: bold;
+    font-family: 'Consolas', monospace;
+}
+
+.error-list {
+    list-style-type: none;
+    padding-left: 0;
+    margin: 1rem 0 0 0;
+}
+
+.error-list li {
+    padding: 1rem;
+    margin: 1rem 0;
+    background-color: rgb(10 10 10 / 15%);
+    border-radius: var(--border-radius);
+    border-left: 4px solid var(--error);
+    color: var(--error);
+    font-size: 1.5rem;
+    display: flex;
+    align-items: flex-start;
+}
+
+.error-icon {
+    margin-right: 1rem;
+    font-size: 1.6rem;
+}
+
+.result-content {
+    min-height: 1rem;
+    padding: 0rem 0;
+}
+
+.no-results {
+    color: var(--text-muted);
+    font-style: italic;
+    text-align: center;
+    padding: 1rem;
+    font-size: 1.5rem;
+}
+
+.json-preview {
+    background-color: rgb(10 10 10 / 15%);
+    padding: 1rem;
+    border-radius: var(--border-radius);
+    margin-top: 1rem;
+    max-height: 300px;
+    overflow-y: auto;
+    font-family: 'Consolas', monospace;
+    font-size: 1.4rem;
+    white-space: pre-wrap;
+    word-break: break-all;
+}
+
+.json-key {
+    color: var(--link-color);
+    font-weight: bold;
+}
+
+.json-string {
+    color: var(--success);
+}
+
+.json-number {
+    color: #faa61a;
+}
+
+.json-boolean {
+    color: var(--error);
+}
+
+.json-null {
+    color: var(--text-muted);
+}
+
+.json-bracket {
+    color: #ffffff;
+    font-weight: bold;
+}
+
+.hidden {
+    display: none;
+}
+</style>
+<div class="container">
+    <div class="description">
+        <p>This JSON validator helps you validate and analyze JSON data. Paste your JSON code to check for syntax errors, view key statistics, and edit keys directly.</p>
+        <p>Use the search to find keys by name or value. Add new keys, delete existing ones, or duplicate keys with their values.</p>
+        <p>All changes are reflected in real-time in the JSON preview.</p>
+    </div>
+    <div class="input-section">
+        <textarea class="json-input" id="jsonInput" placeholder='Paste your JSON here... Example: {"name": "John", "age": 30, "city": "New York"}'>{"name": "John", "age": 30, "city": "New York", "name": "Duplicate"}</textarea>
+    </div>
+    <div class="control-buttons">
+        <button class="control-button" id="validateBtn">Validate JSON</button>
+        <button class="control-button" id="formatBtn">Format JSON</button>
+        <button class="control-button" id="clearBtn">Clear</button>
+    </div>
+    <div class="search-section" id="searchSection" style="display: none;">
+        <div class="search-row">
+            <input type="text" class="search-input" id="searchInput" placeholder="Search keys or values...">
+            <button class="advanced-button" id="clearSearchBtn">Clear Search</button>
+        </div>
+        <div class="search-type">
+            <label class="search-radio">
+                <input type="radio" name="searchType" value="name" checked>
+                Search by Key Name
+            </label>
+            <label class="search-radio">
+                <input type="radio" name="searchType" value="value">
+                Search by Value
+            </label>
+            <label class="search-radio">
+                <input type="radio" name="searchType" value="both">
+                Search Both
+            </label>
+        </div>
+        <div class="search-stats" id="searchStats"></div>
+    </div>
+    <div class="advanced-controls" id="advancedControls" style="display: none;">
+        <button class="advanced-button add" id="addKeyBtn">Add New Key</button>
+        <button class="advanced-button duplicate" id="duplicateKeyBtn">Duplicate Selected</button>
+        <button class="advanced-button delete" id="deleteKeyBtn">Delete Selected</button>
+    </div>
+    <div class="add-key-dialog" id="addKeyDialog">
+        <div class="add-key-form">
+            <div class="form-row">
+                <label class="form-label">Key Name:</label>
+                <input type="text" class="form-input" id="newKeyName" placeholder="Enter key name">
+            </div>
+            <div class="form-row">
+                <label class="form-label">Value:</label>
+                <input type="text" class="form-input" id="newKeyValue" placeholder="Enter value (string, number, true/false, null)">
+            </div>
+            <div class="form-row">
+                <label class="form-label">Path (optional):</label>
+                <input type="text" class="form-input" id="newKeyPath" placeholder="parent.child (leave empty for root)">
+            </div>
+            <div class="form-buttons">
+                <button class="form-button save" id="saveNewKeyBtn">Save Key</button>
+                <button class="form-button cancel" id="cancelNewKeyBtn">Cancel</button>
+            </div>
+        </div>
+    </div>
+    <div class="keys-section" id="keysSection" style="display: none;">
+        <h3 id="json-keys-0"><a class="header" href="#json-keys-0">JSON Keys <span class="keys-count" id="keysCount">0</span></a></h3>
+        <div class="keys-container" id="keysContainer"></div>
+    </div>
+    <div class="stats-section" id="statsSection" style="display: none;">
+        <h3 id="json-statistics"><a class="header" href="#json-statistics">JSON Statistics</a></h3>
+        <div class="stats-grid" id="statsGrid"></div>
+    </div>
+    <div class="errors-section" id="errorsSection" style="display: none;">
+        <h3 id="validation-errors"><a class="header" href="#validation-errors">Validation Errors</a></h3>
+        <div class="error-list" id="errorList"></div>
+    </div>
+    <div class="results" id="previewSection" style="display: none;">
+        <h3 id="json-preview"><a class="header" href="#json-preview">JSON Preview</a></h3>
+        <div class="result-content">
+            <div class="json-preview" id="jsonPreview"></div>
+        </div>
+    </div>
+</div>
+<script src="json-validator.js"></script><div style="break-before: page; page-break-before: always;"></div><h1 id="permission-calculator"><a class="header" href="#permission-calculator">Permission Calculator</a></h1>
+<p>Here you can use the discord permissions calculator to later use in the bot invitation link.</p>
+<script src="./permcalc.js" defer></script>
+<style>
+.editPage {
+	visibility: hidden;
+}
+.control-buttons {
+	display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+	justify-content: center;
+    align-items: center;
+}
+.control-button {
+	outline: none;
+	touch-action: manipulation;
+	-webkit-user-select: none;
+	user-select: none;
+	padding-left: 1rem;
+	padding-right: 1rem;
+	height: 4rem;
+	border: none;
+	border-radius: var(--border-radius);
+	cursor: pointer;
+	font-size: 2.25rem;
+	margin: 0.25%;
+	color: #fff;
+	background: hsl(0deg 0% 100% / 7%);
+	box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+    flex: 1;
+    text-align: center;
+}
+.permission-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    background-color: var(--card-bg);
+    border-radius: var(--border-radius);
+    transition: all 0.2s;
+    margin-bottom: .75rem;
+    border-left: 4px solid transparent;
+}
+.permission-item:hover {
+    transform: translateY(-2px);
+}
+.permission-item.checked {
+	border-left-color: var(--link-color);
+	background: rgb(102 126 234 / 20%);
+}
+.permission-item label {
+    margin-left: 1.5rem;
+    font-size: 1.5rem;
+    cursor: pointer;
+    flex-grow: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.permission-value {
+	color: #fff;
+	font-size: 1.4rem;
+	margin-left: 1rem;
+	background-color: rgb(145 145 145 / 10%);
+	padding: .5rem 1rem;
+	border-radius: var(--border-radius);
+}
+input[type="checkbox"] {
+	transform: scale(1.2);
+	cursor: pointer;
+	accent-color: var(--link-color);
+}
+.total-section {
+	border-radius: var(--border-radius);
+	border: 1px solid rgba(255, 255, 255, 0.05);
+	background-color: var(--card-bg);
+	padding: 1rem;
+	margin: 3rem 0;
+	text-align: center;
+}
+.total-section:hover > .total-value {
+    color: var(--link-color);
+    transition: 0.3s;
+}
+.total-section h2 {
+	margin-top: 0;
+	color: #ffffff;
+	font-size: 2.25rem;
+}
+.total-value {
+	font-family: 'Consolas', monospace;
+	font-size: 3rem;
+	color: #fff;
+	font-weight: bold;
+	margin: -1rem 0;
+	word-break: break-all;
+	transition: 0.3s;
+}
+.hex-value {
+	font-family: 'Consolas', monospace;
+	font-size: 1.4rem;
+	color: var(--text-muted);
+	margin-top: 1rem;
+}
+.input-section {
+	margin: 2rem 0;
+}
+.input-section input {
+	width: 100%;
+	padding: 1.5rem;
+	font-size: 1.5rem;
+	background-color: var(--card-bg);
+	border: 2px solid var(--card-hover);
+	border-radius: var(--border-radius);
+	color: #ffff;
+	box-sizing: border-box;
+}
+.input-section input:focus {
+	outline: none;
+	border-color: var(--link-color);
+}
+.input-section input::placeholder {
+    color: #fff;
+}
+.results {
+	border: 1px solid rgba(255, 255, 255, 0.05);
+	background-color: var(--card-bg);
+	padding: 1.5rem;
+	border-radius: var(--border-radius);
+	margin-top: -1rem;
+}
+.results h3 {
+	margin-top: 0;
+	color: #ffffff;
+	font-size: 2rem;
+	border-bottom: 2px solid var(--link-color);
+	padding-bottom: 0.75rem;
+}    
+.result-content {
+	min-height: 1rem;
+	padding: 0rem 0;
+}
+#resultContent {
+	margin-top: -2rem;
+}
+.combination, .current-selection {
+	background-color: rgb(10 10 10 / 15%);
+	padding: 1rem;
+	margin: 1rem 0;
+	border-radius: var(--border-radius);
+	border-left: 0;
+}
+.combination-title {
+	font-weight: bold;
+	margin-bottom: 0rem;
+}
+.permission-list {
+	list-style-type: none;
+	padding-left: 0;
+	margin: 1rem 0;
+}
+.permission-list li {
+	padding: .75rem 1rem;
+	margin: -1rem 0;
+	font-size: 1.5rem;
+}
+.combination-total {
+	font-family: 'Consolas', monospace;
+	color: #fff;
+	font-weight: bold;
+	margin-top: 1rem;
+	font-size: 1rem;
+}
+.no-results {
+	font-style: italic;
+	text-align: center;
+	padding: 1rem;
+}
+.search-info {
+	color: var(--text-secondary);
+	font-size: 1.6rem;
+	margin-top: -1.5rem;
+	padding-top: 0;
+}
+.warning {
+    color: var(--error);
+    font-size: 1.4rem;
+    margin-top: 1rem;
+    padding: 1rem;
+    border-radius: var(--border-radius);
+}
+.category-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin: 2rem 0 1rem 0;
+}
+.category-header .category-title {
+	font-size: 1.5rem;
+	text-transform: uppercase;
+	letter-spacing: .1rem ;
+	padding-bottom: .5rem;
+	border-bottom: 1px solid var(--card-bg);
+	flex-grow: 1;
+}
+.category-toggle {
+	outline: none;
+	touch-action: manipulation;
+	-webkit-user-select: none;
+	user-select: none;
+	padding: 1rem;
+	border: none;
+	border-radius: var(--border-radius);
+	cursor: pointer;
+	font-size: 1.1rem;
+	margin-left: .5rem;
+	color: #fff;
+	background: hsl(0deg 0% 100% / 7%);
+	box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+	transition: all 0.2s;
+	text-align: center;
+}
+</style>
+<div class="control-buttons">
+    <button class="control-button" id="enableAll">Enable All</button>
+    <button class="control-button disable" id="disableAll">Disable All</button>
+</div>
+<div class="permissions-grid" id="permissionsGrid">
+    <div class="category-header">
+        <div class="category-title">General Server Permissions</div>
+        <button class="category-toggle" data-category="general">Toggle All</button>
+    </div>
+    <div class="permission-item" id="item-manage_server">
+        <input type="checkbox" id="manage_server" value="32">
+        <label for="manage_server">
+            Manage Server
+            <span class="permission-value" id="value-manage_server">32</span>
+        </label>
+    </div>
+    <div class="permission-item" id="item-view_audit_log">
+        <input type="checkbox" id="view_audit_log" value="128">
+        <label for="view_audit_log">
+            View Audit Log
+            <span class="permission-value" id="value-view_audit_log">128</span>
+        </label>
+    </div>
+    <div class="permission-item" id="item-view_server_insights">
+        <input type="checkbox" id="view_server_insights" value="524288">
+        <label for="view_server_insights">
+            View Server Insights
+            <span class="permission-value" id="value-view_server_insights">524288</span>
+        </label>
+    </div>
+    <div class="permission-item" id="item-administrator">
+        <input type="checkbox" id="administrator" value="8">
+        <label for="administrator">
+            Administrator
+            <span class="permission-value" id="value-administrator">8</span>
+        </label>
+    </div>
+    <div class="category-header">
+        <div class="category-title">Member Management</div>
+        <button class="category-toggle" data-category="member">Toggle All</button>
+    </div>
+    <div class="permission-item" id="item-kick_members">
+        <input type="checkbox" id="kick_members" value="2">
+        <label for="kick_members">
+            Kick Members
+            <span class="permission-value" id="value-kick_members">2</span>
+        </label>
+    </div>
+    <div class="permission-item" id="item-ban_members">
+        <input type="checkbox" id="ban_members" value="4">
+        <label for="ban_members">
+            Ban Members
+            <span class="permission-value" id="value-ban_members">4</span>
+        </label>
+    </div>
+    <div class="permission-item" id="item-manage_nicknames">
+        <input type="checkbox" id="manage_nicknames" value="134217728">
+        <label for="manage_nicknames">
+            Manage Nicknames
+            <span class="permission-value" id="value-manage_nicknames">134217728</span>
+        </label>
+    </div>
+    <div class="permission-item" id="item-change_nickname">
+        <input type="checkbox" id="change_nickname" value="67108864">
+        <label for="change_nickname">
+            Change Nickname
+            <span class="permission-value" id="value-change_nickname">67108864</span>
+        </label>
+    </div>
+    <div class="category-header">
+        <div class="category-title">Channel Management</div>
+        <button class="category-toggle" data-category="channel">Toggle All</button>
+    </div>
+    <div class="permission-item" id="item-manage_channels">
+        <input type="checkbox" id="manage_channels" value="16">
+        <label for="manage_channels">
+            Manage Channels
+            <span class="permission-value" id="value-manage_channels">16</span>
+        </label>
+    </div>
+    <div class="permission-item" id="item-manage_roles">
+        <input type="checkbox" id="manage_roles" value="268435456">
+        <label for="manage_roles">
+            Manage Roles
+            <span class="permission-value" id="value-manage_roles">268435456</span>
+        </label>
+    </div>
+    <div class="permission-item" id="item-manage_webhooks">
+        <input type="checkbox" id="manage_webhooks" value="536870912">
+        <label for="manage_webhooks">
+            Manage Webhooks
+            <span class="permission-value" id="value-manage_webhooks">536870912</span>
+        </label>
+    </div>
+    <div class="permission-item" id="item-view_channels">
+        <input type="checkbox" id="view_channels" value="1024">
+        <label for="view_channels">
+            View Channels
+            <span class="permission-value" id="value-view_channels">1024</span>
+        </label>
+    </div>
+    <div class="category-header">
+        <div class="category-title">Text Permissions</div>
+        <button class="category-toggle" data-category="text">Toggle All</button>
+    </div>
+    <div class="permission-item" id="item-send_messages">
+        <input type="checkbox" id="send_messages" value="2048">
+        <label for="send_messages">
+            Send Messages
+            <span class="permission-value" id="value-send_messages">2048</span>
+        </label>
+    </div>
+    <div class="permission-item" id="item-send_messages_in_threads">
+        <input type="checkbox" id="send_messages_in_threads" value="274877906944">
+        <label for="send_messages_in_threads">
+            Send Messages in Threads
+            <span class="permission-value" id="value-send_messages_in_threads">274877906944</span>
+        </label>
+    </div>
+    <div class="permission-item" id="item-create_public_threads">
+        <input type="checkbox" id="create_public_threads" value="34359738368">
+        <label for="create_public_threads">
+            Create Public Threads
+            <span class="permission-value" id="value-create_public_threads">34359738368</span>
+        </label>
+    </div>
+    <div class="permission-item" id="item-create_private_threads">
+        <input type="checkbox" id="create_private_threads" value="68719476736">
+        <label for="create_private_threads">
+            Create Private Threads
+            <span class="permission-value" id="value-create_private_threads">68719476736</span>
+        </label>
+    </div>
+    <div class="permission-item" id="item-embed_links">
+        <input type="checkbox" id="embed_links" value="16384">
+        <label for="embed_links">
+            Embed Links
+            <span class="permission-value" id="value-embed_links">16384</span>
+        </label>
+    </div>
+    <div class="permission-item" id="item-attach_files">
+        <input type="checkbox" id="attach_files" value="32768">
+        <label for="attach_files">
+            Attach Files
+            <span class="permission-value" id="value-attach_files">32768</span>
+        </label>
+    </div>
+    <div class="permission-item" id="item-add_reactions">
+        <input type="checkbox" id="add_reactions" value="64">
+        <label for="add_reactions">
+            Add Reactions
+            <span class="permission-value" id="value-add_reactions">64</span>
+        </label>
+    </div>
+    <div class="permission-item" id="item-use_external_emoji">
+        <input type="checkbox" id="use_external_emoji" value="262144">
+        <label for="use_external_emoji">
+            Use External Emoji
+            <span class="permission-value" id="value-use_external_emoji">262144</span>
+        </label>
+    </div>
+    <div class="permission-item" id="item-use_external_stickers">
+        <input type="checkbox" id="use_external_stickers" value="137438953472">
+        <label for="use_external_stickers">
+            Use External Stickers
+            <span class="permission-value" id="value-use_external_stickers">137438953472</span>
+        </label>
+    </div>
+    <div class="permission-item" id="item-mention_everyone">
+        <input type="checkbox" id="mention_everyone" value="131072">
+        <label for="mention_everyone">
+            Mention @everyone, @here, All Roles
+            <span class="permission-value" id="value-mention_everyone">131072</span>
+        </label>
+    </div>
+    <div class="permission-item" id="item-manage_messages">
+        <input type="checkbox" id="manage_messages" value="8192">
+        <label for="manage_messages">
+            Manage Messages
+            <span class="permission-value" id="value-manage_messages">8192</span>
+        </label>
+    </div>
+    <div class="permission-item" id="item-manage_threads">
+        <input type="checkbox" id="manage_threads" value="17179869184">
+        <label for="manage_threads">
+            Manage Threads
+            <span class="permission-value" id="value-manage_threads">17179869184</span>
+        </label>
+    </div>
+    <div class="permission-item" id="item-read_message_history">
+        <input type="checkbox" id="read_message_history" value="65536">
+        <label for="read_message_history">
+            Read Message History
+            <span class="permission-value" id="value-read_message_history">65536</span>
+        </label>
+    </div>
+    <div class="permission-item" id="item-send_tts_messages">
+        <input type="checkbox" id="send_tts_messages" value="4096">
+        <label for="send_tts_messages">
+            Send Text-to-Speech Messages
+            <span class="permission-value" id="value-send_tts_messages">4096</span>
+        </label>
+    </div>
+    <div class="permission-item" id="item-use_application_commands">
+        <input type="checkbox" id="use_application_commands" value="2147483648">
+        <label for="use_application_commands">
+            Use Application Commands
+            <span class="permission-value" id="value-use_application_commands">2147483648</span>
+        </label>
+    </div>
+    <div class="category-header">
+        <div class="category-title">Voice Permissions</div>
+        <button class="category-toggle" data-category="voice">Toggle All</button>
+    </div>
+    <div class="permission-item" id="item-connect">
+        <input type="checkbox" id="connect" value="1048576">
+        <label for="connect">
+            Connect
+            <span class="permission-value" id="value-connect">1048576</span>
+        </label>
+    </div>
+    <div class="permission-item" id="item-speak">
+        <input type="checkbox" id="speak" value="2097152">
+        <label for="speak">
+            Speak
+            <span class="permission-value" id="value-speak">2097152</span>
+        </label>
+    </div>
+    <div class="permission-item" id="item-video">
+        <input type="checkbox" id="video" value="512">
+        <label for="video">
+            Video
+            <span class="permission-value" id="value-video">512</span>
+        </label>
+    </div>
+    <div class="permission-item" id="item-start_activities">
+        <input type="checkbox" id="start_activities" value="549755813888">
+        <label for="start_activities">
+            Start Activities
+            <span class="permission-value" id="value-start_activities">549755813888</span>
+        </label>
+    </div>
+    <div class="permission-item" id="item-use_voice_activity">
+        <input type="checkbox" id="use_voice_activity" value="33554432">
+        <label for="use_voice_activity">
+            Use Voice Activity
+            <span class="permission-value" id="value-use_voice_activity">33554432</span>
+        </label>
+    </div>
+    <div class="permission-item" id="item-priority_speaker">
+        <input type="checkbox" id="priority_speaker" value="256">
+        <label for="priority_speaker">
+            Priority Speaker
+            <span class="permission-value" id="value-priority_speaker">256</span>
+        </label>
+    </div>
+    <div class="permission-item" id="item-mute_members">
+        <input type="checkbox" id="mute_members" value="4194304">
+        <label for="mute_members">
+            Mute Members
+            <span class="permission-value" id="value-mute_members">4194304</span>
+        </label>
+    </div>
+    <div class="permission-item" id="item-deafen_members">
+        <input type="checkbox" id="deafen_members" value="8388608">
+        <label for="deafen_members">
+            Deafen Members
+            <span class="permission-value" id="value-deafen_members">8388608</span>
+        </label>
+    </div>
+    <div class="permission-item" id="item-move_members">
+        <input type="checkbox" id="move_members" value="16777216">
+        <label for="move_members">
+            Move Members
+            <span class="permission-value" id="value-move_members">16777216</span>
+        </label>
+    </div>
+    <div class="permission-item" id="item-request_to_speak">
+        <input type="checkbox" id="request_to_speak" value="4294967296">
+        <label for="request_to_speak">
+            Request to Speak
+            <span class="permission-value" id="value-request_to_speak">4294967296</span>
+        </label>
+    </div>
+    <div class="category-header">
+        <div class="category-title">Other Permissions</div>
+        <button class="category-toggle" data-category="other">Toggle All</button>
+    </div>
+    <div class="permission-item" id="item-manage_emojis_stickers">
+        <input type="checkbox" id="manage_emojis_stickers" value="1073741824">
+        <label for="manage_emojis_stickers">
+            Manage Emojis and Stickers
+            <span class="permission-value" id="value-manage_emojis_stickers">1073741824</span>
+        </label>
+    </div>
+    <div class="permission-item" id="item-manage_events">
+        <input type="checkbox" id="manage_events" value="8589934592">
+        <label for="manage_events">
+            Manage Events
+            <span class="permission-value" id="value-manage_events">8589934592</span>
+        </label>
+    </div>
+    <div class="permission-item" id="item-create_invite">
+        <input type="checkbox" id="create_invite" value="1">
+        <label for="create_invite">
+            Create Invite
+            <span class="permission-value" id="value-create_invite">1</span>
+        </label>
+    </div>
+    <div class="total-section">
+        <h2 id="current-permission-value"><a class="header" href="#current-permission-value">Current Permission Value:</a></h2>
+        <div class="total-value" id="totalValue">0</div>
+        <div class="hex-value" id="hexValue">0x0</div>
+    </div>
+    <div class="input-section">
+        <input type="number" id="targetValue" placeholder="Enter permission value to find combinations." min="0">
+    </div>
+    <div class="results">
+        <h3 id="search-results"><a class="header" href="#search-results">Search Results:</a></h3>
+        <div class="result-content" id="resultContent">
+            Select permissions and/or enter a value to find combinations
+        </div>
+    </div>
+</div>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="timestamp-converter"><a class="header" href="#timestamp-converter">Timestamp Converter</a></h1>
+<style>
+.editPage {
+	visibility: hidden;
+}
+.converter-section {
+    background: var(--card-bg);
+	border-radius: var(--border-radius);
+	border: 1px solid rgba(255, 255, 255, 0.05);
+	margin-top: 1.5rem;
+	padding-bottom: 0rem;
+	padding-left: 1.5rem;
+	padding-right: 1.5rem;
+	box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+}
+.converter-section h2 {
+    margin-top: -.5rem;
+    padding-top: 1.5rem;
+}
+.converter-section p {
+    margin-top: -1.5rem;
+}
+.converter-section label {
+	display: block;
+	margin-bottom: .5rem !important;
+	color: var(--error);
+}
+.converter-section input {
+    color: #fff;
+    padding: 2.25rem;
+    width: 100%;
+	max-width: 100%;
+	box-sizing: border-box;
+    background: hsl(0deg 0% 100% / 7%);
+    border-radius: var(--border-radius);
+    border-width: 0;
+    font-family: monospace;
+    font-size: 14px;
+    height: 3rem;
+    margin-bottom: 1rem;
+    outline: none;
+	touch-action: manipulation;
+	-webkit-user-select: none;
+	user-select: none;
+}
+#datetimepicker {
+    margin-bottom: 1rem !important;
+}
+.result {
+    margin-top: 1rem;
+	margin-bottom: 1.5rem;
+    padding: 1rem;
+	padding-top: 2rem;
+	padding-bottom: 2rem;
+    background: hsl(0deg 0% 100% / 7%);
+    border-radius: var(--border-radius);
+    font-weight: bold;
+    word-break: break-all;
+    display: flex;
+    height: 3.5rem !important;
+    align-items: center;
+}
+.result p {
+	margin-top: 1.5rem !important;
+	padding: .5rem;
+	border-radius: var(--border-radius);
+	word-break: break-all;
+	display: flex;
+	height: 3.5rem !important;
+	align-items: center;
+	user-select: none;
+	-webkit-user-select: none;
+}
+.timestamp {
+    color: #7f8c8d;
+}
+.time-buttons {
+    user-select: none;
+	-webkit-user-select: none;
+	display: flex;
+	justify-content: center;
+	flex-wrap: wrap;
+    margin-bottom: 2rem;
+    margin-top: -1rem;
+}
+.converter-section button {
+	outline: none;
+	touch-action: manipulation;
+	-webkit-user-select: none;
+	user-select: none;
+	padding-left: 1rem;
+	padding-right: 1rem;
+	height: 4rem;
+	border: none;
+	border-radius: var(--border-radius);
+	cursor: pointer;
+	margin-top: 1rem !important;
+    margin-right: 1rem !important;
+	font-size: 1.5rem;
+	margin: 0.25%;
+	color: #fff;
+	background: hsl(0deg 0% 100% / 7%);
+	box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+}
+.current-time {
+    text-align: center;
+    padding: 1.5rem;
+    background-color: var(--card-bg);
+    border-radius: var(--border-radius);
+    margin-top: 3rem;
+}
+#current-time span {
+	color: #a5a5a5;
+}
+.timezone-error, #date-info {
+    color: var(--error) !important;
+    font-size: 1rem;
+    min-height: 1rem;
+	margin-top: -0.75rem;
+	margin-bottom: -0.75rem !important;
+}
+#date-info {
+	margin-top: -2rem !important;
+	margin-left: -1rem;
+	padding: 1rem;
+}
+</style>
+<p>Here you can manage UnixTime for your commands.</p>
+<div id="admonition-note" class="admonition admonish-note" role="note" aria-labelledby="admonition-note-title">
+<div class="admonition-title">
+<div id="admonition-note-title">
+<p>Note</p>
+</div>
+<a class="admonition-anchor-link" href="tools/timestamp.html#admonition-note"></a>
+</div>
+<div>
+<p>Unix time is a system for tracking time by counting the number of seconds that have passed since January 1st, 1970. This value is stored as a simple integer, which computers can easily process and calculate with. For example, the function <a href="https://wiki.botdesignerdiscord.com/nightl/bdscript/getTimestamp.md"><code>$getTimestamp</code></a> can be used to get the current Unix timestamp or perform time-based operations for your bot.</p>
+</div>
+</div>
+<div id="admonition-info" class="admonition admonish-info" role="note" aria-labelledby="admonition-info-title">
+<div class="admonition-title">
+<div id="admonition-info-title">
+<p>Info</p>
+</div>
+<a class="admonition-anchor-link" href="tools/timestamp.html#admonition-info"></a>
+</div>
+<div>
+<p>The timezone selected on your device is used as default.</p>
+</div>
+</div>
+<div class="converter-section">
+    <h2 id="time-zone"><a class="header" href="#time-zone">Time zone</a></h2>
+    <p>Select timezone for time calculations</p>
+    <input type="timestamp" id="timezone" placeholder="e.g., Europe/London" oninput="updateTimezone()" onkeypress="if(event.key === 'Enter') updateTimezone()">
+    <label class="timezone-error"></label>
+</div>
+<div class="converter-section">
+    <h2 id="date-to-unix-timestamp"><a class="header" href="#date-to-unix-timestamp">Date to Unix Timestamp</a></h2>
+    <p>Select a date and time:</p>
+    <input type="datetime-local" id="datetimepicker" oninput="updateUnixTime()">
+    <div class="result">
+		<p>Unix timestamp:</p>
+        <span id="unixtime-display">0</span>
+        <div class="timestamp" id="timestamp-info"></div>
+    </div>
+</div>
+<div class="converter-section">
+    <h2 id="unix-timestamp-to-date"><a class="header" href="#unix-timestamp-to-date">Unix Timestamp to Date</a></h2>
+    <p>Enter Unix timestamp:</p>
+    <input type="number" id="unix-input" placeholder="e.g., 1704067200" oninput="updateDateFromUnix()" onkeypress="if(event.key === 'Enter') updateDateFromUnix()" min="0">
+    <div class="result">
+		<p>Date and time:</p>
+        <span id="date-display">Not set</span>
+    </div>
+	<div class="timestamp" id="date-info"></div>
+</div>
+<div class="converter-section">
+    <h2 id="time-remaining"><a class="header" href="#time-remaining">Time Remaining</a></h2>
+    <p>Time until selected Unix timestamp:</p>
+    <div class="result">
+        <span id="timer-display">Loading...</span>
+    </div>
+</div>
+<div class="current-time">
+    <span id="current-time"></span>
+</div>
+<h2 id="functions-1"><a class="header" href="#functions-1">Functions</a></h2>
+<p>Here are all the functions related to unix timestamp.</p>
+<p><strong>GET</strong>:</p>
+<ul>
+<li><a href="https://wiki.botdesignerdiscord.com/nightl/bdscript/getEmbedData.md"><code>$getEmbedData[]</code></a></li>
+<li><a href="https://wiki.botdesignerdiscord.com/nightl/bdscript/getTimestamp.md"><code>$getTimestamp</code></a></li>
+<li><a href="https://wiki.botdesignerdiscord.com/nightl/bdscript/getTimestampComplex.md"><code>$getTimestamp[]</code></a></li>
+<li><a href="https://wiki.botdesignerdiscord.com/nightl/bdscript/hostingExpireTime.md"><code>$hostingExpireTime</code></a></li>
+<li><a href="https://wiki.botdesignerdiscord.com/nightl/bdscript/hostingExpireTimeComplex.md"><code>$hostingExpireTime[]</code></a></li>
+<li><a href="https://wiki.botdesignerdiscord.com/nightl/bdscript/lastPinTimestamp.md"><code>$lastPinTimestamp</code></a></li>
+<li><a href="https://wiki.botdesignerdiscord.com/nightl/bdscript/messageEditedTimestamp.md"><code>$messageEditedTimestamp[]</code></a></li>
+<li><a href="https://wiki.botdesignerdiscord.com/nightl/bdscript/premiumExpireTime.md"><code>$premiumExpireTime</code></a></li>
+</ul>
+<h2 id="example-1"><a class="header" href="#example-1">Example</a></h2>
+<pre><code>$nomention
+Unix date: &lt;t:1917043200:D&gt;
+</code></pre>
+<pre><code class="language-discord yaml">- user_id: 803569638084313098
+  username: RainbowKey
+  color: "#E67E22"
+  content: |
+    !example
+- user_id: 1009018156494368798
+  username: BDFD Support
+  color: "#378afa"
+  bot: true
+  verified: true
+  content: |
+    Unix date: &lt;div class="discord-time-mark"&gt;January 10, 2030&lt;/div&gt;
+</code></pre>
+<div id="admonition-example" class="admonition admonish-example" role="note" aria-labelledby="admonition-example-title">
+<div class="admonition-title">
+<div id="admonition-example-title">
+<p>Example</p>
+</div>
+<a class="admonition-anchor-link" href="tools/timestamp.html#admonition-example"></a>
+</div>
+<div>
+<p>You can use <a href="https://wiki.botdesignerdiscord.com/nightl/resources/discordTimestamps.md">Discord timestamp highlighting</a> to make your code look nicer!</p>
+</div>
+</div>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="escaper"><a class="header" href="#escaper">Escaper</a></h1>
+<style>
+.editPage {
+	visibility: hidden;
+}
+.picker-container {
+    background: var(--card-bg);
+	border-radius: var(--border-radius);
+	border: 1px solid rgba(255, 255, 255, 0.05);
+	margin-top: 1.5rem;
+	padding-bottom: 0rem;
+	padding-left: 1.5rem;
+	padding-right: 1.5rem;
+	box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+}
+.picker-container h2 {
+    margin-top: -.5rem;
+    padding-top: 1.5rem;
+}
+.picker-container p {
+	margin-top: -1.5rem;
+}
+.textarea-row {
+	display: block;
+	margin: 1rem 0;
+}
+.escaper-input, .escaper-output {
+    color: #fff;
+    padding: 1rem;
+    background: hsl(0deg 0% 100% / 7%);
+    border-radius: var(--border-radius);
+	border-width: 0;
+    font-family: monospace;
+    font-size: 1.5rem ;
+    line-height: 1.5;
+    height: 16rem;
+    width: 100%;
+    outline: none;
+	resize: vertical;
+	transition: all 0.3s;
+	box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+	margin-bottom: 1rem;
+}
+.escaper-input:focus {
+	box-shadow: 0 0 0 3px rgba(255,255,255,0.3), 0 8px 15px rgba(0, 0, 0, 0.4);
+}
+.escaper-output {
+    background: hsl(0deg 0% 100% / 7%);
+    min-height: 16rem;
+    white-space: pre-wrap;
+    word-break: break-all;
+    color: #fff;
+}
+.btn-row {
+	display: flex;
+	gap: 1rem;
+	margin: 1rem 0;
+	flex-wrap: wrap;
+	justify-content: center;
+}
+.escape-btn, .copy-btn, .clear-btn {
+	outline: none;
+	touch-action: manipulation;
+	-webkit-user-select: none;
+	user-select: none;
+	padding-left: 1rem;
+	padding-right: 1rem;
+	height: 4rem;
+	border: none;
+	border-radius: var(--border-radius);
+	cursor: pointer;
+	font-size: 1.5rem ;
+	color: #fff;
+	background: hsl(0deg 0% 100% / 7%);
+	box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+	transition: all 0.3s;
+	font-weight: 500;
+}
+.escape-btn {
+	background: hsl(0deg 0% 100% / 7%);
+	font-weight: 500;
+	padding-left: 1.5rem;
+	padding-right: 1.5rem;
+	font-size: 1.5rem ;
+	height: 4rem ;
+}
+.escape-btn:hover, .copy-btn:hover, .clear-btn:hover {
+	transform: translateY(-1px);
+	box-shadow: 0 8px 15px rgba(0, 0, 0, 0.4);
+}
+.error {
+	color: var(--error);
+	font-size: 1.2rem;
+	min-height: 1rem;
+	padding: 0;
+	margin: 0;
+}
+.char-count {
+    color: #aaa;
+    font-size: 1.2rem;
+    margin-top: 0.5rem;
+}
+
+.highlight-span {
+	background: hsl(0deg 0% 100% / 10%);
+	color: #fff;
+	padding: 0.5rem 0.75rem;
+	border-radius: 6px;
+	font-family: monospace;
+	font-weight: bold;
+	font-size: 1.3rem;
+}
+.output-span {
+	background: hsl(0deg 0% 100% / 10%);
+	padding: 0.5rem 0.75rem;
+	border-radius: 6px;
+	font-family: monospace;
+	font-size: 1.3rem;
+	color: #fff;
+}
+</style>
+<p>Here you can escape special characters to use in ur code.</p>
+<div id="admonition-note" class="admonition admonish-note" role="note" aria-labelledby="admonition-note-title">
+<div class="admonition-title">
+<div id="admonition-note-title">
+<p>Note</p>
+</div>
+<a class="admonition-anchor-link" href="tools/escaper.html#admonition-note"></a>
+</div>
+<div>
+<p>Escape characters are used to treat special symbols as plain text instead of triggering functions. This lets your bot return characters like <span class="highlight-span">;</span>, <span class="highlight-span">$</span>, <span class="highlight-span">]</span>, <span class="highlight-span">\</span> inside your message without breaking the script.</p>
+</div>
+</div>
+<div class="picker-container">
+	<h2 id="character-escaper"><a class="header" href="#character-escaper">Character Escaper</a></h2>
+  	<p>Paste text to escape. Click Escape Code to process.</p>
+  	<div class="textarea-row">
+    	<textarea id="inputText" class="escaper-input" placeholder="Original text..."></textarea>
+    	<textarea id="outputText" class="escaper-output" readonly placeholder="Escaped text..."></textarea>
+  	</div>
+  	<div class="btn-row">
+    	<button id="escapeBtn" class="escape-btn">Escape Code</button>
+    	<button id="copyBtn" class="copy-btn">Copy Output</button>
+    	<button id="clearBtn" class="clear-btn">Clear</button>
+  	</div>
+  	<div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; padding-bottom: 1.5rem;">
+    	<div class="char-count" id="charCount">0 / 0 characters</div>
+    	<div class="error" id="errorText" style="margin: 0; flex-shrink: 0;"></div>
+  	</div>
+</div>
+<h2 id="escaping-rules"><a class="header" href="#escaping-rules">Escaping Rules</a></h2>
+<div id="admonition-note-1" class="admonition admonish-note" role="note" aria-labelledby="admonition-note-1-title">
+<div class="admonition-title">
+<div id="admonition-note-1-title">
+<p>Note</p>
+</div>
+<a class="admonition-anchor-link" href="tools/escaper.html#admonition-note-1"></a>
+</div>
+<div>
+<p>These characters are changed:</p>
+<p><span class="highlight-span">$</span> → <span class="output-span">%{DOL}%</span></p>
+<p><span class="highlight-span">]</span> → <span class="output-span">\]</span></p>
+<p><span class="highlight-span">;</span> → <span class="output-span">\;</span></p>
+<p><span class="highlight-span">\</span> → <span class="output-span">\\</span></p>
+</div>
+</div>
+<h2 id="functions-2"><a class="header" href="#functions-2">Functions</a></h2>
+<div id="admonition-note-2" class="admonition admonish-note" role="note" aria-labelledby="admonition-note-2-title">
+<div class="admonition-title">
+<div id="admonition-note-2-title">
+<p>Note</p>
+</div>
+<a class="admonition-anchor-link" href="tools/escaper.html#admonition-note-2"></a>
+</div>
+<div>
+<p>Use in BDFD functions like <a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/sendMessage.md"><code>$sendMessage[]</code></a>, <a href="https://wiki.botdesignerdiscord.com/nightly/guides/general/bds2/asyncScopes.md"><code>$async[]</code></a>, embeds, etc.</p>
+</div>
+</div>
+<h2 id="example-2"><a class="header" href="#example-2">Example</a></h2>
+<pre><code>$nomention
+$sendMessage[[%{DOL}%Hello\\; this is pretty cool\\; right%{DOL}%\\]]
+</code></pre>
+<pre><code class="language-discord yaml">- user_id: 860384146778226699
+  username: Zubariel
+  color: "#ffffff"
+  content: |
+    !example
+- user_id: 1009018156494368798
+  username: BDFD Support
+  color: "#378afa"
+  bot: true
+  verified: true
+  content: |
+    [$Hello; this is pretty cool; right$]
+</code></pre>
+<div id="admonition-how-to-use" class="admonition admonish-question" role="note" aria-labelledby="admonition-how-to-use-title">
+<div class="admonition-title">
+<div id="admonition-how-to-use-title">
+<p>How to use?</p>
+</div>
+<a class="admonition-anchor-link" href="tools/escaper.html#admonition-how-to-use"></a>
+</div>
+<div>
+<p>Paste text → Escape Code → Copy Output → Paste in BDFD.</p>
+</div>
+</div>
+<script>
+function escapeBDFD(text) {
+  return text
+    .replace(/\\/g, '\\\\')
+    .replace(/\$/g, '%{DOL}%')
+    .replace(/\]/g, '\\]')
+    .replace(/;/g, '\\;');
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  const input = document.getElementById('inputText');
+  const output = document.getElementById('outputText');
+  const escapeBtn = document.getElementById('escapeBtn');
+  const copyBtn = document.getElementById('copyBtn');
+  const clearBtn = document.getElementById('clearBtn');
+  const charCount = document.getElementById('charCount');
+  const errorText = document.getElementById('errorText');
+
+  function updateCharCount() {
+    const inLen = input.value.length;
+    const outLen = output.value.length;
+    charCount.textContent = `${inLen} / ${outLen} characters`;
+  }
+
+  escapeBtn.onclick = function() {
+    errorText.textContent = '';
+    const text = input.value;
+    if (!text.trim()) {
+      errorText.textContent = 'Enter text to escape';
+      return;
+    }
+    output.value = escapeBDFD(text);
+    updateCharCount();
+    escapeBtn.style.transform = 'scale(0.95)';
+    setTimeout(() => { escapeBtn.style.transform = ''; }, 150);
+  };
+
+  copyBtn.onclick = function() {
+    const text = output.value;
+    if (!text.trim()) {
+      errorText.textContent = 'Nothing to copy';
+      return;
+    }
+    navigator.clipboard.writeText(text).then(() => {
+      const original = copyBtn.textContent;
+      copyBtn.textContent = 'Copied!';
+      copyBtn.style.background = 'hsl(120deg 100% 30%)';
+      setTimeout(() => {
+        copyBtn.textContent = original;
+        copyBtn.style.background = '';
+      }, 2000);
+    }).catch(() => {
+      errorText.textContent = 'Copy failed';
+    });
+  };
+
+  clearBtn.onclick = function() {
+    input.value = '';
+    output.value = '';
+    updateCharCount();
+    errorText.textContent = '';
+  };
+
+  input.oninput = updateCharCount;
+});
+</script>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="embed-builder"><a class="header" href="#embed-builder">Embed Builder</a></h1>
+<style>
+.editPage {
+	visibility: hidden;
+}
+.picker-container {
+    background: var(--card-bg);
+	border-radius: var(--border-radius);
+	border: 1px solid rgba(255, 255, 255, 0.05);
+	margin-top: 1.5rem;
+	padding-bottom: 0rem;
+	padding-left: 1.5rem;
+	padding-right: 1.5rem;
+	box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+}
+.picker-container h2 {
+    margin-top: -.5rem;
+    padding-top: 1.5rem;
+}
+.picker-container p {
+	margin-top: -1.5rem;
+}
+.form-group {
+	margin-bottom: 1.5rem;
+} 
+.form-group label {
+	display: block;
+	font-size: 1.3rem ;
+	font-weight: 500;
+	margin-bottom: 0.75rem;
+	color: rgba(255, 255, 255, 0.9);
+	letter-spacing: 0.01em;
+}
+.form-row {
+	display: grid;
+	gap: 1rem;
+	grid-template-columns: 1fr;
+}
+@media (min-width: 640px) {
+	.form-row {
+		grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+	}
+}
+.form-input {
+    color: #fff;
+    padding: 1rem;
+    background: hsl(0deg 0% 100% / 7%);
+    border-radius: var(--border-radius);
+	border-width: 0;
+    font-family: monospace;
+    font-size: 1.5rem ;
+    line-height: 1.5;
+    width: 100%;
+    outline: none;
+	transition: all 0.3s;
+	box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+}
+.form-input:focus {
+	box-shadow: 0 0 0 3px rgba(255,255,255,0.3), 0 8px 15px rgba(0, 0, 0, 0.4);
+}
+.form-textarea {
+    min-height: 10rem;
+    resize: vertical;
+}
+.form-checkbox {
+	width: 1.2rem;
+	height: 1.2rem;
+	border-radius: 0.25rem;
+	background: hsl(0deg 0% 100% / 10%);
+	border: 1px solid rgba(255,255,255,0.2);
+	cursor: pointer;
+	margin: 0;
+}
+.form-checkbox:checked {
+	background: hsl(120deg 70% 50%);
+	border-color: hsl(120deg 70% 60%);
+}
+.checkbox-label {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	margin-top: 0.75rem;
+	cursor: pointer;
+	user-select: none;
+}
+.checkbox-label span {
+	font-size: 1.3rem ;
+	color: rgba(255, 255, 255, 0.9);
+	font-weight: 400;
+}
+.btn-row {
+	display: flex;
+	gap: 1rem;
+	margin-top: 1.5rem;
+	margin-bottom: 1.5rem;
+	flex-wrap: wrap;
+	justify-content: center;
+}
+.generate-btn, .copy-btn, .clear-btn {
+	outline: none;
+	touch-action: manipulation;
+	-webkit-user-select: none;
+	user-select: none;
+	padding-left: 1rem;
+	padding-right: 1rem;
+	height: 4rem;
+	border: none;
+	border-radius: var(--border-radius);
+	cursor: pointer;
+	font-weight: 500;
+	transition: all 0.3s;
+	color: #fff;
+	background: hsl(0deg 0% 100% / 7%);
+	box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+	font-size: 1.5rem ;
+}
+.generate-btn {
+	background: hsl(0deg 0% 100% / 7%);
+	font-weight: 500;
+	font-size: 1.5rem ;
+	padding-left: 1.5rem;
+	padding-right: 1.5rem;
+	height: 4rem ;
+}
+.generate-btn:hover, .copy-btn:hover, .clear-btn:hover {
+	transform: translateY(-1px);
+	box-shadow: 0 8px 15px rgba(0, 0, 0, 0.4);
+}
+.output {
+    background: hsl(0deg 0% 100% / 7%);
+    border-width: 0;
+    min-height: 16rem;
+    white-space: pre-wrap;
+    word-break: break-all;
+    color: #fff;
+    font-family: monospace ;
+    font-size: 1.5rem ;
+    line-height: 1.5;
+    padding: 1rem;
+    border-radius: var(--border-radius);
+    margin-top: 0;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+}
+.error {
+	color: var(--error);
+	font-size: 1rem ;
+	min-height: 1rem;
+	margin-top: 0.5rem;
+}
+.char-count {
+    color: #aaa;
+    font-size: 1.2rem ;
+    margin-top: 0.75rem;
+    margin-bottom: 1.5rem;
+}
+.add-field-btn {
+	outline: none;
+	touch-action: manipulation;
+	-webkit-user-select: none;
+	user-select: none;
+	background: hsl(0deg 0% 100% / 7%);
+	padding-left: 1rem;
+	padding-right: 1rem;
+	height: 4rem;
+	font-size: 1.5rem ;
+	font-weight: 500;
+	border-radius: var(--border-radius);
+	color: #fff;
+	border: none;
+	cursor: pointer;
+	margin-right: 0.5rem;
+	margin-bottom: 0.5rem;
+	transition: all 0.3s;
+	box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+}
+.add-field-btn:hover {
+	transform: translateY(-1px);
+	box-shadow: 0 8px 15px rgba(0, 0, 0, 0.4);
+}
+.field-row, .button-row, .select-row, .modal-row {
+	background: hsl(0deg 0% 100% / 5%);
+	border-radius: var(--border-radius);
+	padding: 1rem;
+	margin-bottom: 1rem;
+	margin-top: 1rem;
+	border: 1px solid rgba(255,255,255,0.08);
+}
+.remove-btn {
+	background: hsl(0deg 0% 50% / 30%);
+	color: #fff;
+	border: none;
+	padding: 0.625rem 1rem;
+	border-radius: var(--border-radius);
+	cursor: pointer;
+	font-size: 1rem ;
+	font-weight: 500;
+	transition: all 0.2s;
+}
+.remove-btn:hover {
+	background: hsl(0deg 0% 60% / 40%);
+}
+.flex-buttons {
+	display: flex;
+	gap: 0;
+	flex-wrap: wrap;
+	margin-top: 1rem;
+}
+</style>
+<p>Here you can make embeds using the respective text inputs.</p>
+<div id="admonition-note" class="admonition admonish-note" role="note" aria-labelledby="admonition-note-title">
+<div class="admonition-title">
+<div id="admonition-note-title">
+<p>Note</p>
+</div>
+<a class="admonition-anchor-link" href="tools/embed.html#admonition-note"></a>
+</div>
+<div>
+<p>Embed Builder creates Discord embeds with titles, descriptions, fields, buttons, select menus,  modals, and more.</p>
+</div>
+</div>
+<div class="picker-container">
+	<h2 id="embed-builder-1"><a class="header" href="#embed-builder-1">Embed Builder</a></h2>
+  	<p>Fill text input fields below to generate embed code.</p>
+   <div class="form-group">
+     <label>Author</label>
+     <div class="form-row">
+       <input id="authorName" class="form-input" placeholder="Author Name">
+       <input id="authorIcon" class="form-input" placeholder="Author Icon URL">
+       <input id="authorUrl" class="form-input" placeholder="Author URL">
+     </div>
+   </div>
+   <div class="form-group">
+     <label>Title</label>
+     <div class="form-row">
+       <input id="title" class="form-input" placeholder="Title">
+       <input id="titleUrl" class="form-input" placeholder="Title URL">
+     </div>
+   </div>
+   <div class="form-group">
+     <label>Description</label>
+     <textarea id="description" class="form-input form-textarea" placeholder="Description..."></textarea>
+   </div>
+   <div class="form-group">
+     <label>Media & Style</label>
+     <div class="form-row">
+       <input id="thumbnail" class="form-input" placeholder="Thumbnail URL">
+       <input id="image" class="form-input" placeholder="Image URL">
+       <input id="color" class="form-input" placeholder="#ffffff" value="#7289da">
+     </div>
+   </div>
+   <div class="form-group">
+     <label>Footer</label>
+     <div class="form-row">
+       <input id="footer" class="form-input" placeholder="Footer Text">
+       <input id="footerIcon" class="form-input" placeholder="Footer Icon URL">
+     </div>
+     <label class="checkbox-label">
+       <input type="checkbox" id="timestamp" class="form-checkbox">
+       <span>Add Timestamp</span>
+     </label>
+   </div>
+   <div class="flex-buttons">
+     <button id="addField" class="add-field-btn">+ Field</button>
+     <button id="addButton" class="add-field-btn">+ Button</button>
+     <button id="addSelect" class="add-field-btn">+ Select Menu</button>
+     <button id="addModal" class="add-field-btn">+ Modal</button>
+   </div>
+   <div id="dynamicFields"></div>
+   <div class="btn-row">
+     <button id="generateBtn" class="generate-btn">Generate Embed</button>
+     <button id="copyBtn" class="copy-btn">Copy Output</button>
+     <button id="clearBtn" class="clear-btn">Clear All</button>
+   </div>
+   <div id="output" class="output">Generated code appears here...</div>
+   <div class="char-count" id="charCount">0 characters</div>
+   <div class="error" id="error"></div>
+</div>
+<h2 id="functions-3"><a class="header" href="#functions-3">Functions</a></h2>
+<div id="admonition-note-1" class="admonition admonish-note" role="note" aria-labelledby="admonition-note-1-title">
+<div class="admonition-title">
+<div id="admonition-note-1-title">
+<p>Note</p>
+</div>
+<a class="admonition-anchor-link" href="tools/embed.html#admonition-note-1"></a>
+</div>
+<div>
+<p>Generated code uses standard BDFD embed functions.</p>
+</div>
+</div>
+<p><strong>Core</strong>:</p>
+<ul>
+<li><a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/title.md"><code>$title[]</code></a>, <a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/description.md"><code>$description[]</code></a>, <a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/color.md"><code>$color[]</code></a>, <a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/image.md"><code>$image[]</code></a>, <a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/thumbnail.md"><code>$thumbnail[]</code></a></li>
+<li><a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/addField.md"><code>$addField[]</code></a>, <a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/addButton.md"><code>$addButton[]</code></a>, <a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/addSelectMenuOption.md"><code>$addSelectMenuOption[]</code></a></li>
+<li><a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/newModal.md"><code>$newModal[]</code></a>, <a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/addTextInput.md"><code>$addTextInput[]</code></a></li>
+</ul>
+<h2 id="example-3"><a class="header" href="#example-3">Example</a></h2>
+<pre><code>$nomention
+$title[Hello]
+$description[Welcome to embed builder.]
+$color[#673ab7]
+</code></pre>
+<pre><code class="language-discord yaml">- user_id: 860384146778226699
+  username: Zubariel
+  color: "#ffffff"
+  content: |
+    !example
+- user_id: 1009018156494368798
+  username: BDFD Support
+  color: "#378afa"
+  bot: true
+  verified: true
+  content: &lt;none&gt;
+  embed:
+    title: Hello
+    description: Welcome to embed builder.
+    color: "#673ab7"
+</code></pre>
+<div id="admonition-how-it-works" class="admonition admonish-question" role="note" aria-labelledby="admonition-how-it-works-title">
+<div class="admonition-title">
+<div id="admonition-how-it-works-title">
+<p>How it works?</p>
+</div>
+<a class="admonition-anchor-link" href="tools/embed.html#admonition-how-it-works"></a>
+</div>
+<div>
+<p>Fill form → Generate → Copy code → Paste in BDFD commands.</p>
+</div>
+</div>
+<script>
+let fieldCount = 0, buttonCount = 0, selectCount = 0, modalCount = 0;
+
+document.addEventListener('DOMContentLoaded', () => {
+  const generateBtn = document.getElementById('generateBtn');
+  const copyBtn = document.getElementById('copyBtn');
+  const clearBtn = document.getElementById('clearBtn');
+  const addField = document.getElementById('addField');
+  const addButton = document.getElementById('addButton');
+  const addSelect = document.getElementById('addSelect');
+  const addModal = document.getElementById('addModal');
+  const output = document.getElementById('output');
+  const charCount = document.getElementById('charCount');
+  const error = document.getElementById('error');
+  const dynamicFields = document.getElementById('dynamicFields');
+
+  generateBtn.onclick = generateEmbed;
+  copyBtn.onclick = copyOutput;
+  clearBtn.onclick = clearAll;
+  addField.onclick = () => addFieldRow();
+  addButton.onclick = () => addButtonRow();
+  addSelect.onclick = () => addSelectRow();
+  addModal.onclick = () => addModalRow();
+
+  function sanitize(str) {
+    if (!str) return '';
+    return str
+      .replace(/\\/g, '\\\\')
+      .replace(/\$/g, '%{DOL}%')
+      .replace(/;/g, '\\;')
+      .replace(/\]/g, '\\]');
+  }
+
+  function generateEmbed() {
+    error.textContent = '';
+    let code = '$nomention\n';
+    
+    // Author
+    const authorName = sanitize(document.getElementById('authorName').value);
+    const authorIcon = sanitize(document.getElementById('authorIcon').value);
+    const authorUrl = sanitize(document.getElementById('authorUrl').value);
+    if (authorName) {
+      code += `$author[${authorName}`;
+      if (authorIcon) code += `;${authorIcon}`;
+      if (authorUrl) code += `;${authorUrl}`;
+      code += ']\n';
+    }
+
+    // Title
+    const title = sanitize(document.getElementById('title').value);
+    const titleUrl = sanitize(document.getElementById('titleUrl').value);
+    if (title) {
+      code += `$title[${title}`;
+      if (titleUrl) code += `;${titleUrl}`;
+      code += ']\n';
+    }
+
+    // Description
+    const desc = sanitize(document.getElementById('description').value);
+    if (desc) code += `$description[${desc}]\n`;
+
+    // Thumbnail
+    const thumbnail = sanitize(document.getElementById('thumbnail').value);
+    if (thumbnail) code += `$thumbnail[${thumbnail}]\n`;
+
+    // Image
+    const image = sanitize(document.getElementById('image').value);
+    if (image) code += `$image[${image}]\n`;
+
+    // Color
+    const color = document.getElementById('color').value || '#7289da';
+    code += `$color[${color}]\n`;
+
+    // Footer
+    const footer = sanitize(document.getElementById('footer').value);
+    const footerIcon = sanitize(document.getElementById('footerIcon').value);
+    if (footer) {
+      code += `$footer[${footer}`;
+      if (footerIcon) code += `;${footerIcon}`;
+      code += ']\n';
+    }
+
+    // Timestamp
+    if (document.getElementById('timestamp').checked) code += '$addTimestamp\n';
+
+    // Dynamic fields
+    document.querySelectorAll('.field-row').forEach(row => {
+      const name = sanitize(row.querySelector('.field-name')?.value);
+      const value = sanitize(row.querySelector('.field-value')?.value);
+      const inline = row.querySelector('.field-inline')?.checked ? 'yes' : 'no';
+      if (name && value) code += `$addField[${name};${value};${inline}]\n`;
+    });
+
+    // Buttons
+    document.querySelectorAll('.button-row').forEach(row => {
+      const label = sanitize(row.querySelector('.button-label')?.value);
+      const customId = sanitize(row.querySelector('.button-id')?.value);
+      const style = row.querySelector('.button-style')?.value || 'primary';
+      const disabled = row.querySelector('.button-disabled')?.checked ? 'yes' : 'no';
+      const emoji = sanitize(row.querySelector('.button-emoji')?.value);
+      const url = sanitize(row.querySelector('.button-url')?.value);
+      
+      if (label || emoji) {
+        if (style === 'link' && url) {
+          code += `$addButton[1;${label || 'Link'};${url};${disabled};${emoji}]\n`;
+        } else if (customId) {
+          const styleNum = {primary: 1, secondary: 2, success: 3, danger: 4}[style] || 1;
+          code += `$addButton[no;${label};${styleNum};${customId};${disabled};${emoji}]\n`;
+        }
+      }
+    });
+
+    // Select menus
+    document.querySelectorAll('.select-row').forEach(row => {
+      const placeholder = sanitize(row.querySelector('.select-placeholder')?.value);
+      const customId = sanitize(row.querySelector('.select-id')?.value);
+      const minValues = row.querySelector('.select-min')?.value || '1';
+      const maxValues = row.querySelector('.select-max')?.value || '1';
+      
+      if (customId) {
+        code += `$addSelectMenu[${customId};${placeholder || 'Select an option'};${minValues};${maxValues}]\n`;
+        
+        row.querySelectorAll('.select-option').forEach(opt => {
+          const label = sanitize(opt.querySelector('.option-label')?.value);
+          const value = sanitize(opt.querySelector('.option-value')?.value);
+          const desc = sanitize(opt.querySelector('.option-desc')?.value);
+          const emoji = sanitize(opt.querySelector('.option-emoji')?.value);
+          
+          if (label && value) {
+            code += `$addSelectMenuOption[${customId};${label};${value};${desc};${emoji}]\n`;
+          }
+        });
+      }
+    });
+
+    // Modals
+    document.querySelectorAll('.modal-row').forEach(row => {
+      const title = sanitize(row.querySelector('.modal-title')?.value);
+      const customId = sanitize(row.querySelector('.modal-id')?.value);
+      
+      if (title && customId) {
+        code += `$newModal[${customId};${title}]\n`;
+        
+        row.querySelectorAll('.modal-input').forEach(input => {
+          const label = sanitize(input.querySelector('.input-label')?.value);
+          const id = sanitize(input.querySelector('.input-id')?.value);
+          const style = input.querySelector('.input-style')?.value || 'short';
+          const required = input.querySelector('.input-required')?.checked ? 'yes' : 'no';
+          const placeholder = sanitize(input.querySelector('.input-placeholder')?.value);
+          
+          if (label && id) {
+            code += `$addTextInput[${id};${style};${label};${required};${placeholder}]\n`;
+          }
+        });
+      }
+    });
+
+    output.textContent = code.trim();
+    charCount.textContent = output.textContent.length + ' characters';
+  }
+
+  function copyOutput() {
+    if (!output.textContent || output.textContent === 'Generated code appears here...') {
+      error.textContent = 'Nothing to copy';
+      return;
+    }
+    
+    navigator.clipboard.writeText(output.textContent).then(() => {
+      const original = copyBtn.textContent;
+      copyBtn.textContent = 'Copied!';
+      copyBtn.style.background = 'hsl(120deg 100% 30%)';
+      setTimeout(() => {
+        copyBtn.textContent = original;
+        copyBtn.style.background = '';
+      }, 2000);
+    }).catch(() => {
+      error.textContent = 'Copy failed';
+    });
+  }
+
+  function clearAll() {
+    document.querySelectorAll('.form-input, .form-textarea').forEach(input => {
+      if (input.id === 'color') {
+        input.value = '#7289da';
+      } else {
+        input.value = '';
+      }
+    });
+    document.querySelectorAll('.form-checkbox').forEach(cb => cb.checked = false);
+    dynamicFields.innerHTML = '';
+    fieldCount = 0;
+    buttonCount = 0;
+    selectCount = 0;
+    modalCount = 0;
+    output.textContent = 'Generated code appears here...';
+    charCount.textContent = '0 characters';
+    error.textContent = '';
+  }
+
+  function addFieldRow() {
+    const row = document.createElement('div');
+    row.className = 'field-row';
+    row.innerHTML = `
+      <div class="form-row">
+        <input class="form-input field-name" placeholder="Field Name">
+        <input class="form-input field-value" placeholder="Field Value">
+      </div>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.75rem;">
+        <label class="checkbox-label" style="margin: 0;">
+          <input type="checkbox" class="form-checkbox field-inline">
+          <span>Inline</span>
+        </label>
+        <button class="remove-btn">Remove</button>
+      </div>
+    `;
+    dynamicFields.appendChild(row);
+    row.querySelector('.remove-btn').onclick = () => row.remove();
+  }
+
+  function addButtonRow() {
+    const row = document.createElement('div');
+    row.className = 'button-row';
+    row.innerHTML = `
+      <div class="form-row">
+        <input class="form-input button-label" placeholder="Button Label">
+        <input class="form-input button-id" placeholder="Custom ID">
+        <select class="form-input button-style">
+          <option value="primary">Primary</option>
+          <option value="secondary">Secondary</option>
+          <option value="success">Success</option>
+          <option value="danger">Danger</option>
+          <option value="link">Link</option>
+        </select>
+      </div>
+      <div class="form-row" style="margin-top: 0.75rem;">
+        <input class="form-input button-emoji" placeholder="Emoji">
+        <input class="form-input button-url" placeholder="URL (for Link style)">
+      </div>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.75rem;">
+        <label class="checkbox-label" style="margin: 0;">
+          <input type="checkbox" class="form-checkbox button-disabled">
+          <span>Disabled</span>
+        </label>
+        <button class="remove-btn">Remove</button>
+      </div>
+    `;
+    dynamicFields.appendChild(row);
+    row.querySelector('.remove-btn').onclick = () => row.remove();
+  }
+
+  function addSelectRow() {
+    const row = document.createElement('div');
+    row.className = 'select-row';
+    row.innerHTML = `
+      <div class="form-row">
+        <input class="form-input select-placeholder" placeholder="Placeholder">
+        <input class="form-input select-id" placeholder="Custom ID">
+        <input class="form-input select-min" type="number" placeholder="Min Values" value="1" min="1">
+        <input class="form-input select-max" type="number" placeholder="Max Values" value="1" min="1">
+      </div>
+      <div class="options-container" style="margin-top: 1rem;"></div>
+      <div style="display: flex; gap: 0.75rem; margin-top: 0.75rem;">
+        <button class="add-field-btn add-option-btn">+ Option</button>
+        <button class="remove-btn">Remove Menu</button>
+      </div>
+    `;
+    dynamicFields.appendChild(row);
+    
+    const optionsContainer = row.querySelector('.options-container');
+    row.querySelector('.add-option-btn').onclick = () => {
+      const option = document.createElement('div');
+      option.className = 'select-option';
+      option.innerHTML = `
+        <div class="form-row" style="margin-top: 0.5rem;">
+          <input class="form-input option-label" placeholder="Label">
+          <input class="form-input option-value" placeholder="Value">
+          <input class="form-input option-desc" placeholder="Description">
+          <input class="form-input option-emoji" placeholder="Emoji">
+        </div>
+      `;
+      optionsContainer.appendChild(option);
+    };
+    row.querySelector('.remove-btn').onclick = () => row.remove();
+  }
+
+  function addModalRow() {
+    const row = document.createElement('div');
+    row.className = 'modal-row';
+    row.innerHTML = `
+      <div class="form-row">
+        <input class="form-input modal-title" placeholder="Modal Title">
+        <input class="form-input modal-id" placeholder="Custom ID">
+      </div>
+      <div class="modal-inputs-container" style="margin-top: 1rem;"></div>
+      <div style="display: flex; gap: 0.75rem; margin-top: 0.75rem;">
+        <button class="add-field-btn add-modal-input-btn">+ Text Input</button>
+        <button class="remove-btn">Remove Modal</button>
+      </div>
+    `;
+    dynamicFields.appendChild(row);
+    
+    const inputsContainer = row.querySelector('.modal-inputs-container');
+    row.querySelector('.add-modal-input-btn').onclick = () => {
+      const input = document.createElement('div');
+      input.className = 'modal-input';
+      input.innerHTML = `
+        <div class="form-row" style="margin-top: 0.5rem;">
+          <input class="form-input input-label" placeholder="Label">
+          <input class="form-input input-id" placeholder="Input ID">
+          <select class="form-input input-style">
+            <option value="short">Short</option>
+            <option value="paragraph">Paragraph</option>
+          </select>
+          <input class="form-input input-placeholder" placeholder="Placeholder">
+        </div>
+        <label class="checkbox-label">
+          <input type="checkbox" class="form-checkbox input-required" checked>
+          <span>Required</span>
+        </label>
+      `;
+      inputsContainer.appendChild(input);
+    };
+    row.querySelector('.remove-btn').onclick = () => row.remove();
+  }
+});
+</script>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="highlighter"><a class="header" href="#highlighter">Highlighter</a></h1>
+<script src="./highlighter.js"></script>
+<style>
+.editPage {
+	visibility: hidden;
+}
+.picker-container {
+    background: var(--card-bg);
+	border-radius: var(--border-radius);
+	border: 1px solid rgba(255, 255, 255, 0.05);
+	margin-top: 1.5rem;
+	padding-bottom: 0rem;
+	padding-left: 1.5rem;
+	padding-right: 1.5rem;
+	box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+}
+.picker-container h2 {
+    margin-top: -.5rem;
+    padding-top: 1.5rem;
+}
+.picker-container p {
+	margin-top: -1.5rem;
+}
+.control-bar {
+	display: flex;
+	gap: 1rem;
+	margin-bottom: 1.5rem;
+	flex-wrap: wrap;
+}
+.control-btn {
+	outline: none;
+	touch-action: manipulation;
+	user-select: none;
+	padding-left: 1rem;
+	padding-right: 1rem;
+	height: 4rem;
+	border: none;
+	border-radius: var(--border-radius);
+	cursor: pointer;
+	font-size: 1.5rem;
+	color: #fff;
+	background: hsl(0deg 0% 100% / 7%);
+	box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+	transition: all 0.3s;
+	font-weight: 500;
+	flex: 1;
+	min-width: 150px;
+}
+.control-btn:hover {
+	transform: translateY(-1px);
+	box-shadow: 0 8px 15px rgba(0, 0, 0, 0.4);
+}
+.function-selector-wrapper {
+	position: relative;
+	flex: 1;
+	min-width: 150px;
+}
+.function-dropdown {
+	position: absolute;
+	top: calc(100% + 0.5rem);
+	left: 0;
+	right: 0;
+	background: var(--card-bg);
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	border-radius: var(--border-radius);
+	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+	max-height: 300px;
+	overflow-y: auto;
+	z-index: 100;
+	display: none;
+}
+.function-dropdown.active {
+	display: block;
+}
+.function-search {
+	width: 100%;
+	padding: 0.75rem;
+	background: hsl(0deg 0% 100% / 10%);
+	border: none;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+	color: #fff;
+	font-size: 1rem;
+	outline: none;
+}
+.function-list {
+	max-height: 240px;
+	overflow-y: auto;
+}
+.function-item {
+	padding: 0.75rem 1rem;
+	color: #fff;
+	cursor: pointer;
+	transition: background 0.2s;
+	
+	font-size: 1rem;
+}
+.function-item:hover {
+	background: hsl(0deg 0% 100% / 10%);
+}
+.functions-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+	gap: 1rem;
+	margin-bottom: 1.5rem;
+}
+.function-card {
+	background: hsl(0deg 0% 100% / 7%);
+	border-radius: var(--border-radius);
+	padding: 1rem;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+}
+.function-info {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	flex: 1;
+	min-width: 0;
+}
+.color-badge {
+	width: 2rem;
+	height: 2rem;
+	border-radius: 50%;
+	flex-shrink: 0;
+	border: 2px solid rgba(255, 255, 255, 0.2);
+}
+.function-name {
+	font-size: 1.1rem;
+	color: #fff;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.function-actions {
+	display: flex;
+	gap: 0.5rem;
+	flex-shrink: 0;
+}
+.action-btn {
+	background: none;
+	border: none;
+	color: rgba(255, 255, 255, 0.6);
+	cursor: pointer;
+	font-size: 1.1rem;
+	padding: 0.25rem;
+	transition: all 0.2s;
+	width: 1.75rem;
+	height: 1.75rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+.action-btn:hover {
+	color: #fff;
+}
+.btn-row {
+	display: flex;
+	gap: 1rem;
+	margin: 1.5rem 0;
+	flex-wrap: wrap;
+	justify-content: center;
+}
+.btn-secondary {
+	outline: none;
+	touch-action: manipulation;
+	user-select: none;
+	padding-left: 1.5rem;
+	padding-right: 1.5rem;
+	height: 4rem;
+	border: none;
+	border-radius: var(--border-radius);
+	cursor: pointer;
+	font-size: 1.5rem;
+	color: #fff;
+	background: hsl(0deg 0% 100% / 7%);
+	box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+	transition: all 0.3s;
+	font-weight: 500;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.5rem;
+}
+.btn-secondary:hover {
+	transform: translateY(-1px);
+	box-shadow: 0 8px 15px rgba(0, 0, 0, 0.4);
+}
+.output-container {
+	background: hsl(0deg 0% 100% / 7%);
+	border-radius: var(--border-radius);
+	overflow: hidden;
+	box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+}
+.output-header {
+	background: hsl(0deg 0% 100% / 5%);
+	padding: 1rem;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+.output-title {
+	font-size: 1.5rem;
+	font-weight: 600;
+	color: #fff;
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+.copy-output-btn {
+	background: none;
+	border: none;
+	color: rgba(255, 255, 255, 0.8);
+	cursor: pointer;
+	font-size: 1rem;
+	padding: 0.5rem 1rem;
+	transition: all 0.2s;
+	border-radius: var(--border-radius);
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+.copy-output-btn:hover {
+	background: hsl(0deg 0% 100% / 10%);
+	color: #fff;
+}
+.output-box {
+    color: #fff;
+    font-size: 1rem;
+    line-height: 1.6;
+    padding: 1rem;
+    white-space: pre-wrap;
+    word-break: break-word;
+    height: 16rem;
+    overflow-y: auto;
+}
+.info-text {
+    color: #aaa;
+    font-size: 1rem;
+    margin-top: 0.8rem;
+    margin-bottom: 1rem;
+}
+.error-text {
+	color: var(--error);
+	font-size: 1rem;
+	min-height: 1rem;
+	margin-top: 0.5rem;
+}
+.modal-overlay {
+	position: fixed;
+	inset: 0;
+	background: rgba(0, 0, 0, 0.5);
+	display: none;
+	align-items: center;
+	justify-content: center;
+	z-index: 1000;
+}
+.modal-overlay.active {
+	display: flex;
+}
+.modal-content {
+	background: var(--card-bg);
+	border-radius: var(--border-radius);
+	padding: 2rem;
+	max-width: 400px;
+	width: 90%;
+	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+	border: 1px solid rgba(255, 255, 255, 0.05);
+}
+.modal-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 1.5rem;
+}
+.modal-title {
+	font-size: 1.5rem;
+	font-weight: 600;
+	color: #fff;
+}
+.modal-close {
+	background: none;
+	border: none;
+	color: rgba(255, 255, 255, 0.6);
+	font-size: 1.5rem;
+	cursor: pointer;
+	padding: 0;
+	width: 2rem;
+	height: 2rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+.modal-close:hover {
+	color: #fff;
+}
+.modal-body {
+	margin-bottom: 1.5rem;
+}
+.modal-label {
+	display: block;
+	color: rgba(255, 255, 255, 0.9);
+	font-size: 1rem;
+	margin-bottom: 0.5rem;
+	font-weight: 500;
+}
+.color-picker-row {
+	display: flex;
+	gap: 0.5rem;
+	align-items: center;
+}
+.color-picker-visual {
+	width: 3rem;
+	height: 3rem;
+	border-radius: 50%;
+	cursor: pointer;
+	border: 2px solid rgba(255, 255, 255, 0.2);
+	flex-shrink: 0;
+}
+.color-input {
+	flex: 1;
+	padding: 0.75rem;
+	background: hsl(0deg 0% 100% / 10%);
+	border: 1px solid rgba(255, 255, 255, 0.2);
+	border-radius: var(--border-radius);
+	color: #fff;
+	
+	font-size: 1rem;
+	text-align: center;
+	outline: none;
+}
+.style-selector {
+	display: flex;
+	gap: 0.5rem;
+	margin-top: 0.75rem;
+	flex-wrap: wrap;
+}
+.style-btn {
+	padding: 0.75rem 1rem;
+	background: hsl(0deg 0% 100% / 10%);
+	border: 1px solid rgba(255, 255, 255, 0.2);
+	border-radius: var(--border-radius);
+	color: #fff;
+	cursor: pointer;
+	font-size: 1rem;
+	transition: all 0.2s;
+}
+.style-btn:hover {
+	background: hsl(0deg 0% 100% / 15%);
+}
+.style-btn.active {
+	background: hsl(120deg 70% 50%);
+	border-color: hsl(120deg 70% 60%);
+}
+.modal-preview {
+	background: hsl(0deg 0% 100% / 10%);
+	padding: 1rem;
+	border-radius: var(--border-radius);
+	
+	font-size: 1.2rem;
+	color: #fff;
+	margin-top: 1rem;
+}
+.modal-save {
+	width: 100%;
+	padding: 0.75rem;
+	background: hsl(0deg 0% 100% / 7%);
+	border: none;
+	border-radius: var(--border-radius);
+	color: #fff;
+	font-size: 1rem;
+	font-weight: 500;
+	cursor: pointer;
+	box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+	transition: all 0.3s;
+}
+.modal-save:hover {
+	transform: translateY(-1px);
+	box-shadow: 0 8px 15px rgba(0, 0, 0, 0.4);
+}
+.import-textarea {
+	width: 100%;
+	min-height: 10rem;
+	padding: 1rem;
+	background: hsl(0deg 0% 100% / 10%);
+	border: 1px solid rgba(255, 255, 255, 0.2);
+	border-radius: var(--border-radius);
+	color: #fff;
+
+	font-size: 1rem;
+	resize: vertical;
+	outline: none;
+	margin-bottom: 1rem;
+}
+.confirm-modal .modal-body {
+	text-align: center;
+}
+.confirm-modal .modal-body p {
+	color: rgba(255, 255, 255, 0.9);
+	margin-bottom: 1.5rem;
+	font-size: 1rem;
+}
+.confirm-buttons {
+	display: flex;
+	gap: 1rem;
+	justify-content: center;
+}
+.confirm-btn {
+	padding: 0.75rem 1.5rem;
+	border: none;
+	border-radius: var(--border-radius);
+	cursor: pointer;
+	font-size: 1rem;
+	font-weight: 500;
+	transition: all 0.3s;
+}
+.confirm-btn.cancel {
+	background: hsl(0deg 0% 50%);
+	color: #fff;
+}
+.confirm-btn.delete {
+	background: hsl(0deg 100% 50%);
+	color: #fff;
+}
+.confirm-btn:hover {
+	transform: translateY(-1px);
+	opacity: 0.9;
+}
+</style>
+<p>Here you can create custom code highlighting themes for BDFD.</p>
+<div id="admonition-note" class="admonition admonish-note" role="note" aria-labelledby="admonition-note-title">
+<div class="admonition-title">
+<div id="admonition-note-title">
+<p>Note</p>
+</div>
+<a class="admonition-anchor-link" href="tools/highlighter.html#admonition-note"></a>
+</div>
+<div>
+<p>The code highlighter allows you to assign custom colors and styles to BDFD functions, creating syntax highlighting themes that improve code readability. Generate JSON themes to use in the BDFD app’s highlighting settings.</p>
+</div>
+</div>
+<div class="picker-container">
+<h2 id="code-highlighter"><a class="header" href="#code-highlighter">Code Highlighter</a></h2>
+<p>Highlight different functions and text using unique colors for better coding experience.</p>
+<div class="control-bar">
+<button id="importThemeBtn" class="control-btn">Import Theme</button>
+<div class="function-selector-wrapper">
+<button id="addFunctionBtn" class="control-btn">Add Function</button>
+<div id="functionDropdown" class="function-dropdown">
+<input type="text" id="functionSearch" class="function-search" placeholder="Search function...">
+<div id="functionList" class="function-list"></div>
+</div>
+</div>
+<button id="deleteAllBtn" class="control-btn">Delete All</button>
+</div>
+<div id="functionsGrid" class="functions-grid"></div>
+<div class="btn-row">
+<button id="generateBtn" class="btn-secondary">Generate Code</button>
+</div>
+<div class="output-container">
+<div class="output-header">
+<span class="output-title">Highlighted Code</span>
+<button id="copyOutputBtn" class="copy-output-btn">📋 Copy</button>
+</div>
+<div id="output" class="output-box">Your highlighted code will appear here...</div>
+</div>
+<div class="info-text" id="infoText">0 functions</div>
+<div class="error-text" id="errorText"></div>
+</div>
+<div id="editModal" class="modal-overlay">
+<div class="modal-content">
+<div class="modal-header">
+<h3 id="edit-highlight" class="modal-title"><a class="header" href="#edit-highlight">Edit Highlight</a></h3>
+<button id="modalClose" class="modal-close">×</button>
+</div>
+<div class="modal-body">
+<label class="modal-label">Color</label>
+<div class="color-picker-row">
+<div id="colorPickerVisual" class="color-picker-visual"></div>
+<input type="text" id="hexInput" class="color-input" placeholder="#FFFFFF">
+</div>
+<p><label class="modal-label" style="margin-top: 1rem;">Style</label></p>
+<div class="style-selector">
+<button class="style-btn active" data-style="0">Normal</button>
+<button class="style-btn" data-style="2">Italic</button>
+<button class="style-btn" data-style="1">Bold</button>
+<button class="style-btn" data-style="3">Bold+Italic</button>
+</div>
+<div class="modal-preview" id="modalPreview">Sample Text</div>
+</div>
+<button id="modalSave" class="modal-save">Save</button>
+</div>
+</div>
+<div id="importModal" class="modal-overlay">
+<div class="modal-content">
+<div class="modal-header">
+<h3 id="import-json-theme" class="modal-title"><a class="header" href="#import-json-theme">Import JSON Theme</a></h3>
+<button id="importModalClose" class="modal-close">×</button>
+</div>
+<div class="modal-body">
+<textarea id="importTextarea" class="import-textarea" placeholder="Paste your JSON theme here"></textarea>
+<div class="error-text" id="importError"></div>
+</div>
+<div class="confirm-buttons">
+<button id="cancelImport" class="confirm-btn cancel">Cancel</button>
+<button id="applyImport" class="confirm-btn delete">Apply Theme</button>
+</div>
+</div>
+</div>
+<div id="deleteModal" class="modal-overlay confirm-modal">
+<div class="modal-content">
+<div class="modal-header">
+<h3 id="confirm-deletion" class="modal-title"><a class="header" href="#confirm-deletion">Confirm Deletion</a></h3>
+<button id="deleteModalClose" class="modal-close">×</button>
+</div>
+<div class="modal-body">
+<p>Are you sure you want to delete this function?</p>
+<div class="confirm-buttons">
+<button id="cancelDelete" class="confirm-btn cancel">Cancel</button>
+<button id="confirmDelete" class="confirm-btn delete">Delete</button>
+</div>
+</div>
+</div>
+</div>
+<div id="deleteAllModal" class="modal-overlay confirm-modal">
+<div class="modal-content">
+<div class="modal-header">
+<h3 id="confirm-deletion-1" class="modal-title"><a class="header" href="#confirm-deletion-1">Confirm Deletion</a></h3>
+<button id="deleteAllModalClose" class="modal-close">×</button>
+</div>
+<div class="modal-body">
+<p>Are you sure you want to delete the saved theme? This action cannot be undone.</p>
+<div class="confirm-buttons">
+<button id="cancelDeleteAll" class="confirm-btn cancel">Cancel</button>
+<button id="confirmDeleteAll" class="confirm-btn delete">Delete</button>
+</div>
+</div>
+</div>
+</div>
+<h2 id="functions-4"><a class="header" href="#functions-4">Functions</a></h2>
+<div id="admonition-note-1" class="admonition admonish-note" role="note" aria-labelledby="admonition-note-1-title">
+<div class="admonition-title">
+<div id="admonition-note-1-title">
+<p>Note</p>
+</div>
+<a class="admonition-anchor-link" href="tools/highlighter.html#admonition-note-1"></a>
+</div>
+<div>
+<p>Generated code uses standard BDFD highlighting JSON format.</p>
+</div>
+</div>
+<p><strong>Base Highlights:</strong></p>
+<ul>
+<li>Default Text - Main text color</li>
+<li>Fallback - Functions not in custom list</li>
+<li>Numbers - Numeric values</li>
+<li><code>[]</code> - Bracket characters</li>
+<li><code>;</code> - Semicolon characters</li>
+</ul>
+<p><strong>Custom Functions:</strong>
+Add any BDFD function to customize its color and style.</p>
+<h2 id="example-4"><a class="header" href="#example-4">Example</a></h2>
+<p><strong>Generated JSON:</strong></p>
+<pre><code class="language-json">{
+  "defaultTextHighlight": { "color": 4288341353, "style": 0 },
+  "fallbackHighlight": { "color": 4291546079, "style": 0 },
+  "bracketHighlight": { "color": 4294921292, "style": 1 },
+  "semicolonHighlight": { "color": 4294920266, "style": 1 },
+  "functionsHighlights": {
+    "$nomention": { "color": 4294932473, "style": 0 },
+    "$if": { "color": 4288905212, "style": 0 }
+  }
+}
+</code></pre>
+<div id="admonition-where-to-paste-this-json-body" class="admonition admonish-question" role="note" aria-labelledby="admonition-where-to-paste-this-json-body-title">
+<div class="admonition-title">
+<div id="admonition-where-to-paste-this-json-body-title">
+<p>Where to paste this JSON body?</p>
+</div>
+<a class="admonition-anchor-link" href="tools/highlighter.html#admonition-where-to-paste-this-json-body"></a>
+</div>
+<div>
+<p>Paste this JSON directly into the Highlighting Settings within the BDFD app. To do this, open the app, go to Settings → Change Code Highlight Settings, then click Apply Theme and paste the JSON.</p>
+</div>
+</div>
+
+            </main>
+
+        </div>
+    </div>
+
+</div>
+
+
+
+    <script>
+        window.playground_copyable = true;
+    </script>
+
+    <script src="elasticlunr.min.js" charset="utf-8"></script>
+    <script src="mark.min.js" charset="utf-8"></script>
+    <script src="theme/searcher.js" charset="utf-8"></script>
+
+<script src="clipboard.min.js" charset="utf-8"></script>
+<script src="highlight.js" charset="utf-8"></script>
+<script src="book.js" charset="utf-8"></script>
+<script src="theme/playground.js"></script>
+
+<!-- Custom JS scripts -->
+
+        <script>
+            window.addEventListener('load', function () {
+                window.setTimeout(window.print, 100);
+            });
+        </script>
+
+<script src="theme/settings/code-hg.js" defer></script>
+
+<!-- Override some theme attributes with the custom settings -->
+<script src="theme/settings/apply-settings.js"></script>
+</body>
+
+</html>
