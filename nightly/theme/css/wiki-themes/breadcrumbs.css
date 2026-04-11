@@ -1,0 +1,24 @@
+.breadcrumb {
+    user-select: none;
+    -webkit-user-select: none;
+    display: -webkit-box;
+    color: var(--link-color);
+    padding-top: 10px;
+}
+
+.breadcrumb p {
+    margin: 0 2px;
+}
+
+.breadcrumb a {
+    text-decoration: none;
+    text-align: center;
+    padding: 5px;
+    color: var(--link-color) !important;
+    border-radius: 12px;
+}
+
+.breadcrumb a:hover {
+    text-decoration: none;
+    background-color: rgba(0, 0, 0, 0.3);
+}

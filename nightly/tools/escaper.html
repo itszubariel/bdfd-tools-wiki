@@ -1,0 +1,486 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js bdfd">
+
+<head>
+    <!-- Book generated using mdBook -->
+    <meta charset="UTF-8">
+    <title>Character Escaper - BDFD - Community Tools</title>
+
+
+
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+    <meta name="description" content="Improves the quality of BDFD usage.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <meta name="theme-color" content="#633fb3">
+    <meta name="og:image" content="https://app.botdesignerdiscord.com/icons/Icon-512.png">
+    <meta name="format-detection" content="telephone=no"/>
+
+    <link rel="icon" type="image/png" href="../favicon.png">
+    <link rel="apple-touch-icon" type="image/png" href="../favicon.png">
+
+    <link rel="stylesheet" href="../theme/css/variables.css">
+    <link rel="stylesheet" href="../theme/css/general.css">
+    <link rel="stylesheet" href="../theme/css/chrome.css">
+    <link rel="stylesheet" href="../theme/css/print.css" media="print">
+
+    <!-- Discord Components -->
+    <script type="module"
+            src="../assets/vendor/discord-components/skyra-discord-components-core.js"></script>
+
+    <!-- Fonts -->
+    <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
+
+    <!-- Highlight.js Stylesheets -->
+    <link rel="stylesheet" href="../highlight.css">
+    <link rel="stylesheet" href="../tomorrow-night.css">
+    <link rel="stylesheet" href="../ayu-highlight.css">
+
+    <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href=".././src/theme/mdbook-admonish.css">
+</head>
+
+<body>
+<!-- Provide site root to javascript -->
+<script>
+    var path_to_root = "../";
+    var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "bdfd" : "bdfd";
+</script>
+<!-- Start loading toc.js asap -->
+<script src="../toc.js"></script>
+
+<!-- Work around some values being stored in localStorage wrapped in quotes -->
+<script>
+    try {
+        var theme = localStorage.getItem('mdbook-theme');
+        var sidebar = localStorage.getItem('mdbook-sidebar');
+
+        if (theme.startsWith('"') && theme.endsWith('"')) {
+            localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+        }
+
+        if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+            localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+        }
+    } catch (e) {
+    }
+</script>
+
+<!-- Set the theme before any content is loaded, prevents flash -->
+<script>
+    var theme;
+    try {
+        theme = localStorage.getItem('mdbook-theme');
+    } catch (e) {
+    }
+    if (theme === null || theme === undefined) {
+        theme = default_theme;
+    }
+    const html = document.documentElement;
+    html.classList.remove('bdfd')
+    html.classList.add(theme);
+    html.classList.add("js");
+</script>
+
+<input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+<!-- Hide / unhide sidebar before it is displayed -->
+<script>
+    var sidebar = null;
+    var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+    if (document.body.clientWidth >= 1080) {
+        try {
+            sidebar = localStorage.getItem('mdbook-sidebar');
+        } catch (e) {
+        }
+        sidebar = sidebar || 'visible';
+    } else {
+        sidebar = 'hidden';
+    }
+    sidebar_toggle.checked = sidebar === 'visible';
+    html.classList.remove('sidebar-visible');
+    html.classList.add("sidebar-" + sidebar);
+</script>
+
+<nav id="sidebar" class="sidebar" aria-label="Table of contents">
+    <!-- populated by js -->
+    <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+    <noscript>
+        <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+    </noscript>
+    <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+        <div class="sidebar-resize-indicator"></div>
+    </div>
+</nav>
+
+<div id="menu-bar" class="menu-bar">
+    <div id="menu-bar-sticky-container">
+        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor"
+               title="Toggle Table of Contents" aria-label="Toggle Table of Contents"
+               aria-controls="sidebar">
+            <i class="fa fa-bars"></i>
+        </label>
+
+        <a href="../index.html" class="navbar-brand">
+            <img class="navbar-brand-icon" src="../assets/logo192.png" alt="BDFD Wiki Logo">
+            <span class="navbar-brand-text">BDFD Tools</span>
+        </a>
+
+        <div class="menu-buttons">
+            <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)"
+                    aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S"
+                    aria-controls="searchbar">
+                <i class="fa fa-search"></i>
+            </button>
+        </div>
+
+        <h1 class="menu-title">Bot Designer For Discord</h1>
+    </div>
+</div>
+
+<div class="navbar-spacer"></div>
+
+<div id="page-wrapper" class="page-wrapper">
+    <div class="page">
+
+            <div id="search-wrapper" class="hidden">
+                <form id="searchbar-outer" class="searchbar-outer">
+                    <input type="search" name="search" id="searchbar" name="searchbar" placeholder="Search tools..."
+                           aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    <div class="search-hint">Press <kbd>ESC</kbd> or click outside to close</div>
+                </form>
+                <div id="searchresults-outer" class="searchresults-outer hidden">
+                    <div id="searchresults-header" class="searchresults-header"></div>
+                    <ul id="searchresults">
+                    </ul>
+                </div>
+            </div>
+
+        <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+        <script>
+            document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+            document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+            Array.from(document.querySelectorAll('#sidebar a')).forEach(function (link) {
+                link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+            });
+        </script>
+
+        <div class="snowflakes">
+            <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+            <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+            <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+            <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+            <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+            <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+            <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+            <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+            <i></i><i></i><i></i><i></i>
+        </div>
+
+        <div id="content" class="content">
+            <main>
+                <nav class="breadcrumb">
+                    <script src="../theme/breadcrumbs.js"></script>
+                </nav>
+
+                <a href="https://github.com/NilPointer-Software/bdfd-wiki/edit/dev/src/tools/escaper.md" class="editPage">
+                    <i class='fa fa-edit' id="editPageIcon"></i>
+                </a>
+
+                <h1 id="escaper"><a class="header" href="#escaper">Escaper</a></h1>
+<style>
+.editPage {
+	visibility: hidden;
+}
+.picker-container {
+    background: var(--card-bg);
+	border-radius: var(--border-radius);
+	border: 1px solid rgba(255, 255, 255, 0.05);
+	margin-top: 1.5rem;
+	padding-bottom: 0rem;
+	padding-left: 1.5rem;
+	padding-right: 1.5rem;
+	box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+}
+.picker-container h2 {
+    margin-top: -.5rem;
+    padding-top: 1.5rem;
+}
+.picker-container p {
+	margin-top: -1.5rem;
+}
+.textarea-row {
+	display: block;
+	margin: 1rem 0;
+}
+.escaper-input, .escaper-output {
+    color: #fff;
+    padding: 1rem;
+    background: hsl(0deg 0% 100% / 7%);
+    border-radius: var(--border-radius);
+	border-width: 0;
+    font-family: monospace;
+    font-size: 1.5rem ;
+    line-height: 1.5;
+    height: 16rem;
+    width: 100%;
+    outline: none;
+	resize: vertical;
+	transition: all 0.3s;
+	box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+	margin-bottom: 1rem;
+}
+.escaper-input:focus {
+	box-shadow: 0 0 0 3px rgba(255,255,255,0.3), 0 8px 15px rgba(0, 0, 0, 0.4);
+}
+.escaper-output {
+    background: hsl(0deg 0% 100% / 7%);
+    min-height: 16rem;
+    white-space: pre-wrap;
+    word-break: break-all;
+    color: #fff;
+}
+.btn-row {
+	display: flex;
+	gap: 1rem;
+	margin: 1rem 0;
+	flex-wrap: wrap;
+	justify-content: center;
+}
+.escape-btn, .copy-btn, .clear-btn {
+	outline: none;
+	touch-action: manipulation;
+	-webkit-user-select: none;
+	user-select: none;
+	padding-left: 1rem;
+	padding-right: 1rem;
+	height: 4rem;
+	border: none;
+	border-radius: var(--border-radius);
+	cursor: pointer;
+	font-size: 1.5rem ;
+	color: #fff;
+	background: hsl(0deg 0% 100% / 7%);
+	box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+	transition: all 0.3s;
+	font-weight: 500;
+}
+.escape-btn {
+	background: hsl(0deg 0% 100% / 7%);
+	font-weight: 500;
+	padding-left: 1.5rem;
+	padding-right: 1.5rem;
+	font-size: 1.5rem ;
+	height: 4rem ;
+}
+.escape-btn:hover, .copy-btn:hover, .clear-btn:hover {
+	transform: translateY(-1px);
+	box-shadow: 0 8px 15px rgba(0, 0, 0, 0.4);
+}
+.error {
+	color: var(--error);
+	font-size: 1.2rem;
+	min-height: 1rem;
+	padding: 0;
+	margin: 0;
+}
+.char-count {
+    color: #aaa;
+    font-size: 1.2rem;
+    margin-top: 0.5rem;
+}
+
+.highlight-span {
+	background: hsl(0deg 0% 100% / 10%);
+	color: #fff;
+	padding: 0.5rem 0.75rem;
+	border-radius: 6px;
+	font-family: monospace;
+	font-weight: bold;
+	font-size: 1.3rem;
+}
+.output-span {
+	background: hsl(0deg 0% 100% / 10%);
+	padding: 0.5rem 0.75rem;
+	border-radius: 6px;
+	font-family: monospace;
+	font-size: 1.3rem;
+	color: #fff;
+}
+</style>
+<p>Here you can escape special characters to use in ur code.</p>
+<div id="admonition-note" class="admonition admonish-note" role="note" aria-labelledby="admonition-note-title">
+<div class="admonition-title">
+<div id="admonition-note-title">
+<p>Note</p>
+</div>
+<a class="admonition-anchor-link" href="#admonition-note"></a>
+</div>
+<div>
+<p>Escape characters are used to treat special symbols as plain text instead of triggering functions. This lets your bot return characters like <span class="highlight-span">;</span>, <span class="highlight-span">$</span>, <span class="highlight-span">]</span>, <span class="highlight-span">\</span> inside your message without breaking the script.</p>
+</div>
+</div>
+<div class="picker-container">
+	<h2 id="character-escaper"><a class="header" href="#character-escaper">Character Escaper</a></h2>
+  	<p>Paste text to escape. Click Escape Code to process.</p>
+  	<div class="textarea-row">
+    	<textarea id="inputText" class="escaper-input" placeholder="Original text..."></textarea>
+    	<textarea id="outputText" class="escaper-output" readonly placeholder="Escaped text..."></textarea>
+  	</div>
+  	<div class="btn-row">
+    	<button id="escapeBtn" class="escape-btn">Escape Code</button>
+    	<button id="copyBtn" class="copy-btn">Copy Output</button>
+    	<button id="clearBtn" class="clear-btn">Clear</button>
+  	</div>
+  	<div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; padding-bottom: 1.5rem;">
+    	<div class="char-count" id="charCount">0 / 0 characters</div>
+    	<div class="error" id="errorText" style="margin: 0; flex-shrink: 0;"></div>
+  	</div>
+</div>
+<h2 id="escaping-rules"><a class="header" href="#escaping-rules">Escaping Rules</a></h2>
+<div id="admonition-note-1" class="admonition admonish-note" role="note" aria-labelledby="admonition-note-1-title">
+<div class="admonition-title">
+<div id="admonition-note-1-title">
+<p>Note</p>
+</div>
+<a class="admonition-anchor-link" href="#admonition-note-1"></a>
+</div>
+<div>
+<p>These characters are changed:</p>
+<p><span class="highlight-span">$</span> → <span class="output-span">%{DOL}%</span></p>
+<p><span class="highlight-span">]</span> → <span class="output-span">\]</span></p>
+<p><span class="highlight-span">;</span> → <span class="output-span">\;</span></p>
+<p><span class="highlight-span">\</span> → <span class="output-span">\\</span></p>
+</div>
+</div>
+<h2 id="functions"><a class="header" href="#functions">Functions</a></h2>
+<div id="admonition-note-2" class="admonition admonish-note" role="note" aria-labelledby="admonition-note-2-title">
+<div class="admonition-title">
+<div id="admonition-note-2-title">
+<p>Note</p>
+</div>
+<a class="admonition-anchor-link" href="#admonition-note-2"></a>
+</div>
+<div>
+<p>Use in BDFD functions like <a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/sendMessage.md"><code>$sendMessage[]</code></a>, <a href="https://wiki.botdesignerdiscord.com/nightly/guides/general/bds2/asyncScopes.md"><code>$async[]</code></a>, embeds, etc.</p>
+</div>
+</div>
+<h2 id="example"><a class="header" href="#example">Example</a></h2>
+<pre><code>$nomention
+$sendMessage[[%{DOL}%Hello\\; this is pretty cool\\; right%{DOL}%\\]]
+</code></pre>
+<discord-messages>
+    <discord-message author="Zubariel" role-color="#ffffff">
+        !example
+    </discord-message>
+    <discord-message author="BDFD Support" bot verified role-color="#378afa">
+        [$Hello; this is pretty cool; right$]
+    </discord-message>
+</discord-messages>
+<div id="admonition-how-to-use" class="admonition admonish-question" role="note" aria-labelledby="admonition-how-to-use-title">
+<div class="admonition-title">
+<div id="admonition-how-to-use-title">
+<p>How to use?</p>
+</div>
+<a class="admonition-anchor-link" href="#admonition-how-to-use"></a>
+</div>
+<div>
+<p>Paste text → Escape Code → Copy Output → Paste in BDFD.</p>
+</div>
+</div>
+<script>
+function escapeBDFD(text) {
+  return text
+    .replace(/\\/g, '\\\\')
+    .replace(/\$/g, '%{DOL}%')
+    .replace(/\]/g, '\\]')
+    .replace(/;/g, '\\;');
+}
+<p>document.addEventListener(‘DOMContentLoaded’, function() {
+const input = document.getElementById(‘inputText’);
+const output = document.getElementById(‘outputText’);
+const escapeBtn = document.getElementById(‘escapeBtn’);
+const copyBtn = document.getElementById(‘copyBtn’);
+const clearBtn = document.getElementById(‘clearBtn’);
+const charCount = document.getElementById(‘charCount’);
+const errorText = document.getElementById(‘errorText’);</p>
+<p>function updateCharCount() {
+const inLen = input.value.length;
+const outLen = output.value.length;
+charCount.textContent = <code>${inLen} / ${outLen} characters</code>;
+}</p>
+<p>escapeBtn.onclick = function() {
+errorText.textContent = ‘’;
+const text = input.value;
+if (!text.trim()) {
+errorText.textContent = ‘Enter text to escape’;
+return;
+}
+output.value = escapeBDFD(text);
+updateCharCount();
+escapeBtn.style.transform = ‘scale(0.95)’;
+setTimeout(() =&gt; { escapeBtn.style.transform = ‘’; }, 150);
+};</p>
+<p>copyBtn.onclick = function() {
+const text = output.value;
+if (!text.trim()) {
+errorText.textContent = ‘Nothing to copy’;
+return;
+}
+navigator.clipboard.writeText(text).then(() =&gt; {
+const original = copyBtn.textContent;
+copyBtn.textContent = ‘Copied!’;
+copyBtn.style.background = ‘hsl(120deg 100% 30%)’;
+setTimeout(() =&gt; {
+copyBtn.textContent = original;
+copyBtn.style.background = ‘’;
+}, 2000);
+}).catch(() =&gt; {
+errorText.textContent = ‘Copy failed’;
+});
+};</p>
+<p>clearBtn.onclick = function() {
+input.value = ‘’;
+output.value = ‘’;
+updateCharCount();
+errorText.textContent = ‘’;
+};</p>
+<p>input.oninput = updateCharCount;
+});
+</script></p>
+
+            </main>
+
+        </div>
+    </div>
+
+</div>
+
+
+
+    <script>
+        window.playground_copyable = true;
+    </script>
+
+    <script src="../elasticlunr.min.js" charset="utf-8"></script>
+    <script src="../mark.min.js" charset="utf-8"></script>
+    <script src="../theme/searcher.js" charset="utf-8"></script>
+
+<script src="../clipboard.min.js" charset="utf-8"></script>
+<script src="../highlight.js" charset="utf-8"></script>
+<script src="../book.js" charset="utf-8"></script>
+<script src="../theme/playground.js"></script>
+
+<!-- Custom JS scripts -->
+
+
+<script src="../theme/settings/code-hg.js" defer></script>
+
+<!-- Override some theme attributes with the custom settings -->
+<script src="../theme/settings/apply-settings.js"></script>
+</body>
+
+</html>

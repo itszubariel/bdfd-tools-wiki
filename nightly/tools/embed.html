@@ -1,0 +1,809 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js bdfd">
+
+<head>
+    <!-- Book generated using mdBook -->
+    <meta charset="UTF-8">
+    <title>Embed Builder - BDFD - Community Tools</title>
+
+
+
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+    <meta name="description" content="Improves the quality of BDFD usage.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <meta name="theme-color" content="#633fb3">
+    <meta name="og:image" content="https://app.botdesignerdiscord.com/icons/Icon-512.png">
+    <meta name="format-detection" content="telephone=no"/>
+
+    <link rel="icon" type="image/png" href="../favicon.png">
+    <link rel="apple-touch-icon" type="image/png" href="../favicon.png">
+
+    <link rel="stylesheet" href="../theme/css/variables.css">
+    <link rel="stylesheet" href="../theme/css/general.css">
+    <link rel="stylesheet" href="../theme/css/chrome.css">
+    <link rel="stylesheet" href="../theme/css/print.css" media="print">
+
+    <!-- Discord Components -->
+    <script type="module"
+            src="../assets/vendor/discord-components/skyra-discord-components-core.js"></script>
+
+    <!-- Fonts -->
+    <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
+
+    <!-- Highlight.js Stylesheets -->
+    <link rel="stylesheet" href="../highlight.css">
+    <link rel="stylesheet" href="../tomorrow-night.css">
+    <link rel="stylesheet" href="../ayu-highlight.css">
+
+    <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href=".././src/theme/mdbook-admonish.css">
+</head>
+
+<body>
+<!-- Provide site root to javascript -->
+<script>
+    var path_to_root = "../";
+    var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "bdfd" : "bdfd";
+</script>
+<!-- Start loading toc.js asap -->
+<script src="../toc.js"></script>
+
+<!-- Work around some values being stored in localStorage wrapped in quotes -->
+<script>
+    try {
+        var theme = localStorage.getItem('mdbook-theme');
+        var sidebar = localStorage.getItem('mdbook-sidebar');
+
+        if (theme.startsWith('"') && theme.endsWith('"')) {
+            localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+        }
+
+        if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+            localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+        }
+    } catch (e) {
+    }
+</script>
+
+<!-- Set the theme before any content is loaded, prevents flash -->
+<script>
+    var theme;
+    try {
+        theme = localStorage.getItem('mdbook-theme');
+    } catch (e) {
+    }
+    if (theme === null || theme === undefined) {
+        theme = default_theme;
+    }
+    const html = document.documentElement;
+    html.classList.remove('bdfd')
+    html.classList.add(theme);
+    html.classList.add("js");
+</script>
+
+<input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+<!-- Hide / unhide sidebar before it is displayed -->
+<script>
+    var sidebar = null;
+    var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+    if (document.body.clientWidth >= 1080) {
+        try {
+            sidebar = localStorage.getItem('mdbook-sidebar');
+        } catch (e) {
+        }
+        sidebar = sidebar || 'visible';
+    } else {
+        sidebar = 'hidden';
+    }
+    sidebar_toggle.checked = sidebar === 'visible';
+    html.classList.remove('sidebar-visible');
+    html.classList.add("sidebar-" + sidebar);
+</script>
+
+<nav id="sidebar" class="sidebar" aria-label="Table of contents">
+    <!-- populated by js -->
+    <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+    <noscript>
+        <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+    </noscript>
+    <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+        <div class="sidebar-resize-indicator"></div>
+    </div>
+</nav>
+
+<div id="menu-bar" class="menu-bar">
+    <div id="menu-bar-sticky-container">
+        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor"
+               title="Toggle Table of Contents" aria-label="Toggle Table of Contents"
+               aria-controls="sidebar">
+            <i class="fa fa-bars"></i>
+        </label>
+
+        <a href="../index.html" class="navbar-brand">
+            <img class="navbar-brand-icon" src="../assets/logo192.png" alt="BDFD Wiki Logo">
+            <span class="navbar-brand-text">BDFD Tools</span>
+        </a>
+
+        <div class="menu-buttons">
+            <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)"
+                    aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S"
+                    aria-controls="searchbar">
+                <i class="fa fa-search"></i>
+            </button>
+        </div>
+
+        <h1 class="menu-title">Bot Designer For Discord</h1>
+    </div>
+</div>
+
+<div class="navbar-spacer"></div>
+
+<div id="page-wrapper" class="page-wrapper">
+    <div class="page">
+
+            <div id="search-wrapper" class="hidden">
+                <form id="searchbar-outer" class="searchbar-outer">
+                    <input type="search" name="search" id="searchbar" name="searchbar" placeholder="Search tools..."
+                           aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    <div class="search-hint">Press <kbd>ESC</kbd> or click outside to close</div>
+                </form>
+                <div id="searchresults-outer" class="searchresults-outer hidden">
+                    <div id="searchresults-header" class="searchresults-header"></div>
+                    <ul id="searchresults">
+                    </ul>
+                </div>
+            </div>
+
+        <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+        <script>
+            document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+            document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+            Array.from(document.querySelectorAll('#sidebar a')).forEach(function (link) {
+                link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+            });
+        </script>
+
+        <div class="snowflakes">
+            <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+            <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+            <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+            <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+            <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+            <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+            <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+            <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+            <i></i><i></i><i></i><i></i>
+        </div>
+
+        <div id="content" class="content">
+            <main>
+                <nav class="breadcrumb">
+                    <script src="../theme/breadcrumbs.js"></script>
+                </nav>
+
+                <a href="https://github.com/NilPointer-Software/bdfd-wiki/edit/dev/src/tools/embed.md" class="editPage">
+                    <i class='fa fa-edit' id="editPageIcon"></i>
+                </a>
+
+                <h1 id="embed-builder"><a class="header" href="#embed-builder">Embed Builder</a></h1>
+<style>
+.editPage {
+	visibility: hidden;
+}
+.picker-container {
+    background: var(--card-bg);
+	border-radius: var(--border-radius);
+	border: 1px solid rgba(255, 255, 255, 0.05);
+	margin-top: 1.5rem;
+	padding-bottom: 0rem;
+	padding-left: 1.5rem;
+	padding-right: 1.5rem;
+	box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+}
+.picker-container h2 {
+    margin-top: -.5rem;
+    padding-top: 1.5rem;
+}
+.picker-container p {
+	margin-top: -1.5rem;
+}
+.form-group {
+	margin-bottom: 1.5rem;
+} 
+.form-group label {
+	display: block;
+	font-size: 1.3rem ;
+	font-weight: 500;
+	margin-bottom: 0.75rem;
+	color: rgba(255, 255, 255, 0.9);
+	letter-spacing: 0.01em;
+}
+.form-row {
+	display: grid;
+	gap: 1rem;
+	grid-template-columns: 1fr;
+}
+@media (min-width: 640px) {
+	.form-row {
+		grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+	}
+}
+.form-input {
+    color: #fff;
+    padding: 1rem;
+    background: hsl(0deg 0% 100% / 7%);
+    border-radius: var(--border-radius);
+	border-width: 0;
+    font-family: monospace;
+    font-size: 1.5rem ;
+    line-height: 1.5;
+    width: 100%;
+    outline: none;
+	transition: all 0.3s;
+	box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+}
+.form-input:focus {
+	box-shadow: 0 0 0 3px rgba(255,255,255,0.3), 0 8px 15px rgba(0, 0, 0, 0.4);
+}
+.form-textarea {
+    min-height: 10rem;
+    resize: vertical;
+}
+.form-checkbox {
+	width: 1.2rem;
+	height: 1.2rem;
+	border-radius: 0.25rem;
+	background: hsl(0deg 0% 100% / 10%);
+	border: 1px solid rgba(255,255,255,0.2);
+	cursor: pointer;
+	margin: 0;
+}
+.form-checkbox:checked {
+	background: hsl(120deg 70% 50%);
+	border-color: hsl(120deg 70% 60%);
+}
+.checkbox-label {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	margin-top: 0.75rem;
+	cursor: pointer;
+	user-select: none;
+}
+.checkbox-label span {
+	font-size: 1.3rem ;
+	color: rgba(255, 255, 255, 0.9);
+	font-weight: 400;
+}
+.btn-row {
+	display: flex;
+	gap: 1rem;
+	margin-top: 1.5rem;
+	margin-bottom: 1.5rem;
+	flex-wrap: wrap;
+	justify-content: center;
+}
+.generate-btn, .copy-btn, .clear-btn {
+	outline: none;
+	touch-action: manipulation;
+	-webkit-user-select: none;
+	user-select: none;
+	padding-left: 1rem;
+	padding-right: 1rem;
+	height: 4rem;
+	border: none;
+	border-radius: var(--border-radius);
+	cursor: pointer;
+	font-weight: 500;
+	transition: all 0.3s;
+	color: #fff;
+	background: hsl(0deg 0% 100% / 7%);
+	box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+	font-size: 1.5rem ;
+}
+.generate-btn {
+	background: hsl(0deg 0% 100% / 7%);
+	font-weight: 500;
+	font-size: 1.5rem ;
+	padding-left: 1.5rem;
+	padding-right: 1.5rem;
+	height: 4rem ;
+}
+.generate-btn:hover, .copy-btn:hover, .clear-btn:hover {
+	transform: translateY(-1px);
+	box-shadow: 0 8px 15px rgba(0, 0, 0, 0.4);
+}
+.output {
+    background: hsl(0deg 0% 100% / 7%);
+    border-width: 0;
+    min-height: 16rem;
+    white-space: pre-wrap;
+    word-break: break-all;
+    color: #fff;
+    font-family: monospace ;
+    font-size: 1.5rem ;
+    line-height: 1.5;
+    padding: 1rem;
+    border-radius: var(--border-radius);
+    margin-top: 0;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+}
+.error {
+	color: var(--error);
+	font-size: 1rem ;
+	min-height: 1rem;
+	margin-top: 0.5rem;
+}
+.char-count {
+    color: #aaa;
+    font-size: 1.2rem ;
+    margin-top: 0.75rem;
+    margin-bottom: 1.5rem;
+}
+.add-field-btn {
+	outline: none;
+	touch-action: manipulation;
+	-webkit-user-select: none;
+	user-select: none;
+	background: hsl(0deg 0% 100% / 7%);
+	padding-left: 1rem;
+	padding-right: 1rem;
+	height: 4rem;
+	font-size: 1.5rem ;
+	font-weight: 500;
+	border-radius: var(--border-radius);
+	color: #fff;
+	border: none;
+	cursor: pointer;
+	margin-right: 0.5rem;
+	margin-bottom: 0.5rem;
+	transition: all 0.3s;
+	box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+}
+.add-field-btn:hover {
+	transform: translateY(-1px);
+	box-shadow: 0 8px 15px rgba(0, 0, 0, 0.4);
+}
+.field-row, .button-row, .select-row, .modal-row {
+	background: hsl(0deg 0% 100% / 5%);
+	border-radius: var(--border-radius);
+	padding: 1rem;
+	margin-bottom: 1rem;
+	margin-top: 1rem;
+	border: 1px solid rgba(255,255,255,0.08);
+}
+.remove-btn {
+	background: hsl(0deg 0% 50% / 30%);
+	color: #fff;
+	border: none;
+	padding: 0.625rem 1rem;
+	border-radius: var(--border-radius);
+	cursor: pointer;
+	font-size: 1rem ;
+	font-weight: 500;
+	transition: all 0.2s;
+}
+.remove-btn:hover {
+	background: hsl(0deg 0% 60% / 40%);
+}
+.flex-buttons {
+	display: flex;
+	gap: 0;
+	flex-wrap: wrap;
+	margin-top: 1rem;
+}
+</style>
+<p>Here you can make embeds using the respective text inputs.</p>
+<div id="admonition-note" class="admonition admonish-note" role="note" aria-labelledby="admonition-note-title">
+<div class="admonition-title">
+<div id="admonition-note-title">
+<p>Note</p>
+</div>
+<a class="admonition-anchor-link" href="#admonition-note"></a>
+</div>
+<div>
+<p>Embed Builder creates Discord embeds with titles, descriptions, fields, buttons, select menus,  modals, and more.</p>
+</div>
+</div>
+<div class="picker-container">
+	<h2 id="embed-builder-1"><a class="header" href="#embed-builder-1">Embed Builder</a></h2>
+  	<p>Fill text input fields below to generate embed code.</p>
+<div class="form-group">
+     <label>Author</label>
+     <div class="form-row">
+       <input id="authorName" class="form-input" placeholder="Author Name">
+       <input id="authorIcon" class="form-input" placeholder="Author Icon URL">
+       <input id="authorUrl" class="form-input" placeholder="Author URL">
+     </div>
+   </div>
+<div class="form-group">
+     <label>Title</label>
+     <div class="form-row">
+       <input id="title" class="form-input" placeholder="Title">
+       <input id="titleUrl" class="form-input" placeholder="Title URL">
+     </div>
+   </div>
+<div class="form-group">
+     <label>Description</label>
+     <textarea id="description" class="form-input form-textarea" placeholder="Description..."></textarea>
+   </div>
+<div class="form-group">
+     <label>Media & Style</label>
+     <div class="form-row">
+       <input id="thumbnail" class="form-input" placeholder="Thumbnail URL">
+       <input id="image" class="form-input" placeholder="Image URL">
+       <input id="color" class="form-input" placeholder="#ffffff" value="#7289da">
+     </div>
+   </div>
+<div class="form-group">
+     <label>Footer</label>
+     <div class="form-row">
+       <input id="footer" class="form-input" placeholder="Footer Text">
+       <input id="footerIcon" class="form-input" placeholder="Footer Icon URL">
+     </div>
+     <label class="checkbox-label">
+       <input type="checkbox" id="timestamp" class="form-checkbox">
+       <span>Add Timestamp</span>
+     </label>
+   </div>
+<div class="flex-buttons">
+     <button id="addField" class="add-field-btn">+ Field</button>
+     <button id="addButton" class="add-field-btn">+ Button</button>
+     <button id="addSelect" class="add-field-btn">+ Select Menu</button>
+     <button id="addModal" class="add-field-btn">+ Modal</button>
+   </div>
+<div id="dynamicFields"></div>
+<div class="btn-row">
+     <button id="generateBtn" class="generate-btn">Generate Embed</button>
+     <button id="copyBtn" class="copy-btn">Copy Output</button>
+     <button id="clearBtn" class="clear-btn">Clear All</button>
+   </div>
+<div id="output" class="output">Generated code appears here...</div>
+   <div class="char-count" id="charCount">0 characters</div>
+   <div class="error" id="error"></div>
+</div>
+<h2 id="functions"><a class="header" href="#functions">Functions</a></h2>
+<div id="admonition-note-1" class="admonition admonish-note" role="note" aria-labelledby="admonition-note-1-title">
+<div class="admonition-title">
+<div id="admonition-note-1-title">
+<p>Note</p>
+</div>
+<a class="admonition-anchor-link" href="#admonition-note-1"></a>
+</div>
+<div>
+<p>Generated code uses standard BDFD embed functions.</p>
+</div>
+</div>
+<p><strong>Core</strong>:</p>
+<ul>
+<li><a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/title.md"><code>$title[]</code></a>, <a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/description.md"><code>$description[]</code></a>, <a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/color.md"><code>$color[]</code></a>, <a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/image.md"><code>$image[]</code></a>, <a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/thumbnail.md"><code>$thumbnail[]</code></a></li>
+<li><a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/addField.md"><code>$addField[]</code></a>, <a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/addButton.md"><code>$addButton[]</code></a>, <a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/addSelectMenuOption.md"><code>$addSelectMenuOption[]</code></a></li>
+<li><a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/newModal.md"><code>$newModal[]</code></a>, <a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/addTextInput.md"><code>$addTextInput[]</code></a></li>
+</ul>
+<h2 id="example"><a class="header" href="#example">Example</a></h2>
+<pre><code>$nomention
+$title[Hello]
+$description[Welcome to embed builder.]
+$color[#673ab7]
+</code></pre>
+<discord-messages>
+    <discord-message author="Zubariel" role-color="#ffffff">
+        !example
+    </discord-message>
+    <discord-message bot author="BDFD Support" role-color="#378afa" verified>
+        <none>
+        <discord-embed slot="embeds" embed-title="Hello" color="#673ab7">
+            <discord-embed-description slot="description">
+                Welcome to embed builder.
+            </discord-embed-description>
+        </discord-embed>
+    </discord-message>
+</discord-messages>
+<div id="admonition-how-it-works" class="admonition admonish-question" role="note" aria-labelledby="admonition-how-it-works-title">
+<div class="admonition-title">
+<div id="admonition-how-it-works-title">
+<p>How it works?</p>
+</div>
+<a class="admonition-anchor-link" href="#admonition-how-it-works"></a>
+</div>
+<div>
+<p>Fill form → Generate → Copy code → Paste in BDFD commands.</p>
+</div>
+</div>
+<script>
+let fieldCount = 0, buttonCount = 0, selectCount = 0, modalCount = 0;
+<p>document.addEventListener(‘DOMContentLoaded’, () =&gt; {
+const generateBtn = document.getElementById(‘generateBtn’);
+const copyBtn = document.getElementById(‘copyBtn’);
+const clearBtn = document.getElementById(‘clearBtn’);
+const addField = document.getElementById(‘addField’);
+const addButton = document.getElementById(‘addButton’);
+const addSelect = document.getElementById(‘addSelect’);
+const addModal = document.getElementById(‘addModal’);
+const output = document.getElementById(‘output’);
+const charCount = document.getElementById(‘charCount’);
+const error = document.getElementById(‘error’);
+const dynamicFields = document.getElementById(‘dynamicFields’);</p>
+<p>generateBtn.onclick = generateEmbed;
+copyBtn.onclick = copyOutput;
+clearBtn.onclick = clearAll;
+addField.onclick = () =&gt; addFieldRow();
+addButton.onclick = () =&gt; addButtonRow();
+addSelect.onclick = () =&gt; addSelectRow();
+addModal.onclick = () =&gt; addModalRow();</p>
+<p>function sanitize(str) {
+if (!str) return ‘’;
+return str
+.replace(/\/g, ‘\\’)
+.replace(/$/g, ‘%{DOL}%’)
+.replace(/;/g, ‘\;’)
+.replace(/]/g, ‘\]’);
+}</p>
+<p>function generateEmbed() {
+error.textContent = ‘’;
+let code = ‘$nomention\n’;</p>
+<pre><code>// Author
+const authorName = sanitize(document.getElementById('authorName').value);
+const authorIcon = sanitize(document.getElementById('authorIcon').value);
+const authorUrl = sanitize(document.getElementById('authorUrl').value);
+if (authorName) {
+  code += `$author[${authorName}`;
+  if (authorIcon) code += `;${authorIcon}`;
+  if (authorUrl) code += `;${authorUrl}`;
+  code += ']\n';
+}
+
+// Title
+const title = sanitize(document.getElementById('title').value);
+const titleUrl = sanitize(document.getElementById('titleUrl').value);
+if (title) {
+  code += `$title[${title}`;
+  if (titleUrl) code += `;${titleUrl}`;
+  code += ']\n';
+}
+
+// Description
+const desc = sanitize(document.getElementById('description').value);
+if (desc) code += `$description[${desc}]\n`;
+
+// Thumbnail
+const thumbnail = sanitize(document.getElementById('thumbnail').value);
+if (thumbnail) code += `$thumbnail[${thumbnail}]\n`;
+
+// Image
+const image = sanitize(document.getElementById('image').value);
+if (image) code += `$image[${image}]\n`;
+
+// Color
+const color = document.getElementById('color').value || '#7289da';
+code += `$color[${color}]\n`;
+
+// Footer
+const footer = sanitize(document.getElementById('footer').value);
+const footerIcon = sanitize(document.getElementById('footerIcon').value);
+if (footer) {
+  code += `$footer[${footer}`;
+  if (footerIcon) code += `;${footerIcon}`;
+  code += ']\n';
+}
+
+// Timestamp
+if (document.getElementById('timestamp').checked) code += '$addTimestamp\n';
+
+// Dynamic fields
+document.querySelectorAll('.field-row').forEach(row =&gt; {
+  const name = sanitize(row.querySelector('.field-name')?.value);
+  const value = sanitize(row.querySelector('.field-value')?.value);
+  const inline = row.querySelector('.field-inline')?.checked ? 'yes' : 'no';
+  if (name &amp;&amp; value) code += `$addField[${name};${value};${inline}]\n`;
+});
+
+// Buttons
+document.querySelectorAll('.button-row').forEach(row =&gt; {
+  const label = sanitize(row.querySelector('.button-label')?.value);
+  const customId = sanitize(row.querySelector('.button-id')?.value);
+  const style = row.querySelector('.button-style')?.value || 'primary';
+  const disabled = row.querySelector('.button-disabled')?.checked ? 'yes' : 'no';
+  const emoji = sanitize(row.querySelector('.button-emoji')?.value);
+  const url = sanitize(row.querySelector('.button-url')?.value);
+  
+  if (label || emoji) {
+    if (style === 'link' &amp;&amp; url) {
+      code += `$addButton[1;${label || 'Link'};${url};${disabled};${emoji}]\n`;
+    } else if (customId) {
+      const styleNum = {primary: 1, secondary: 2, success: 3, danger: 4}[style] || 1;
+      code += `$addButton[no;${label};${styleNum};${customId};${disabled};${emoji}]\n`;
+    }
+  }
+});
+
+// Select menus
+document.querySelectorAll('.select-row').forEach(row =&gt; {
+  const placeholder = sanitize(row.querySelector('.select-placeholder')?.value);
+  const customId = sanitize(row.querySelector('.select-id')?.value);
+  const minValues = row.querySelector('.select-min')?.value || '1';
+  const maxValues = row.querySelector('.select-max')?.value || '1';
+  
+  if (customId) {
+    code += `$addSelectMenu[${customId};${placeholder || 'Select an option'};${minValues};${maxValues}]\n`;
+    
+    row.querySelectorAll('.select-option').forEach(opt =&gt; {
+      const label = sanitize(opt.querySelector('.option-label')?.value);
+      const value = sanitize(opt.querySelector('.option-value')?.value);
+      const desc = sanitize(opt.querySelector('.option-desc')?.value);
+      const emoji = sanitize(opt.querySelector('.option-emoji')?.value);
+      
+      if (label &amp;&amp; value) {
+        code += `$addSelectMenuOption[${customId};${label};${value};${desc};${emoji}]\n`;
+      }
+    });
+  }
+});
+
+// Modals
+document.querySelectorAll('.modal-row').forEach(row =&gt; {
+  const title = sanitize(row.querySelector('.modal-title')?.value);
+  const customId = sanitize(row.querySelector('.modal-id')?.value);
+  
+  if (title &amp;&amp; customId) {
+    code += `$newModal[${customId};${title}]\n`;
+    
+    row.querySelectorAll('.modal-input').forEach(input =&gt; {
+      const label = sanitize(input.querySelector('.input-label')?.value);
+      const id = sanitize(input.querySelector('.input-id')?.value);
+      const style = input.querySelector('.input-style')?.value || 'short';
+      const required = input.querySelector('.input-required')?.checked ? 'yes' : 'no';
+      const placeholder = sanitize(input.querySelector('.input-placeholder')?.value);
+      
+      if (label &amp;&amp; id) {
+        code += `$addTextInput[${id};${style};${label};${required};${placeholder}]\n`;
+      }
+    });
+  }
+});
+
+output.textContent = code.trim();
+charCount.textContent = output.textContent.length + ' characters';
+</code></pre>
+<p>}</p>
+<p>function copyOutput() {
+if (!output.textContent || output.textContent === ‘Generated code appears here…’) {
+error.textContent = ‘Nothing to copy’;
+return;
+}</p>
+<pre><code>navigator.clipboard.writeText(output.textContent).then(() =&gt; {
+  const original = copyBtn.textContent;
+  copyBtn.textContent = 'Copied!';
+  copyBtn.style.background = 'hsl(120deg 100% 30%)';
+  setTimeout(() =&gt; {
+    copyBtn.textContent = original;
+    copyBtn.style.background = '';
+  }, 2000);
+}).catch(() =&gt; {
+  error.textContent = 'Copy failed';
+});
+</code></pre>
+<p>}</p>
+<p>function clearAll() {
+document.querySelectorAll(‘.form-input, .form-textarea’).forEach(input =&gt; {
+if (input.id === ‘color’) {
+input.value = ‘#7289da’;
+} else {
+input.value = ‘’;
+}
+});
+document.querySelectorAll(‘.form-checkbox’).forEach(cb =&gt; cb.checked = false);
+dynamicFields.innerHTML = ‘’;
+fieldCount = 0;
+buttonCount = 0;
+selectCount = 0;
+modalCount = 0;
+output.textContent = ‘Generated code appears here…’;
+charCount.textContent = ‘0 characters’;
+error.textContent = ‘’;
+}</p>
+<p>function addFieldRow() {
+const row = document.createElement(‘div’);
+row.className = ‘field-row’;
+row.innerHTML = <code>      &lt;div class="form-row"&gt;         &lt;input class="form-input field-name" placeholder="Field Name"&gt;         &lt;input class="form-input field-value" placeholder="Field Value"&gt;       &lt;/div&gt;       &lt;div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.75rem;"&gt;         &lt;label class="checkbox-label" style="margin: 0;"&gt;           &lt;input type="checkbox" class="form-checkbox field-inline"&gt;           &lt;span&gt;Inline&lt;/span&gt;         &lt;/label&gt;         &lt;button class="remove-btn"&gt;Remove&lt;/button&gt;       &lt;/div&gt;    </code>;
+dynamicFields.appendChild(row);
+row.querySelector(‘.remove-btn’).onclick = () =&gt; row.remove();
+}</p>
+<p>function addButtonRow() {
+const row = document.createElement(‘div’);
+row.className = ‘button-row’;
+row.innerHTML = <code>      &lt;div class="form-row"&gt;         &lt;input class="form-input button-label" placeholder="Button Label"&gt;         &lt;input class="form-input button-id" placeholder="Custom ID"&gt;         &lt;select class="form-input button-style"&gt;           &lt;option value="primary"&gt;Primary&lt;/option&gt;           &lt;option value="secondary"&gt;Secondary&lt;/option&gt;           &lt;option value="success"&gt;Success&lt;/option&gt;           &lt;option value="danger"&gt;Danger&lt;/option&gt;           &lt;option value="link"&gt;Link&lt;/option&gt;         &lt;/select&gt;       &lt;/div&gt;       &lt;div class="form-row" style="margin-top: 0.75rem;"&gt;         &lt;input class="form-input button-emoji" placeholder="Emoji"&gt;         &lt;input class="form-input button-url" placeholder="URL (for Link style)"&gt;       &lt;/div&gt;       &lt;div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.75rem;"&gt;         &lt;label class="checkbox-label" style="margin: 0;"&gt;           &lt;input type="checkbox" class="form-checkbox button-disabled"&gt;           &lt;span&gt;Disabled&lt;/span&gt;         &lt;/label&gt;         &lt;button class="remove-btn"&gt;Remove&lt;/button&gt;       &lt;/div&gt;    </code>;
+dynamicFields.appendChild(row);
+row.querySelector(‘.remove-btn’).onclick = () =&gt; row.remove();
+}</p>
+<p>function addSelectRow() {
+const row = document.createElement(‘div’);
+row.className = ‘select-row’;
+row.innerHTML = <code>      &lt;div class="form-row"&gt;         &lt;input class="form-input select-placeholder" placeholder="Placeholder"&gt;         &lt;input class="form-input select-id" placeholder="Custom ID"&gt;         &lt;input class="form-input select-min" type="number" placeholder="Min Values" value="1" min="1"&gt;         &lt;input class="form-input select-max" type="number" placeholder="Max Values" value="1" min="1"&gt;       &lt;/div&gt;       &lt;div class="options-container" style="margin-top: 1rem;"&gt;&lt;/div&gt;       &lt;div style="display: flex; gap: 0.75rem; margin-top: 0.75rem;"&gt;         &lt;button class="add-field-btn add-option-btn"&gt;+ Option&lt;/button&gt;         &lt;button class="remove-btn"&gt;Remove Menu&lt;/button&gt;       &lt;/div&gt;    </code>;
+dynamicFields.appendChild(row);</p>
+<pre><code>const optionsContainer = row.querySelector('.options-container');
+row.querySelector('.add-option-btn').onclick = () =&gt; {
+  const option = document.createElement('div');
+  option.className = 'select-option';
+  option.innerHTML = `
+    &lt;div class="form-row" style="margin-top: 0.5rem;"&gt;
+      &lt;input class="form-input option-label" placeholder="Label"&gt;
+      &lt;input class="form-input option-value" placeholder="Value"&gt;
+      &lt;input class="form-input option-desc" placeholder="Description"&gt;
+      &lt;input class="form-input option-emoji" placeholder="Emoji"&gt;
+    &lt;/div&gt;
+  `;
+  optionsContainer.appendChild(option);
+};
+row.querySelector('.remove-btn').onclick = () =&gt; row.remove();
+</code></pre>
+<p>}</p>
+<p>function addModalRow() {
+const row = document.createElement(‘div’);
+row.className = ‘modal-row’;
+row.innerHTML = <code>      &lt;div class="form-row"&gt;         &lt;input class="form-input modal-title" placeholder="Modal Title"&gt;         &lt;input class="form-input modal-id" placeholder="Custom ID"&gt;       &lt;/div&gt;       &lt;div class="modal-inputs-container" style="margin-top: 1rem;"&gt;&lt;/div&gt;       &lt;div style="display: flex; gap: 0.75rem; margin-top: 0.75rem;"&gt;         &lt;button class="add-field-btn add-modal-input-btn"&gt;+ Text Input&lt;/button&gt;         &lt;button class="remove-btn"&gt;Remove Modal&lt;/button&gt;       &lt;/div&gt;    </code>;
+dynamicFields.appendChild(row);</p>
+<pre><code>const inputsContainer = row.querySelector('.modal-inputs-container');
+row.querySelector('.add-modal-input-btn').onclick = () =&gt; {
+  const input = document.createElement('div');
+  input.className = 'modal-input';
+  input.innerHTML = `
+    &lt;div class="form-row" style="margin-top: 0.5rem;"&gt;
+      &lt;input class="form-input input-label" placeholder="Label"&gt;
+      &lt;input class="form-input input-id" placeholder="Input ID"&gt;
+      &lt;select class="form-input input-style"&gt;
+        &lt;option value="short"&gt;Short&lt;/option&gt;
+        &lt;option value="paragraph"&gt;Paragraph&lt;/option&gt;
+      &lt;/select&gt;
+      &lt;input class="form-input input-placeholder" placeholder="Placeholder"&gt;
+    &lt;/div&gt;
+    &lt;label class="checkbox-label"&gt;
+      &lt;input type="checkbox" class="form-checkbox input-required" checked&gt;
+      &lt;span&gt;Required&lt;/span&gt;
+    &lt;/label&gt;
+  `;
+  inputsContainer.appendChild(input);
+};
+row.querySelector('.remove-btn').onclick = () =&gt; row.remove();
+</code></pre>
+<p>}
+});
+</script></p>
+
+            </main>
+
+        </div>
+    </div>
+
+</div>
+
+
+
+    <script>
+        window.playground_copyable = true;
+    </script>
+
+    <script src="../elasticlunr.min.js" charset="utf-8"></script>
+    <script src="../mark.min.js" charset="utf-8"></script>
+    <script src="../theme/searcher.js" charset="utf-8"></script>
+
+<script src="../clipboard.min.js" charset="utf-8"></script>
+<script src="../highlight.js" charset="utf-8"></script>
+<script src="../book.js" charset="utf-8"></script>
+<script src="../theme/playground.js"></script>
+
+<!-- Custom JS scripts -->
+
+
+<script src="../theme/settings/code-hg.js" defer></script>
+
+<!-- Override some theme attributes with the custom settings -->
+<script src="../theme/settings/apply-settings.js"></script>
+</body>
+
+</html>
