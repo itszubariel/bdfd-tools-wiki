@@ -1559,3 +1559,71 @@ document.addEventListener('DOMContentLoaded', function() {
     updateDateFromUnix();
     updateUnixTime();
 });
+
+// Escaper
+function escapeBDFD(text) {
+  return text
+    .replace(/\\/g, '\\\\')
+    .replace(/\$/g, '%{DOL}%')
+    .replace(/\]/g, '\\]')
+    .replace(/;/g, '\\;');
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  const input = document.getElementById('inputText');
+  const output = document.getElementById('outputText');
+  const escapeBtn = document.getElementById('escapeBtn');
+  const copyBtn = document.getElementById('copyBtn');
+  const clearBtn = document.getElementById('clearBtn');
+  const charCount = document.getElementById('charCount');
+  const errorText = document.getElementById('errorText');
+
+  if (!input || !output) return;
+
+  function updateCharCount() {
+    const inLen = input.value.length;
+    const outLen = output.value.length;
+    charCount.textContent = `${inLen} / ${outLen} characters`;
+  }
+
+  escapeBtn.onclick = function() {
+    errorText.textContent = '';
+    const text = input.value;
+    if (!text.trim()) {
+      errorText.textContent = 'Enter text to escape';
+      return;
+    }
+    output.value = escapeBDFD(text);
+    updateCharCount();
+    escapeBtn.style.transform = 'scale(0.95)';
+    setTimeout(() => { escapeBtn.style.transform = ''; }, 150);
+  };
+
+  copyBtn.onclick = function() {
+    const text = output.value;
+    if (!text.trim()) {
+      errorText.textContent = 'Nothing to copy';
+      return;
+    }
+    navigator.clipboard.writeText(text).then(() => {
+      const original = copyBtn.textContent;
+      copyBtn.textContent = 'Copied!';
+      copyBtn.style.background = 'hsl(120deg 100% 30%)';
+      setTimeout(() => {
+        copyBtn.textContent = original;
+        copyBtn.style.background = '';
+      }, 2000);
+    }).catch(() => {
+      errorText.textContent = 'Copy failed';
+    });
+  };
+
+  clearBtn.onclick = function() {
+    input.value = '';
+    output.value = '';
+    updateCharCount();
+    errorText.textContent = '';
+  };
+
+  input.oninput = updateCharCount;
+});
