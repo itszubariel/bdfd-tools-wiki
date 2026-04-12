@@ -401,7 +401,7 @@ $color[#673ab7]
     <discord-message author="RainbowKey" role-color="#E67E22">
         !example
     </discord-message>
-    <discord-message author="BDFD Support" verified role-color="#378afa" bot>
+    <discord-message author="BDFD Support" bot verified role-color="#378afa">
         <none>
         <discord-embed slot="embeds" color="#673ab7">
             <discord-embed-description slot="description">
@@ -2545,10 +2545,10 @@ input[type="checkbox"] {
 Unix date: &lt;t:1917043200:D&gt;
 </code></pre>
 <discord-messages>
-    <discord-message role-color="#E67E22" author="RainbowKey">
+    <discord-message author="RainbowKey" role-color="#E67E22">
         !example
     </discord-message>
-    <discord-message bot verified author="BDFD Support" role-color="#378afa">
+    <discord-message author="BDFD Support" role-color="#378afa" bot verified>
         Unix date: <div class="discord-time-mark">January 10, 2030</div>
     </discord-message>
 </discord-messages>
@@ -2749,7 +2749,7 @@ $sendMessage[[%{DOL}%Hello\\; this is pretty cool\\; right%{DOL}%\\]]
     <discord-message role-color="#ffffff" author="Zubariel">
         !example
     </discord-message>
-    <discord-message author="BDFD Support" verified role-color="#378afa" bot>
+    <discord-message author="BDFD Support" bot verified role-color="#378afa">
         [$Hello; this is pretty cool; right$]
     </discord-message>
 </discord-messages>
@@ -2764,66 +2764,6 @@ $sendMessage[[%{DOL}%Hello\\; this is pretty cool\\; right%{DOL}%\\]]
 <p>Paste text → Escape Code → Copy Output → Paste in BDFD.</p>
 </div>
 </div>
-<script>
-function escapeBDFD(text) {
-  return text
-    .replace(/\\/g, '\\\\')
-    .replace(/\$/g, '%{DOL}%')
-    .replace(/\]/g, '\\]')
-    .replace(/;/g, '\\;');
-}
-<p>document.addEventListener(‘DOMContentLoaded’, function() {
-const input = document.getElementById(‘inputText’);
-const output = document.getElementById(‘outputText’);
-const escapeBtn = document.getElementById(‘escapeBtn’);
-const copyBtn = document.getElementById(‘copyBtn’);
-const clearBtn = document.getElementById(‘clearBtn’);
-const charCount = document.getElementById(‘charCount’);
-const errorText = document.getElementById(‘errorText’);</p>
-<p>function updateCharCount() {
-const inLen = input.value.length;
-const outLen = output.value.length;
-charCount.textContent = <code>${inLen} / ${outLen} characters</code>;
-}</p>
-<p>escapeBtn.onclick = function() {
-errorText.textContent = ‘’;
-const text = input.value;
-if (!text.trim()) {
-errorText.textContent = ‘Enter text to escape’;
-return;
-}
-output.value = escapeBDFD(text);
-updateCharCount();
-escapeBtn.style.transform = ‘scale(0.95)’;
-setTimeout(() =&gt; { escapeBtn.style.transform = ‘’; }, 150);
-};</p>
-<p>copyBtn.onclick = function() {
-const text = output.value;
-if (!text.trim()) {
-errorText.textContent = ‘Nothing to copy’;
-return;
-}
-navigator.clipboard.writeText(text).then(() =&gt; {
-const original = copyBtn.textContent;
-copyBtn.textContent = ‘Copied!’;
-copyBtn.style.background = ‘hsl(120deg 100% 30%)’;
-setTimeout(() =&gt; {
-copyBtn.textContent = original;
-copyBtn.style.background = ‘’;
-}, 2000);
-}).catch(() =&gt; {
-errorText.textContent = ‘Copy failed’;
-});
-};</p>
-<p>clearBtn.onclick = function() {
-input.value = ‘’;
-output.value = ‘’;
-updateCharCount();
-errorText.textContent = ‘’;
-};</p>
-<p>input.oninput = updateCharCount;
-});
-</script></p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="embed-builder"><a class="header" href="#embed-builder">Embed Builder</a></h1>
 <style>
 .editPage {
@@ -3129,9 +3069,9 @@ $color[#673ab7]
     <discord-message author="Zubariel" role-color="#ffffff">
         !example
     </discord-message>
-    <discord-message verified author="BDFD Support" bot role-color="#378afa">
+    <discord-message bot role-color="#378afa" verified author="BDFD Support">
         <none>
-        <discord-embed slot="embeds" embed-title="Hello" color="#673ab7">
+        <discord-embed embed-title="Hello" color="#673ab7" slot="embeds">
             <discord-embed-description slot="description">
                 Welcome to embed builder.
             </discord-embed-description>

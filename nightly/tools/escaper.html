@@ -376,7 +376,7 @@ $sendMessage[[%{DOL}%Hello\\; this is pretty cool\\; right%{DOL}%\\]]
     <discord-message role-color="#ffffff" author="Zubariel">
         !example
     </discord-message>
-    <discord-message author="BDFD Support" verified role-color="#378afa" bot>
+    <discord-message author="BDFD Support" bot verified role-color="#378afa">
         [$Hello; this is pretty cool; right$]
     </discord-message>
 </discord-messages>
@@ -391,66 +391,6 @@ $sendMessage[[%{DOL}%Hello\\; this is pretty cool\\; right%{DOL}%\\]]
 <p>Paste text → Escape Code → Copy Output → Paste in BDFD.</p>
 </div>
 </div>
-<script>
-function escapeBDFD(text) {
-  return text
-    .replace(/\\/g, '\\\\')
-    .replace(/\$/g, '%{DOL}%')
-    .replace(/\]/g, '\\]')
-    .replace(/;/g, '\\;');
-}
-<p>document.addEventListener(‘DOMContentLoaded’, function() {
-const input = document.getElementById(‘inputText’);
-const output = document.getElementById(‘outputText’);
-const escapeBtn = document.getElementById(‘escapeBtn’);
-const copyBtn = document.getElementById(‘copyBtn’);
-const clearBtn = document.getElementById(‘clearBtn’);
-const charCount = document.getElementById(‘charCount’);
-const errorText = document.getElementById(‘errorText’);</p>
-<p>function updateCharCount() {
-const inLen = input.value.length;
-const outLen = output.value.length;
-charCount.textContent = <code>${inLen} / ${outLen} characters</code>;
-}</p>
-<p>escapeBtn.onclick = function() {
-errorText.textContent = ‘’;
-const text = input.value;
-if (!text.trim()) {
-errorText.textContent = ‘Enter text to escape’;
-return;
-}
-output.value = escapeBDFD(text);
-updateCharCount();
-escapeBtn.style.transform = ‘scale(0.95)’;
-setTimeout(() =&gt; { escapeBtn.style.transform = ‘’; }, 150);
-};</p>
-<p>copyBtn.onclick = function() {
-const text = output.value;
-if (!text.trim()) {
-errorText.textContent = ‘Nothing to copy’;
-return;
-}
-navigator.clipboard.writeText(text).then(() =&gt; {
-const original = copyBtn.textContent;
-copyBtn.textContent = ‘Copied!’;
-copyBtn.style.background = ‘hsl(120deg 100% 30%)’;
-setTimeout(() =&gt; {
-copyBtn.textContent = original;
-copyBtn.style.background = ‘’;
-}, 2000);
-}).catch(() =&gt; {
-errorText.textContent = ‘Copy failed’;
-});
-};</p>
-<p>clearBtn.onclick = function() {
-input.value = ‘’;
-output.value = ‘’;
-updateCharCount();
-errorText.textContent = ‘’;
-};</p>
-<p>input.oninput = updateCharCount;
-});
-</script></p>
 
             </main>
 
