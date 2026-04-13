@@ -20,9 +20,8 @@ function autoSettingChange(buttonName, status) {
   button.style.background = status ? activeGradient : inactiveGradient;
 }
 
-// Main autocomplete — loads functions from functions.json
+// Main autocomplete - loads functions from functions.json
 function autocomplete() {
-  // path_to_root is injected by mdBook in index.hbs, e.g. "" or "../" or "../../"
   var jsonPath = (typeof path_to_root !== 'undefined' ? path_to_root : '') + 'tools/functions.json';
   fetch(jsonPath)
     .then(function(r) { return r.json(); })
@@ -34,7 +33,6 @@ function initAutocomplete(functions) {
   var textarea = document.getElementById('editor');
   if (!textarea) return;
 
-  // Create floating dropdown attached to body so it overlays everything
   var dropdown = document.createElement('div');
   dropdown.id = 'autocomplete';
   dropdown.style.position = 'absolute';
@@ -60,16 +58,38 @@ function initAutocomplete(functions) {
       var span = document.createElement('span');
       span.textContent = func;
       span.addEventListener('mousedown', function(e) {
-        e.preventDefault(); // keep focus on textarea
+        e.preventDefault();
         insert(func, dollarIndex, cursorPosition, inputText);
       });
       dropdown.appendChild(span);
     });
 
+    // Position near the cursor line, not the bottom of the textarea
     var rect = textarea.getBoundingClientRect();
-    dropdown.style.left = (rect.left + window.scrollX) + 'px';
-    dropdown.style.top = (rect.bottom + window.scrollY + 4) + 'px';
-    dropdown.style.minWidth = rect.width + 'px';
+    var style = window.getComputedStyle(textarea);
+    var lineHeight = parseFloat(style.lineHeight) || parseFloat(style.fontSize) * 1.2 || 20;
+    var paddingTop = parseFloat(style.paddingTop) || 0;
+    var paddingLeft = parseFloat(style.paddingLeft) || 0;
+    var charWidth = parseFloat(style.fontSize) * 0.6;
+
+    var textBefore = inputText.substring(0, cursorPosition);
+    var lines = textBefore.split('\n');
+    var lineIndex = lines.length - 1;
+    var currentLine = lines[lineIndex];
+
+    // Cursor X based on current line char count; cursor Y accounts for textarea.scrollTop
+    var cursorX = rect.left + window.scrollX + paddingLeft + currentLine.length * charWidth;
+    var cursorY = rect.top + window.scrollY + paddingTop + (lineIndex + 1) * lineHeight - textarea.scrollTop;
+
+    // Clamp to viewport width
+    var dropdownWidth = 220;
+    var maxLeft = window.scrollX + window.innerWidth - dropdownWidth - 8;
+    cursorX = Math.min(cursorX, maxLeft);
+    cursorX = Math.max(cursorX, window.scrollX + 4);
+
+    dropdown.style.left = cursorX + 'px';
+    dropdown.style.top = (cursorY + 4) + 'px';
+    dropdown.style.minWidth = dropdownWidth + 'px';
     dropdown.style.display = 'block';
 
     clearTimeout(hideTimer);
@@ -80,9 +100,10 @@ function initAutocomplete(functions) {
     if (!autocompleteEnabled) { hide(); return; }
     var inputText = textarea.value;
     var cursorPosition = textarea.selectionStart;
-    var dollarIndex = inputText.substring(0, cursorPosition).lastIndexOf('$');
+    var textBefore = inputText.substring(0, cursorPosition);
+    var dollarIndex = textBefore.lastIndexOf('$');
     if (dollarIndex === -1) { hide(); return; }
-    var searchTerm = inputText.substring(dollarIndex, cursorPosition).toLowerCase();
+    var searchTerm = textBefore.substring(dollarIndex).toLowerCase();
     var matches = functions
       .filter(function(f) { return f.toLowerCase().startsWith(searchTerm); })
       .slice(0, 8);
