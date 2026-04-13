@@ -401,9 +401,9 @@ $color[#673ab7]
     <discord-message author="RainbowKey" role-color="#E67E22">
         !example
     </discord-message>
-    <discord-message role-color="#378afa" author="BDFD Support" bot verified>
+    <discord-message verified role-color="#378afa" bot author="BDFD Support">
         <none>
-        <discord-embed color="#673ab7" slot="embeds">
+        <discord-embed slot="embeds" color="#673ab7">
             <discord-embed-description slot="description">
                 ⬅️ Border color hex
             </discord-embed-description>
@@ -1005,7 +1005,7 @@ $color[#673ab7]
 	<p id="autocomplete"></p>
 	<div class="scriptdiv">
 		<textarea id="editor" oninput="updateStats(); checkBrackets(); bdscript2()"></textarea><br>
-	 	<button class="fa fa-regular fa-paste clip-button" onclick="copyCodeText() title="Copy" aria-label="Copy"></button>
+	 	<button class="fa fa-regular fa-paste clip-button" onclick="copyCodeText()" title="Copy" aria-label="Copy"></button>
 	  	<button class="fa fa-file-word-o" onclick="saveFile()" title="Save as file" aria-label="Save as file"></button>
 	</div>
 </div>
@@ -2545,10 +2545,10 @@ input[type="checkbox"] {
 Unix date: &lt;t:1917043200:D&gt;
 </code></pre>
 <discord-messages>
-    <discord-message role-color="#E67E22" author="RainbowKey">
+    <discord-message author="RainbowKey" role-color="#E67E22">
         !example
     </discord-message>
-    <discord-message verified bot author="BDFD Support" role-color="#378afa">
+    <discord-message author="BDFD Support" role-color="#378afa" bot verified>
         Unix date: <div class="discord-time-mark">January 10, 2030</div>
     </discord-message>
 </discord-messages>
@@ -2749,7 +2749,7 @@ $sendMessage[[%{DOL}%Hello\\; this is pretty cool\\; right%{DOL}%\\]]
     <discord-message author="Zubariel" role-color="#ffffff">
         !example
     </discord-message>
-    <discord-message bot role-color="#378afa" verified author="BDFD Support">
+    <discord-message verified author="BDFD Support" bot role-color="#378afa">
         [$Hello; this is pretty cool; right$]
     </discord-message>
 </discord-messages>
@@ -3068,7 +3068,7 @@ $color[#673ab7]
     <discord-message author="Zubariel" role-color="#ffffff">
         !example
     </discord-message>
-    <discord-message bot author="BDFD Support" verified role-color="#378afa">
+    <discord-message author="BDFD Support" verified role-color="#378afa" bot>
         <none>
         <discord-embed color="#673ab7" slot="embeds" embed-title="Hello">
             <discord-embed-description slot="description">
