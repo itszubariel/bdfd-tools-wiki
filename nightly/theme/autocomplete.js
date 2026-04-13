@@ -22,7 +22,9 @@ function autoSettingChange(buttonName, status) {
 
 // Main autocomplete — loads functions from functions.json
 function autocomplete() {
-  fetch('../tools/functions.json')
+  // path_to_root is injected by mdBook in index.hbs, e.g. "" or "../" or "../../"
+  var jsonPath = (typeof path_to_root !== 'undefined' ? path_to_root : '') + 'tools/functions.json';
+  fetch(jsonPath)
     .then(function(r) { return r.json(); })
     .then(function(data) { initAutocomplete(data.functions); })
     .catch(function(err) { console.warn('autocomplete: failed to load functions.json', err); });
