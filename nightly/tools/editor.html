@@ -710,14 +710,16 @@
 }
 
 #autocomplete {
+    position: absolute;
     white-space: normal;
     width: auto;
-    margin-bottom: 3rem;
-    margin-top: -1.75rem;
-    display: block !important;
-	border-radius: 10px;
-	background: var(--card-bg);
-	border: 1px solid rgba(255, 255, 255, 0.05);
+    min-width: 200px;
+    max-height: 280px;
+    overflow-y: auto;
+    border-radius: 10px;
+    background: var(--card-bg);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
 }
 
 #autocomplete span {
@@ -771,7 +773,6 @@
 		</select>
 	</div>
 	<p id="error-message"></p>
-	<p id="autocomplete"></p>
 	<div class="scriptdiv">
 		<textarea id="editor" oninput="updateStats(); checkBrackets(); bdscript2()"></textarea><br>
 	 	<button class="fa fa-regular fa-paste clip-button" onclick="copyCodeText()" title="Copy" aria-label="Copy"></button>
