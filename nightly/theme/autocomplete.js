@@ -22,12 +22,13 @@ function autoSettingChange(buttonName, status) {
 
 // Main autocomplete
 function autocomplete() {
-  const functionsHeader = Array.from(document.querySelectorAll('li.chapter-item')).find(li => li.querySelector('div')?.textContent.trim() === 'Functions');
-  if (!functionsHeader) return;
-  const sectionList = functionsHeader.nextElementSibling;
-  if (!sectionList) return;
-  const html = sectionList.innerHTML;
-  const functions = Array.from(new DOMParser().parseFromString(html, 'text/html').querySelectorAll('a')).map(a => a.textContent).filter(text => text.startsWith('$'));
+  fetch('../tools/functions.json')
+    .then(r => r.json())
+    .then(data => initAutocomplete(data.functions))
+    .catch(err => console.warn('autocomplete: failed to load functions.json', err));
+}
+
+function initAutocomplete(functions) {
   const textarea = document.getElementById('editor');
   const autocompleteOutput = document.getElementById('autocomplete');
   let cursorInactiveTimeout;
@@ -212,7 +213,7 @@ function updateAutocompleteState() {
 }
 
 document.addEventListener("DOMContentLoaded", function() {
-  if (window.location.href.includes('editor.html')) {
+  if (document.getElementById('editor')) {
     autocomplete();
     addTooltips();
     updateAutocompleteState();
