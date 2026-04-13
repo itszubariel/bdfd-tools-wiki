@@ -20,6 +20,65 @@ function autoSettingChange(buttonName, status) {
   button.style.background = status ? activeGradient : inactiveGradient;
 }
 
+// Returns {x, y} pixel position of the character at `index` inside `textarea`,
+// relative to the document (accounts for scroll, border, padding).
+function getCaretCoords(textarea, index) {
+  var mirror = document.getElementById('_caret_mirror');
+  if (!mirror) {
+    mirror = document.createElement('div');
+    mirror.id = '_caret_mirror';
+    document.body.appendChild(mirror);
+  }
+
+  // Copy every layout-affecting style from the textarea
+  var s = window.getComputedStyle(textarea);
+  var props = [
+    'boxSizing','width','height','overflowX','overflowY',
+    'borderTopWidth','borderRightWidth','borderBottomWidth','borderLeftWidth',
+    'borderTopStyle','borderRightStyle','borderBottomStyle','borderLeftStyle',
+    'paddingTop','paddingRight','paddingBottom','paddingLeft',
+    'fontStyle','fontVariant','fontWeight','fontStretch','fontSize',
+    'fontSizeAdjust','lineHeight','fontFamily','textTransform','textIndent',
+    'letterSpacing','wordSpacing','tabSize','MozTabSize','whiteSpace','wordWrap','wordBreak'
+  ];
+
+  var ms = mirror.style;
+  ms.position   = 'absolute';
+  ms.visibility = 'hidden';
+  ms.whiteSpace = 'pre-wrap';
+  ms.wordWrap   = 'break-word';
+  ms.overflow   = 'hidden';
+
+  props.forEach(function(p) { ms[p] = s[p]; });
+
+  // Position the mirror exactly over the textarea so coordinates match
+  var rect = textarea.getBoundingClientRect();
+  ms.top  = (rect.top  + window.scrollY) + 'px';
+  ms.left = (rect.left + window.scrollX) + 'px';
+
+  // Text up to the caret, then a zero-width marker span
+  var textBefore = textarea.value.substring(0, index);
+  mirror.innerHTML = '';
+
+  var pre = document.createTextNode(textBefore);
+  mirror.appendChild(pre);
+
+  var marker = document.createElement('span');
+  marker.textContent = '\u200b'; // zero-width space — gives the span real dimensions
+  mirror.appendChild(marker);
+
+  // Scroll the mirror to match the textarea's scroll position
+  mirror.scrollTop  = textarea.scrollTop;
+  mirror.scrollLeft = textarea.scrollLeft;
+
+  var markerRect = marker.getBoundingClientRect();
+
+  return {
+    x: markerRect.left + window.scrollX,
+    y: markerRect.top  + window.scrollY
+  };
+}
+
 // Main autocomplete - loads functions from functions.json
 function autocomplete() {
   var jsonPath = (typeof path_to_root !== 'undefined' ? path_to_root : '') + 'tools/functions.json';
@@ -64,33 +123,23 @@ function initAutocomplete(functions) {
       dropdown.appendChild(span);
     });
 
-    // Position near the cursor line, not the bottom of the textarea
-    var rect = textarea.getBoundingClientRect();
-    var style = window.getComputedStyle(textarea);
-    var lineHeight = parseFloat(style.lineHeight) || parseFloat(style.fontSize) * 1.2 || 20;
-    var paddingTop = parseFloat(style.paddingTop) || 0;
-    var paddingLeft = parseFloat(style.paddingLeft) || 0;
-    var charWidth = parseFloat(style.fontSize) * 0.6;
+    // Use mirror div to get the true pixel position of the $ character
+    var coords = getCaretCoords(textarea, dollarIndex);
+    var lineHeight = parseFloat(window.getComputedStyle(textarea).lineHeight) || 20;
 
-    var textBefore = inputText.substring(0, cursorPosition);
-    var lines = textBefore.split('\n');
-    var lineIndex = lines.length - 1;
-    var currentLine = lines[lineIndex];
-
-    // Cursor X based on current line char count; cursor Y accounts for textarea.scrollTop
-    var cursorX = rect.left + window.scrollX + paddingLeft + currentLine.length * charWidth;
-    var cursorY = rect.top + window.scrollY + paddingTop + (lineIndex + 1) * lineHeight - textarea.scrollTop;
-
-    // Clamp to viewport width
     var dropdownWidth = 220;
-    var maxLeft = window.scrollX + window.innerWidth - dropdownWidth - 8;
-    cursorX = Math.min(cursorX, maxLeft);
-    cursorX = Math.max(cursorX, window.scrollX + 4);
+    var left = coords.x;
+    var top  = coords.y + lineHeight + 2;
 
-    dropdown.style.left = cursorX + 'px';
-    dropdown.style.top = (cursorY + 4) + 'px';
+    // Clamp so the dropdown never goes off-screen to the right
+    var maxLeft = window.scrollX + window.innerWidth - dropdownWidth - 8;
+    left = Math.min(left, maxLeft);
+    left = Math.max(left, window.scrollX + 4);
+
+    dropdown.style.left     = left + 'px';
+    dropdown.style.top      = top  + 'px';
     dropdown.style.minWidth = dropdownWidth + 'px';
-    dropdown.style.display = 'block';
+    dropdown.style.display  = 'block';
 
     clearTimeout(hideTimer);
     hideTimer = setTimeout(hide, 10000);
@@ -187,13 +236,10 @@ function addTooltips() {
     }
 
     if (tooltipText) {
-      var rect = textarea.getBoundingClientRect();
-      var style = window.getComputedStyle(textarea);
-      var lineHeight = parseInt(style.lineHeight) || 16;
-      var paddingTop = parseInt(style.paddingTop) || 0;
-      var lines = text.substring(0, cursor).split('\n').length;
-      tooltip.style.left = (rect.left + window.scrollX + cursor * 8) + 'px';
-      tooltip.style.top = (rect.top + window.scrollY + paddingTop + lines * lineHeight + 4) + 'px';
+      var coords = getCaretCoords(textarea, cursor);
+      var lineHeight = parseFloat(window.getComputedStyle(textarea).lineHeight) || 20;
+      tooltip.style.left = coords.x + 'px';
+      tooltip.style.top  = (coords.y + lineHeight + 2) + 'px';
       tooltip.textContent = tooltipText;
       tooltip.style.display = 'block';
     } else {
