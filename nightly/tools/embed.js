@@ -30,27 +30,174 @@ document.addEventListener('DOMContentLoaded', () => {
       .replace(/\]/g, '\\]');
   }
 
+  function toast(msg, type) {
+    const t = document.createElement('div');
+    t.style.cssText = `
+      position:fixed; bottom:1.5rem; left:50%; transform:translateX(-50%);
+      background:${type === 'e' ? 'hsl(0deg 70% 40%)' : 'hsl(120deg 60% 30%)'};
+      color:#fff; padding:0.75rem 1.25rem; border-radius:var(--border-radius);
+      font-size:1.3rem; font-family:monospace; box-shadow:0 4px 12px rgba(0,0,0,0.4);
+      z-index:9999; max-width:90vw; text-align:center; pointer-events:auto;
+      display:flex; align-items:center; gap:0.75rem;
+    `;
+    const msg_span = document.createElement('span');
+    msg_span.textContent = msg;
+    const close = document.createElement('button');
+    close.textContent = '✕';
+    close.style.cssText = 'background:none;border:none;color:#fff;cursor:pointer;font-size:1.1rem;padding:0;line-height:1;flex-shrink:0;';
+    close.onclick = () => t.remove();
+    t.appendChild(msg_span);
+    t.appendChild(close);
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 6000);
+  }
+
   function generateEmbed() {
     error.textContent = '';
+    let errorFlag = false;
     let code = '$nomention\n';
-    
+
     // Author
-    const authorName = sanitize(document.getElementById('authorName').value);
-    const authorIcon = sanitize(document.getElementById('authorIcon').value);
-    const authorUrl = sanitize(document.getElementById('authorUrl').value);
-    if (authorName) {
-      code += `$author[${authorName}`;
-      if (authorIcon) code += `;${authorIcon}`;
-      if (authorUrl) code += `;${authorUrl}`;
+    const authorName = document.getElementById('authorName').value.trim();
+    const authorIcon = document.getElementById('authorIcon').value.trim();
+    const authorUrl = document.getElementById('authorUrl').value.trim();
+    if ((authorIcon || authorUrl) && !authorName) {
+      toast("Can't have Author Icon/URL without Author Name", 'e');
+      errorFlag = true;
+    }
+
+    // Title
+    const titleVal = document.getElementById('title').value.trim();
+    const titleUrl = document.getElementById('titleUrl').value.trim();
+    if (titleUrl && !titleVal) {
+      toast("Can't have Title URL without Title", 'e');
+      errorFlag = true;
+    }
+
+    // Footer
+    const footerVal = document.getElementById('footer').value.trim();
+    const footerIcon = document.getElementById('footerIcon').value.trim();
+    if (footerIcon && !footerVal) {
+      toast("Can't have Footer Icon without Footer text", 'e');
+      errorFlag = true;
+    }
+
+    // Fields
+    document.querySelectorAll('.field-row').forEach((row, i) => {
+      const n = i + 1;
+      const name = row.querySelector('.field-name')?.value.trim();
+      const value = row.querySelector('.field-value')?.value.trim();
+      if (!name || !value) {
+        toast(`Field ${n}: Name and Value required`, 'e'); errorFlag = true;
+      } else if (name === value) {
+        toast(`Field ${n}: Name and Value can't be the same`, 'e'); errorFlag = true;
+      }
+    });
+
+    // Buttons
+    document.querySelectorAll('.button-row').forEach((row, i) => {
+      const n = i + 1;
+      const label = row.querySelector('.button-label')?.value.trim();
+      const customId = row.querySelector('.button-id')?.value.trim();
+      const style = row.querySelector('.button-style')?.value;
+      const url = row.querySelector('.button-url')?.value.trim();
+      if (!label) {
+        toast(`Button ${n}: Label required`, 'e'); errorFlag = true;
+      }
+      const needsUrl = style === 'link';
+      if (!customId && !url) {
+        toast(`Button ${n}: ID/URL required`, 'e'); errorFlag = true;
+      } else if (needsUrl && !url) {
+        toast(`Button ${n}: ID/URL required`, 'e'); errorFlag = true;
+      } else if (!needsUrl && !customId) {
+        toast(`Button ${n}: ID/URL required`, 'e'); errorFlag = true;
+      }
+    });
+
+    // Select menus
+    document.querySelectorAll('.select-row').forEach((row, i) => {
+      const n = i + 1;
+      const menuId = row.querySelector('.select-id')?.value.trim();
+      if (!menuId) {
+        toast(`Select Menu ${n}: Menu ID required`, 'e'); errorFlag = true; return;
+      }
+      const options = row.querySelectorAll('.select-option');
+      if (options.length === 0) {
+        toast(`Select Menu ${n}: Add at least one option`, 'e'); errorFlag = true; return;
+      }
+      options.forEach((opt, j) => {
+        const m = j + 1;
+        const label = opt.querySelector('.option-label')?.value.trim();
+        const value = opt.querySelector('.option-value')?.value.trim();
+        const desc = opt.querySelector('.option-desc')?.value.trim();
+        const emoji = opt.querySelector('.option-emoji')?.value.trim();
+        if (!label || !value || !desc) {
+          toast(`Menu ${n} Option ${m}: all fields required`, 'e'); errorFlag = true;
+        } else if (value !== menuId) {
+          toast(`Menu ${n} Option ${m}: Option ID must match Menu ID`, 'e'); errorFlag = true;
+        }
+      });
+    });
+
+    // Modals
+    document.querySelectorAll('.modal-row').forEach((row, i) => {
+      const n = i + 1;
+      const title = row.querySelector('.modal-title')?.value.trim();
+      const customId = row.querySelector('.modal-id')?.value.trim();
+      if (!title || !customId) {
+        toast(`Modal ${n}: ID and Title required`, 'e'); errorFlag = true; return;
+      }
+      const inputs = row.querySelectorAll('.modal-input');
+      if (inputs.length === 0) {
+        toast(`Modal ${n}: Add at least one text input`, 'e'); errorFlag = true; return;
+      }
+      let validInputCount = 0;
+      inputs.forEach((inp, j) => {
+        const m = j + 1;
+        const label = inp.querySelector('.input-label')?.value.trim();
+        const id = inp.querySelector('.input-id')?.value.trim();
+        const placeholder = inp.querySelector('.input-placeholder')?.value.trim() || '';
+        const minLen = parseInt(inp.querySelector('.input-minlen')?.value || '0', 10);
+        const maxLen = parseInt(inp.querySelector('.input-maxlen')?.value || '0', 10);
+        if (!label) {
+          toast(`Modal ${n} Input ${m}: Label required`, 'e'); errorFlag = true;
+        } else if (label.length > 45) {
+          toast(`Modal ${n} Input ${m}: Label max 45 chars`, 'e'); errorFlag = true;
+        }
+        if (placeholder.length > 100) {
+          toast(`Modal ${n} Input ${m}: Placeholder max 100 chars`, 'e'); errorFlag = true;
+        }
+        if (minLen > 4000 || maxLen > 4000) {
+          toast(`Modal ${n} Input ${m}: Length can't exceed 4000`, 'e'); errorFlag = true;
+        } else if (maxLen > 0 && maxLen < minLen) {
+          toast(`Modal ${n} Input ${m}: Max < Min`, 'e'); errorFlag = true;
+        }
+        if (id) validInputCount++;
+      });
+      if (validInputCount === 0) {
+        toast(`Modal ${n}: Add at least one valid input`, 'e'); errorFlag = true;
+      }
+    });
+
+    if (errorFlag) return;
+
+    // Build code — Author
+    const authorNameS = sanitize(authorName);
+    const authorIconS = sanitize(authorIcon);
+    const authorUrlS = sanitize(authorUrl);
+    if (authorNameS) {
+      code += `$author[${authorNameS}`;
+      if (authorIconS) code += `;${authorIconS}`;
+      if (authorUrlS) code += `;${authorUrlS}`;
       code += ']\n';
     }
 
     // Title
-    const title = sanitize(document.getElementById('title').value);
-    const titleUrl = sanitize(document.getElementById('titleUrl').value);
-    if (title) {
-      code += `$title[${title}`;
-      if (titleUrl) code += `;${titleUrl}`;
+    const titleS = sanitize(titleVal);
+    const titleUrlS = sanitize(titleUrl);
+    if (titleS) {
+      code += `$title[${titleS}`;
+      if (titleUrlS) code += `;${titleUrlS}`;
       code += ']\n';
     }
 
@@ -71,11 +218,11 @@ document.addEventListener('DOMContentLoaded', () => {
     code += `$color[${color}]\n`;
 
     // Footer
-    const footer = sanitize(document.getElementById('footer').value);
-    const footerIcon = sanitize(document.getElementById('footerIcon').value);
-    if (footer) {
-      code += `$footer[${footer}`;
-      if (footerIcon) code += `;${footerIcon}`;
+    const footerS = sanitize(footerVal);
+    const footerIconS = sanitize(footerIcon);
+    if (footerS) {
+      code += `$footer[${footerS}`;
+      if (footerIconS) code += `;${footerIconS}`;
       code += ']\n';
     }
 
@@ -99,7 +246,6 @@ document.addEventListener('DOMContentLoaded', () => {
       const newRow = row.querySelector('.button-newrow')?.checked ? 'yes' : 'no';
       const emoji = sanitize(row.querySelector('.button-emoji')?.value);
       const url = sanitize(row.querySelector('.button-url')?.value);
-      
       if (label || emoji) {
         if (style === 'link' && url) {
           code += `$addButton[1;${label || 'Link'};${url};${disabled};${emoji}]\n`;
@@ -116,16 +262,13 @@ document.addEventListener('DOMContentLoaded', () => {
       const customId = sanitize(row.querySelector('.select-id')?.value);
       const minValues = row.querySelector('.select-min')?.value || '1';
       const maxValues = row.querySelector('.select-max')?.value || '1';
-      
       if (customId) {
         code += `$addSelectMenu[${customId};${placeholder || 'Select an option'};${minValues};${maxValues}]\n`;
-        
         row.querySelectorAll('.select-option').forEach(opt => {
           const label = sanitize(opt.querySelector('.option-label')?.value);
           const value = sanitize(opt.querySelector('.option-value')?.value);
           const desc = sanitize(opt.querySelector('.option-desc')?.value);
           const emoji = sanitize(opt.querySelector('.option-emoji')?.value);
-          
           if (label && value) {
             code += `$addSelectMenuOption[${customId};${label};${value};${desc};${emoji}]\n`;
           }
@@ -137,17 +280,14 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.modal-row').forEach(row => {
       const title = sanitize(row.querySelector('.modal-title')?.value);
       const customId = sanitize(row.querySelector('.modal-id')?.value);
-      
       if (title && customId) {
         code += `$newModal[${customId};${title}]\n`;
-        
         row.querySelectorAll('.modal-input').forEach(input => {
           const label = sanitize(input.querySelector('.input-label')?.value);
           const id = sanitize(input.querySelector('.input-id')?.value);
           const style = input.querySelector('.input-style')?.value || 'short';
           const required = input.querySelector('.input-required')?.checked ? 'yes' : 'no';
           const placeholder = sanitize(input.querySelector('.input-placeholder')?.value);
-          
           if (label && id) {
             code += `$addTextInput[${id};${style};${label};${required};${placeholder}]\n`;
           }
@@ -371,6 +511,10 @@ document.addEventListener('DOMContentLoaded', () => {
             <option value="paragraph">Paragraph</option>
           </select>
           <input class="form-input input-placeholder" placeholder="Placeholder">
+        </div>
+        <div class="form-row" style="margin-top: 0.5rem;">
+          <input class="form-input input-minlen" type="number" placeholder="Min Length" min="0" max="4000">
+          <input class="form-input input-maxlen" type="number" placeholder="Max Length" min="0" max="4000">
         </div>
         <label class="checkbox-label">
           <input type="checkbox" class="form-checkbox input-required" checked>
