@@ -231,13 +231,13 @@ document.addEventListener('DOMContentLoaded', () => {
           <input type="checkbox" class="form-checkbox field-inline">
           <span>Inline</span>
         </label>
-        <button class="remove-btn remove-btn-red">Remove</button>
+        <button class="remove-btn-red">Remove</button>
       </div>
     `;
     row.appendChild(makeHeader(`Field #${fieldCount}`, body));
     row.appendChild(body);
     dynamicFields.appendChild(row);
-    body.querySelector('.remove-btn').onclick = () => row.remove();
+    body.querySelector('.remove-btn-red').onclick = () => row.remove();
   }
 
   function addButtonRow() {
@@ -267,13 +267,13 @@ document.addEventListener('DOMContentLoaded', () => {
           <input type="checkbox" class="form-checkbox button-disabled">
           <span>Disabled</span>
         </label>
-        <button class="remove-btn remove-btn-red">Remove</button>
+        <button class="remove-btn-red">Remove</button>
       </div>
     `;
     row.appendChild(makeHeader(`Button #${buttonCount}`, body));
     row.appendChild(body);
     dynamicFields.appendChild(row);
-    body.querySelector('.remove-btn').onclick = () => row.remove();
+    body.querySelector('.remove-btn-red').onclick = () => row.remove();
   }
 
   function addSelectRow() {
@@ -292,7 +292,7 @@ document.addEventListener('DOMContentLoaded', () => {
       <div class="options-container" style="margin-top: 1rem;"></div>
       <div style="display: flex; gap: 0.75rem; margin-top: 0.75rem;">
         <button class="add-field-btn add-option-btn">+ Option</button>
-        <button class="remove-btn remove-btn-red">Remove Menu</button>
+        <button class="add-field-btn remove-btn-red">Remove Menu</button>
       </div>
     `;
     row.appendChild(makeHeader(`Select Menu #${selectCount}`, body));
@@ -308,7 +308,7 @@ document.addEventListener('DOMContentLoaded', () => {
       option.innerHTML = `
         <div class="option-header">
           <span class="option-title">Option #${optionCount}</span>
-          <button class="remove-btn remove-btn-red remove-btn-small">✕</button>
+          <button class="remove-btn-red remove-btn-small">✕</button>
         </div>
         <div class="form-row" style="margin-top: 0.5rem;">
           <input class="form-input option-label" placeholder="Label">
@@ -318,7 +318,7 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
       `;
       optionsContainer.appendChild(option);
-      option.querySelector('.remove-btn').onclick = () => option.remove();
+      option.querySelector('.remove-btn-red').onclick = () => option.remove();
     };
     const removeMenuBtn = body.querySelectorAll('.remove-btn-red');
     removeMenuBtn[removeMenuBtn.length - 1].onclick = () => row.remove();
@@ -338,7 +338,7 @@ document.addEventListener('DOMContentLoaded', () => {
       <div class="modal-inputs-container" style="margin-top: 1rem;"></div>
       <div style="display: flex; gap: 0.75rem; margin-top: 0.75rem;">
         <button class="add-field-btn add-modal-input-btn">+ Text Input</button>
-        <button class="remove-btn remove-btn-red">Remove Modal</button>
+        <button class="add-field-btn remove-btn-red">Remove Modal</button>
       </div>
     `;
     row.appendChild(makeHeader(`Modal #${modalCount}`, body));
@@ -354,13 +354,13 @@ document.addEventListener('DOMContentLoaded', () => {
       input.innerHTML = `
         <div class="option-header">
           <span class="option-title">Text Input #${inputCount}</span>
-          <button class="remove-btn remove-btn-red remove-btn-small">✕</button>
+          <button class="remove-btn-red remove-btn-small">✕</button>
         </div>
         <div class="form-row" style="margin-top: 0.5rem;">
           <input class="form-input input-label" placeholder="Label">
           <input class="form-input input-id" placeholder="Input ID">
           <select class="form-input input-style">
-            <option value="short">Short</option> 
+            <option value="short">Short</option>
             <option value="paragraph">Paragraph</option>
           </select>
           <input class="form-input input-placeholder" placeholder="Placeholder">
@@ -371,7 +371,7 @@ document.addEventListener('DOMContentLoaded', () => {
         </label>
       `;
       inputsContainer.appendChild(input);
-      input.querySelector('.remove-btn').onclick = () => input.remove();
+      input.querySelector('.remove-btn-red').onclick = () => input.remove();
     };
     const btns = body.querySelectorAll('.remove-btn-red');
     btns[btns.length - 1].onclick = () => row.remove();
