@@ -391,6 +391,17 @@
 .remove-btn:hover {
 	background: hsl(0deg 0% 60% / 40%);
 }
+select.form-input {
+	appearance: none;
+	-webkit-appearance: none;
+	background-color: hsl(0deg 0% 100% / 7%);
+	color: #fff;
+	cursor: pointer;
+}
+select.form-input option {
+	background-color: hsl(220deg 15% 18%);
+	color: #fff;
+}
 .flex-buttons {
 	display: flex;
 	gap: 0;
@@ -401,12 +412,14 @@
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
+	min-height: 2.5rem;
 	margin-bottom: 0.75rem;
 }
 .component-title {
 	font-size: 1.3rem;
 	font-weight: 600;
 	color: rgba(255, 255, 255, 0.9);
+	line-height: 1;
 }
 .collapse-btn {
 	background: hsl(220deg 80% 50% / 70%);
@@ -418,6 +431,7 @@
 	font-size: 0.9rem;
 	font-weight: 600;
 	transition: all 0.2s;
+	flex-shrink: 0;
 }
 .collapse-btn:hover {
 	background: hsl(220deg 80% 60% / 90%);
@@ -434,22 +448,33 @@
 	color: rgba(255, 255, 255, 0.75);
 }
 .remove-btn-red {
-	background: hsl(0deg 70% 45% / 70%);
+	outline: none;
+	touch-action: manipulation;
+	-webkit-user-select: none;
+	user-select: none;
+	background: hsl(0deg 70% 40% / 80%);
+	padding-left: 1rem;
+	padding-right: 1rem;
+	height: 4rem;
+	font-size: 1.5rem;
+	font-weight: 500;
+	border-radius: var(--border-radius);
 	color: #fff;
 	border: none;
-	padding: 0.625rem 1rem;
-	border-radius: var(--border-radius);
 	cursor: pointer;
-	font-size: 1rem;
-	font-weight: 500;
-	transition: all 0.2s;
+	transition: all 0.3s;
+	box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
 }
 .remove-btn-red:hover {
-	background: hsl(0deg 70% 55% / 90%);
+	background: hsl(0deg 70% 50% / 90%);
+	transform: translateY(-1px);
+	box-shadow: 0 8px 15px rgba(0, 0, 0, 0.4);
 }
 .remove-btn-small {
+	height: auto;
 	padding: 0.2rem 0.6rem;
 	font-size: 0.85rem;
+	box-shadow: none;
 }
 </style>
 <p>Here you can make embeds using the respective text inputs.</p>
