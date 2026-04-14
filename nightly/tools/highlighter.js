@@ -249,18 +249,10 @@
       const input = document.createElement('input');
       input.type = 'color';
       input.value = hexInput.value;
-      input.style.cssText = 'position:fixed;top:-100px;left:-100px;opacity:0;width:1px;height:1px;';
-      document.body.appendChild(input);
-      input.oninput = function () {
-        hexInput.value = input.value;
-        colorPickerVisual.style.backgroundColor = input.value;
-        updateModalPreview();
-      };
       input.onchange = function () {
         hexInput.value = input.value;
         colorPickerVisual.style.backgroundColor = input.value;
         updateModalPreview();
-        document.body.removeChild(input);
       };
       input.click();
     };
