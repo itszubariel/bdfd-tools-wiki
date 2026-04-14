@@ -206,7 +206,11 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    if (hasErrors) return;
+    if (hasErrors) {
+      const first = document.querySelector('.inline-error');
+      if (first) first.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
 
     // Build code — Author
     const authorNameS = sanitize(authorName);
@@ -496,7 +500,7 @@ document.addEventListener('DOMContentLoaded', () => {
       titleSpan.className = 'option-title';
       titleSpan.textContent = `Option #${optionCount}`;
       const btnGroup = document.createElement('div');
-      btnGroup.style.cssText = 'display:flex;gap:0.4rem;align-items:center;';
+      btnGroup.style.cssText = 'display:flex;gap:0.75rem;align-items:center;';
       const collapseBtn = document.createElement('button');
       collapseBtn.className = 'collapse-btn';
       collapseBtn.textContent = '▲';
@@ -575,7 +579,7 @@ document.addEventListener('DOMContentLoaded', () => {
       titleSpan.className = 'option-title';
       titleSpan.textContent = `Text Input #${inputCount}`;
       const btnGroup = document.createElement('div');
-      btnGroup.style.cssText = 'display:flex;gap:0.4rem;align-items:center;';
+      btnGroup.style.cssText = 'display:flex;gap:0.75rem;align-items:center;';
       const collapseBtn = document.createElement('button');
       collapseBtn.className = 'collapse-btn';
       collapseBtn.textContent = '▲';
