@@ -32,23 +32,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function clearFieldErrors() {
     document.querySelectorAll('.inline-error').forEach(el => el.remove());
-    document.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error'));
   }
 
-  function fieldError(el, msg) {
-    if (!el) return;
-    el.classList.add('input-error');
-    const span = document.createElement('span');
-    span.className = 'inline-error';
-    span.textContent = msg;
-    el.insertAdjacentElement('afterend', span);
-  }
-
+  // Appends a small error line after a given container element (never inside a grid)
   function rowError(container, msg) {
     const span = document.createElement('div');
-    span.className = 'inline-error inline-error-row';
+    span.className = 'inline-error';
     span.textContent = msg;
-    container.insertAdjacentElement('afterbegin', span);
+    container.insertAdjacentElement('afterend', span);
+  }
+
+  // For static top-level inputs: show error after the parent .form-row
+  function formRowError(inputEl, msg) {
+    if (!inputEl) return;
+    const formRow = inputEl.closest('.form-row') || inputEl.parentElement;
+    rowError(formRow, msg);
+  }
+
+  // For dynamic component rows: append error inside the body, after the relevant .form-row
+  function bodyRowError(formRowEl, msg) {
+    if (!formRowEl) return;
+    rowError(formRowEl, msg);
   }
 
   function generateEmbed() {
@@ -62,7 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const authorIcon = document.getElementById('authorIcon').value.trim();
     const authorUrl = document.getElementById('authorUrl').value.trim();
     if ((authorIcon || authorUrl) && !authorName) {
-      fieldError(document.getElementById('authorName'), "Author Name required when Icon/URL is set");
+      formRowError(document.getElementById('authorName'), "Author Name required when Icon/URL is set");
       hasErrors = true;
     }
 
@@ -70,7 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const titleVal = document.getElementById('title').value.trim();
     const titleUrl = document.getElementById('titleUrl').value.trim();
     if (titleUrl && !titleVal) {
-      fieldError(document.getElementById('title'), "Title required when Title URL is set");
+      formRowError(document.getElementById('title'), "Title required when Title URL is set");
       hasErrors = true;
     }
 
@@ -78,7 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const footerVal = document.getElementById('footer').value.trim();
     const footerIcon = document.getElementById('footerIcon').value.trim();
     if (footerIcon && !footerVal) {
-      fieldError(document.getElementById('footer'), "Footer Text required when Footer Icon is set");
+      formRowError(document.getElementById('footer'), "Footer Text required when Footer Icon is set");
       hasErrors = true;
     }
 
@@ -89,10 +93,13 @@ document.addEventListener('DOMContentLoaded', () => {
       const valueEl = row.querySelector('.field-value');
       const name = nameEl?.value.trim();
       const value = valueEl?.value.trim();
-      if (!name) { fieldError(nameEl, `Field ${n}: Name required`); hasErrors = true; }
-      if (!value) { fieldError(valueEl, `Field ${n}: Value required`); hasErrors = true; }
-      if (name && value && name === value) {
-        fieldError(valueEl, `Field ${n}: Name and Value can't be the same`); hasErrors = true;
+      const formRow = row.querySelector('.form-row');
+      if (!name || !value) {
+        bodyRowError(formRow, `Field ${n}: Name and Value required`);
+        hasErrors = true;
+      } else if (name === value) {
+        bodyRowError(formRow, `Field ${n}: Name and Value can't be the same`);
+        hasErrors = true;
       }
     });
 
@@ -106,9 +113,10 @@ document.addEventListener('DOMContentLoaded', () => {
       const label = labelEl?.value.trim();
       const customId = idEl?.value.trim();
       const url = urlEl?.value.trim();
-      if (!label) { fieldError(labelEl, `Button ${n}: Label required`); hasErrors = true; }
-      if (style === 'link' && !url) { fieldError(urlEl, `Button ${n}: URL required for Link style`); hasErrors = true; }
-      else if (style !== 'link' && !customId) { fieldError(idEl, `Button ${n}: Custom ID required`); hasErrors = true; }
+      const formRow = row.querySelector('.form-row');
+      if (!label) { bodyRowError(formRow, `Button ${n}: Label required`); hasErrors = true; }
+      if (style === 'link' && !url) { bodyRowError(formRow, `Button ${n}: URL required for Link style`); hasErrors = true; }
+      else if (style !== 'link' && !customId) { bodyRowError(formRow, `Button ${n}: Custom ID required`); hasErrors = true; }
     });
 
     // Select menus
@@ -116,84 +124,84 @@ document.addEventListener('DOMContentLoaded', () => {
       const n = i + 1;
       const idEl = row.querySelector('.select-id');
       const menuId = idEl?.value.trim();
-      const body = row.querySelector('.component-body');
+      const formRow = row.querySelector('.form-row');
       if (!menuId) {
-        fieldError(idEl, `Select Menu ${n}: Menu ID required`);
+        bodyRowError(formRow, `Select Menu ${n}: Menu ID required`);
         hasErrors = true; return;
       }
       const options = row.querySelectorAll('.select-option');
       if (options.length === 0) {
-        rowError(body, `Select Menu ${n}: Add at least one option`);
+        bodyRowError(formRow, `Select Menu ${n}: Add at least one option`);
         hasErrors = true; return;
       }
       options.forEach((opt, j) => {
         const m = j + 1;
-        const labelEl = opt.querySelector('.option-label');
-        const valueEl = opt.querySelector('.option-value');
-        const descEl = opt.querySelector('.option-desc');
-        const label = labelEl?.value.trim();
-        const value = valueEl?.value.trim();
-        const desc = descEl?.value.trim();
-        if (!label) { fieldError(labelEl, `Menu ${n} Option ${m}: Label required`); hasErrors = true; }
-        if (!value) { fieldError(valueEl, `Menu ${n} Option ${m}: Value required`); hasErrors = true; }
-        if (!desc) { fieldError(descEl, `Menu ${n} Option ${m}: Description required`); hasErrors = true; }
-        if (value && value !== menuId) { fieldError(valueEl, `Menu ${n} Option ${m}: Value must match Menu ID`); hasErrors = true; }
+        const optFormRow = opt.querySelector('.form-row');
+        const label = opt.querySelector('.option-label')?.value.trim();
+        const value = opt.querySelector('.option-value')?.value.trim();
+        const desc = opt.querySelector('.option-desc')?.value.trim();
+        if (!label || !value || !desc) {
+          bodyRowError(optFormRow, `Menu ${n} Option ${m}: Label, Value and Description required`);
+          hasErrors = true;
+        } else if (value !== menuId) {
+          bodyRowError(optFormRow, `Menu ${n} Option ${m}: Value must match Menu ID`);
+          hasErrors = true;
+        }
       });
     });
 
-    // Modals
-    const allModalIds = [];
+    // Modals — collect all IDs first for duplicate check
+    const modalIdMap = {};
+    document.querySelectorAll('.modal-row').forEach((row, i) => {
+      const id = row.querySelector('.modal-id')?.value.trim();
+      if (id) {
+        if (!modalIdMap[id]) modalIdMap[id] = [];
+        modalIdMap[id].push(i);
+      }
+    });
+
     document.querySelectorAll('.modal-row').forEach((row, i) => {
       const n = i + 1;
       const titleEl = row.querySelector('.modal-title');
       const idEl = row.querySelector('.modal-id');
       const title = titleEl?.value.trim();
       const customId = idEl?.value.trim();
-      const body = row.querySelector('.component-body');
-      if (!title) { fieldError(titleEl, `Modal ${n}: Title required`); hasErrors = true; }
-      if (!customId) { fieldError(idEl, `Modal ${n}: ID required`); hasErrors = true; }
-      if (customId) {
-        if (allModalIds.includes(customId)) {
-          fieldError(idEl, `Modal ${n}: Duplicate ID "${customId}"`); hasErrors = true;
-          // also mark the earlier modal with the same id
-          document.querySelectorAll('.modal-row').forEach((r2, i2) => {
-            if (i2 < i && r2.querySelector('.modal-id')?.value.trim() === customId) {
-              fieldError(r2.querySelector('.modal-id'), `Modal ${i2 + 1}: Duplicate ID "${customId}"`);
-            }
-          });
-        }
-        allModalIds.push(customId);
+      const formRow = row.querySelector('.form-row');
+      if (!title || !customId) {
+        bodyRowError(formRow, `Modal ${n}: ID and Title required`);
+        hasErrors = true;
+      }
+      if (customId && modalIdMap[customId]?.length > 1) {
+        bodyRowError(formRow, `Modal ${n}: Duplicate ID "${customId}"`);
+        hasErrors = true;
       }
       if (!title || !customId) return;
       const inputs = row.querySelectorAll('.modal-input');
       if (inputs.length === 0) {
-        rowError(body, `Modal ${n}: Add at least one text input`);
+        bodyRowError(formRow, `Modal ${n}: Add at least one text input`);
         hasErrors = true; return;
       }
       let validInputCount = 0;
       inputs.forEach((inp, j) => {
         const m = j + 1;
-        const labelEl = inp.querySelector('.input-label');
-        const idInpEl = inp.querySelector('.input-id');
-        const placeholderEl = inp.querySelector('.input-placeholder');
-        const minLenEl = inp.querySelector('.input-minlen');
-        const maxLenEl = inp.querySelector('.input-maxlen');
-        const label = labelEl?.value.trim();
-        const id = idInpEl?.value.trim();
-        const placeholder = placeholderEl?.value.trim() || '';
-        const minLen = parseInt(minLenEl?.value || '0', 10);
-        const maxLen = parseInt(maxLenEl?.value || '0', 10);
-        if (!label) { fieldError(labelEl, `Modal ${n} Input ${m}: Label required`); hasErrors = true; }
-        else if (label.length > 45) { fieldError(labelEl, `Modal ${n} Input ${m}: Label max 45 chars`); hasErrors = true; }
-        if (placeholder.length > 100) { fieldError(placeholderEl, `Modal ${n} Input ${m}: Placeholder max 100 chars`); hasErrors = true; }
-        if (minLen > 4000) { fieldError(minLenEl, `Modal ${n} Input ${m}: Min can't exceed 4000`); hasErrors = true; }
-        if (maxLen > 4000) { fieldError(maxLenEl, `Modal ${n} Input ${m}: Max can't exceed 4000`); hasErrors = true; }
-        if (!minLen && !maxLen) {} // both 0 is fine
-        else if (maxLen > 0 && maxLen < minLen) { fieldError(maxLenEl, `Modal ${n} Input ${m}: Max < Min`); hasErrors = true; }
+        const inpFormRow = inp.querySelector('.form-row');
+        const label = inp.querySelector('.input-label')?.value.trim();
+        const id = inp.querySelector('.input-id')?.value.trim();
+        const placeholder = inp.querySelector('.input-placeholder')?.value.trim() || '';
+        const minLen = parseInt(inp.querySelector('.input-minlen')?.value || '0', 10);
+        const maxLen = parseInt(inp.querySelector('.input-maxlen')?.value || '0', 10);
+        const lenRow = inp.querySelectorAll('.form-row')[1];
+        if (!label) { bodyRowError(inpFormRow, `Modal ${n} Input ${m}: Label required`); hasErrors = true; }
+        else if (label.length > 45) { bodyRowError(inpFormRow, `Modal ${n} Input ${m}: Label max 45 chars`); hasErrors = true; }
+        if (placeholder.length > 100) { bodyRowError(inpFormRow, `Modal ${n} Input ${m}: Placeholder max 100 chars`); hasErrors = true; }
+        if (lenRow) {
+          if (minLen > 4000 || maxLen > 4000) { bodyRowError(lenRow, `Modal ${n} Input ${m}: Length can't exceed 4000`); hasErrors = true; }
+          else if (maxLen > 0 && maxLen < minLen) { bodyRowError(lenRow, `Modal ${n} Input ${m}: Max < Min`); hasErrors = true; }
+        }
         if (id) validInputCount++;
       });
       if (validInputCount === 0) {
-        rowError(body, `Modal ${n}: Add at least one valid input (Input ID required)`);
+        bodyRowError(row.querySelector('.form-row'), `Modal ${n}: All inputs need an Input ID`);
         hasErrors = true;
       }
     });
