@@ -96,6 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const customId = sanitize(row.querySelector('.button-id')?.value);
       const style = row.querySelector('.button-style')?.value || 'primary';
       const disabled = row.querySelector('.button-disabled')?.checked ? 'yes' : 'no';
+      const newRow = row.querySelector('.button-newrow')?.checked ? 'yes' : 'no';
       const emoji = sanitize(row.querySelector('.button-emoji')?.value);
       const url = sanitize(row.querySelector('.button-url')?.value);
       
@@ -104,7 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
           code += `$addButton[1;${label || 'Link'};${url};${disabled};${emoji}]\n`;
         } else if (customId) {
           const styleNum = {primary: 1, secondary: 2, success: 3, danger: 4}[style] || 1;
-          code += `$addButton[no;${label};${styleNum};${customId};${disabled};${emoji}]\n`;
+          code += `$addButton[${newRow};${label};${styleNum};${customId};${disabled};${emoji}]\n`;
         }
       }
     });
@@ -231,7 +232,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <input type="checkbox" class="form-checkbox field-inline">
           <span>Inline</span>
         </label>
-        <button class="remove-btn-red">Remove</button>
+        <button class="remove-btn-red remove-btn-small">Remove</button>
       </div>
     `;
     row.appendChild(makeHeader(`Field #${fieldCount}`, body));
@@ -263,11 +264,17 @@ document.addEventListener('DOMContentLoaded', () => {
         <input class="form-input button-url" placeholder="URL (for Link style)">
       </div>
       <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.75rem;">
-        <label class="checkbox-label" style="margin: 0;">
-          <input type="checkbox" class="form-checkbox button-disabled">
-          <span>Disabled</span>
-        </label>
-        <button class="remove-btn-red">Remove</button>
+        <div style="display: flex; gap: 1.5rem; align-items: center;">
+          <label class="checkbox-label" style="margin: 0;">
+            <input type="checkbox" class="form-checkbox button-disabled">
+            <span>Disabled</span>
+          </label>
+          <label class="checkbox-label" style="margin: 0;">
+            <input type="checkbox" class="form-checkbox button-newrow">
+            <span>New Row</span>
+          </label>
+        </div>
+        <button class="remove-btn-red remove-btn-small">Remove</button>
       </div>
     `;
     row.appendChild(makeHeader(`Button #${buttonCount}`, body));
