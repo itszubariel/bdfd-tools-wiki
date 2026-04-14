@@ -481,20 +481,41 @@ document.addEventListener('DOMContentLoaded', () => {
       optionCount++;
       const option = document.createElement('div');
       option.className = 'select-option';
-      option.innerHTML = `
-        <div class="option-header">
-          <span class="option-title">Option #${optionCount}</span>
-          <button class="remove-btn-red remove-btn-small">✕</button>
-        </div>
-        <div class="form-row" style="margin-top: 0.5rem;">
-          <input class="form-input option-label" placeholder="Label">
-          <input class="form-input option-value" placeholder="Value">
-          <input class="form-input option-desc" placeholder="Description">
-          <input class="form-input option-emoji" placeholder="Emoji">
-        </div>
+      const optBody = document.createElement('div');
+      optBody.className = 'form-row';
+      optBody.style.marginTop = '0.5rem';
+      optBody.innerHTML = `
+        <input class="form-input option-label" placeholder="Label">
+        <input class="form-input option-value" placeholder="Value">
+        <input class="form-input option-desc" placeholder="Description">
+        <input class="form-input option-emoji" placeholder="Emoji">
       `;
+      const optHeader = document.createElement('div');
+      optHeader.className = 'option-header';
+      const titleSpan = document.createElement('span');
+      titleSpan.className = 'option-title';
+      titleSpan.textContent = `Option #${optionCount}`;
+      const btnGroup = document.createElement('div');
+      btnGroup.style.cssText = 'display:flex;gap:0.4rem;align-items:center;';
+      const collapseBtn = document.createElement('button');
+      collapseBtn.className = 'collapse-btn';
+      collapseBtn.textContent = '▲';
+      collapseBtn.onclick = () => {
+        const hidden = optBody.style.display === 'none';
+        optBody.style.display = hidden ? '' : 'none';
+        collapseBtn.textContent = hidden ? '▲' : '▼';
+      };
+      const removeBtn = document.createElement('button');
+      removeBtn.className = 'remove-btn-red remove-btn-small';
+      removeBtn.textContent = '✕';
+      removeBtn.onclick = () => option.remove();
+      btnGroup.appendChild(collapseBtn);
+      btnGroup.appendChild(removeBtn);
+      optHeader.appendChild(titleSpan);
+      optHeader.appendChild(btnGroup);
+      option.appendChild(optHeader);
+      option.appendChild(optBody);
       optionsContainer.appendChild(option);
-      option.querySelector('.remove-btn-red').onclick = () => option.remove();
     };
     const removeMenuBtn = body.querySelectorAll('.remove-btn-red');
     removeMenuBtn[removeMenuBtn.length - 1].onclick = () => row.remove();
@@ -527,11 +548,9 @@ document.addEventListener('DOMContentLoaded', () => {
       inputCount++;
       const input = document.createElement('div');
       input.className = 'modal-input';
-      input.innerHTML = `
-        <div class="option-header">
-          <span class="option-title">Text Input #${inputCount}</span>
-          <button class="remove-btn-red remove-btn-small">✕</button>
-        </div>
+      const inpBody = document.createElement('div');
+      inpBody.className = 'modal-input-body';
+      inpBody.innerHTML = `
         <div class="form-row" style="margin-top: 0.5rem;">
           <input class="form-input input-label" placeholder="Label">
           <input class="form-input input-id" placeholder="Input ID">
@@ -550,8 +569,32 @@ document.addEventListener('DOMContentLoaded', () => {
           <span>Required</span>
         </label>
       `;
+      const inpHeader = document.createElement('div');
+      inpHeader.className = 'option-header';
+      const titleSpan = document.createElement('span');
+      titleSpan.className = 'option-title';
+      titleSpan.textContent = `Text Input #${inputCount}`;
+      const btnGroup = document.createElement('div');
+      btnGroup.style.cssText = 'display:flex;gap:0.4rem;align-items:center;';
+      const collapseBtn = document.createElement('button');
+      collapseBtn.className = 'collapse-btn';
+      collapseBtn.textContent = '▲';
+      collapseBtn.onclick = () => {
+        const hidden = inpBody.style.display === 'none';
+        inpBody.style.display = hidden ? '' : 'none';
+        collapseBtn.textContent = hidden ? '▲' : '▼';
+      };
+      const removeBtn = document.createElement('button');
+      removeBtn.className = 'remove-btn-red remove-btn-small';
+      removeBtn.textContent = '✕';
+      removeBtn.onclick = () => input.remove();
+      btnGroup.appendChild(collapseBtn);
+      btnGroup.appendChild(removeBtn);
+      inpHeader.appendChild(titleSpan);
+      inpHeader.appendChild(btnGroup);
+      input.appendChild(inpHeader);
+      input.appendChild(inpBody);
       inputsContainer.appendChild(input);
-      input.querySelector('.remove-btn-red').onclick = () => input.remove();
     };
     const btns = body.querySelectorAll('.remove-btn-red');
     btns[btns.length - 1].onclick = () => row.remove();
