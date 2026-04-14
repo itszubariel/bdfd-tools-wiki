@@ -196,10 +196,32 @@ document.addEventListener('DOMContentLoaded', () => {
     error.textContent = '';
   }
 
+  function makeHeader(title, body) {
+    const header = document.createElement('div');
+    header.className = 'component-header';
+    const titleEl = document.createElement('span');
+    titleEl.className = 'component-title';
+    titleEl.textContent = title;
+    const collapseBtn = document.createElement('button');
+    collapseBtn.className = 'collapse-btn';
+    collapseBtn.textContent = '▲';
+    collapseBtn.onclick = () => {
+      const collapsed = body.style.display === 'none';
+      body.style.display = collapsed ? '' : 'none';
+      collapseBtn.textContent = collapsed ? '▲' : '▼';
+    };
+    header.appendChild(titleEl);
+    header.appendChild(collapseBtn);
+    return header;
+  }
+
   function addFieldRow() {
+    fieldCount++;
     const row = document.createElement('div');
     row.className = 'field-row';
-    row.innerHTML = `
+    const body = document.createElement('div');
+    body.className = 'component-body';
+    body.innerHTML = `
       <div class="form-row">
         <input class="form-input field-name" placeholder="Field Name">
         <input class="form-input field-value" placeholder="Field Value">
@@ -209,17 +231,22 @@ document.addEventListener('DOMContentLoaded', () => {
           <input type="checkbox" class="form-checkbox field-inline">
           <span>Inline</span>
         </label>
-        <button class="remove-btn">Remove</button>
+        <button class="remove-btn remove-btn-red">Remove</button>
       </div>
     `;
+    row.appendChild(makeHeader(`Field #${fieldCount}`, body));
+    row.appendChild(body);
     dynamicFields.appendChild(row);
-    row.querySelector('.remove-btn').onclick = () => row.remove();
+    body.querySelector('.remove-btn').onclick = () => row.remove();
   }
 
   function addButtonRow() {
+    buttonCount++;
     const row = document.createElement('div');
     row.className = 'button-row';
-    row.innerHTML = `
+    const body = document.createElement('div');
+    body.className = 'component-body';
+    body.innerHTML = `
       <div class="form-row">
         <input class="form-input button-label" placeholder="Button Label">
         <input class="form-input button-id" placeholder="Custom ID">
@@ -240,17 +267,22 @@ document.addEventListener('DOMContentLoaded', () => {
           <input type="checkbox" class="form-checkbox button-disabled">
           <span>Disabled</span>
         </label>
-        <button class="remove-btn">Remove</button>
+        <button class="remove-btn remove-btn-red">Remove</button>
       </div>
     `;
+    row.appendChild(makeHeader(`Button #${buttonCount}`, body));
+    row.appendChild(body);
     dynamicFields.appendChild(row);
-    row.querySelector('.remove-btn').onclick = () => row.remove();
+    body.querySelector('.remove-btn').onclick = () => row.remove();
   }
 
   function addSelectRow() {
+    selectCount++;
     const row = document.createElement('div');
     row.className = 'select-row';
-    row.innerHTML = `
+    const body = document.createElement('div');
+    body.className = 'component-body';
+    body.innerHTML = `
       <div class="form-row">
         <input class="form-input select-placeholder" placeholder="Placeholder">
         <input class="form-input select-id" placeholder="Custom ID">
@@ -260,16 +292,24 @@ document.addEventListener('DOMContentLoaded', () => {
       <div class="options-container" style="margin-top: 1rem;"></div>
       <div style="display: flex; gap: 0.75rem; margin-top: 0.75rem;">
         <button class="add-field-btn add-option-btn">+ Option</button>
-        <button class="remove-btn">Remove Menu</button>
+        <button class="remove-btn remove-btn-red">Remove Menu</button>
       </div>
     `;
+    row.appendChild(makeHeader(`Select Menu #${selectCount}`, body));
+    row.appendChild(body);
     dynamicFields.appendChild(row);
-    
-    const optionsContainer = row.querySelector('.options-container');
-    row.querySelector('.add-option-btn').onclick = () => {
+
+    let optionCount = 0;
+    const optionsContainer = body.querySelector('.options-container');
+    body.querySelector('.add-option-btn').onclick = () => {
+      optionCount++;
       const option = document.createElement('div');
       option.className = 'select-option';
       option.innerHTML = `
+        <div class="option-header">
+          <span class="option-title">Option #${optionCount}</span>
+          <button class="remove-btn remove-btn-red remove-btn-small">✕</button>
+        </div>
         <div class="form-row" style="margin-top: 0.5rem;">
           <input class="form-input option-label" placeholder="Label">
           <input class="form-input option-value" placeholder="Value">
@@ -278,14 +318,19 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
       `;
       optionsContainer.appendChild(option);
+      option.querySelector('.remove-btn').onclick = () => option.remove();
     };
-    row.querySelector('.remove-btn').onclick = () => row.remove();
+    const removeMenuBtn = body.querySelectorAll('.remove-btn-red');
+    removeMenuBtn[removeMenuBtn.length - 1].onclick = () => row.remove();
   }
 
   function addModalRow() {
+    modalCount++;
     const row = document.createElement('div');
     row.className = 'modal-row';
-    row.innerHTML = `
+    const body = document.createElement('div');
+    body.className = 'component-body';
+    body.innerHTML = `
       <div class="form-row">
         <input class="form-input modal-title" placeholder="Modal Title">
         <input class="form-input modal-id" placeholder="Custom ID">
@@ -293,16 +338,24 @@ document.addEventListener('DOMContentLoaded', () => {
       <div class="modal-inputs-container" style="margin-top: 1rem;"></div>
       <div style="display: flex; gap: 0.75rem; margin-top: 0.75rem;">
         <button class="add-field-btn add-modal-input-btn">+ Text Input</button>
-        <button class="remove-btn">Remove Modal</button>
+        <button class="remove-btn remove-btn-red">Remove Modal</button>
       </div>
     `;
+    row.appendChild(makeHeader(`Modal #${modalCount}`, body));
+    row.appendChild(body);
     dynamicFields.appendChild(row);
-    
-    const inputsContainer = row.querySelector('.modal-inputs-container');
-    row.querySelector('.add-modal-input-btn').onclick = () => {
+
+    let inputCount = 0;
+    const inputsContainer = body.querySelector('.modal-inputs-container');
+    body.querySelector('.add-modal-input-btn').onclick = () => {
+      inputCount++;
       const input = document.createElement('div');
       input.className = 'modal-input';
       input.innerHTML = `
+        <div class="option-header">
+          <span class="option-title">Text Input #${inputCount}</span>
+          <button class="remove-btn remove-btn-red remove-btn-small">✕</button>
+        </div>
         <div class="form-row" style="margin-top: 0.5rem;">
           <input class="form-input input-label" placeholder="Label">
           <input class="form-input input-id" placeholder="Input ID">
@@ -318,7 +371,9 @@ document.addEventListener('DOMContentLoaded', () => {
         </label>
       `;
       inputsContainer.appendChild(input);
+      input.querySelector('.remove-btn').onclick = () => input.remove();
     };
-    row.querySelector('.remove-btn').onclick = () => row.remove();
+    const btns = body.querySelectorAll('.remove-btn-red');
+    btns[btns.length - 1].onclick = () => row.remove();
   }
 });
