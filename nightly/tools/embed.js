@@ -360,7 +360,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <input class="form-input input-label" placeholder="Label">
           <input class="form-input input-id" placeholder="Input ID">
           <select class="form-input input-style">
-            <option value="short">Short</option>
+            <option value="short">Short</option> 
             <option value="paragraph">Paragraph</option>
           </select>
           <input class="form-input input-placeholder" placeholder="Placeholder">
