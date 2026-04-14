@@ -30,99 +30,175 @@ document.addEventListener('DOMContentLoaded', () => {
       .replace(/\]/g, '\\]');
   }
 
+  function clearFieldErrors() {
+    document.querySelectorAll('.inline-error').forEach(el => el.remove());
+    document.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error'));
+  }
+
+  function fieldError(el, msg) {
+    if (!el) return;
+    el.classList.add('input-error');
+    const span = document.createElement('span');
+    span.className = 'inline-error';
+    span.textContent = msg;
+    el.insertAdjacentElement('afterend', span);
+  }
+
+  function rowError(container, msg) {
+    const span = document.createElement('div');
+    span.className = 'inline-error inline-error-row';
+    span.textContent = msg;
+    container.insertAdjacentElement('afterbegin', span);
+  }
+
   function generateEmbed() {
     error.textContent = '';
-    const errors = [];
+    clearFieldErrors();
+    let hasErrors = false;
     let code = '$nomention\n';
 
     // Author
     const authorName = document.getElementById('authorName').value.trim();
     const authorIcon = document.getElementById('authorIcon').value.trim();
     const authorUrl = document.getElementById('authorUrl').value.trim();
-    if ((authorIcon || authorUrl) && !authorName)
-      errors.push("Can't have Author Icon/URL without Author Name");
+    if ((authorIcon || authorUrl) && !authorName) {
+      fieldError(document.getElementById('authorName'), "Author Name required when Icon/URL is set");
+      hasErrors = true;
+    }
 
     // Title
     const titleVal = document.getElementById('title').value.trim();
     const titleUrl = document.getElementById('titleUrl').value.trim();
-    if (titleUrl && !titleVal)
-      errors.push("Can't have Title URL without Title");
+    if (titleUrl && !titleVal) {
+      fieldError(document.getElementById('title'), "Title required when Title URL is set");
+      hasErrors = true;
+    }
 
     // Footer
     const footerVal = document.getElementById('footer').value.trim();
     const footerIcon = document.getElementById('footerIcon').value.trim();
-    if (footerIcon && !footerVal)
-      errors.push("Can't have Footer Icon without Footer text");
+    if (footerIcon && !footerVal) {
+      fieldError(document.getElementById('footer'), "Footer Text required when Footer Icon is set");
+      hasErrors = true;
+    }
 
     // Fields
     document.querySelectorAll('.field-row').forEach((row, i) => {
       const n = i + 1;
-      const name = row.querySelector('.field-name')?.value.trim();
-      const value = row.querySelector('.field-value')?.value.trim();
-      if (!name || !value) errors.push(`Field ${n}: Name and Value required`);
-      else if (name === value) errors.push(`Field ${n}: Name and Value can't be the same`);
+      const nameEl = row.querySelector('.field-name');
+      const valueEl = row.querySelector('.field-value');
+      const name = nameEl?.value.trim();
+      const value = valueEl?.value.trim();
+      if (!name) { fieldError(nameEl, `Field ${n}: Name required`); hasErrors = true; }
+      if (!value) { fieldError(valueEl, `Field ${n}: Value required`); hasErrors = true; }
+      if (name && value && name === value) {
+        fieldError(valueEl, `Field ${n}: Name and Value can't be the same`); hasErrors = true;
+      }
     });
 
     // Buttons
     document.querySelectorAll('.button-row').forEach((row, i) => {
       const n = i + 1;
-      const label = row.querySelector('.button-label')?.value.trim();
-      const customId = row.querySelector('.button-id')?.value.trim();
+      const labelEl = row.querySelector('.button-label');
+      const idEl = row.querySelector('.button-id');
+      const urlEl = row.querySelector('.button-url');
       const style = row.querySelector('.button-style')?.value;
-      const url = row.querySelector('.button-url')?.value.trim();
-      if (!label) errors.push(`Button ${n}: Label required`);
-      const needsUrl = style === 'link';
-      if (needsUrl && !url) errors.push(`Button ${n}: ID/URL required`);
-      else if (!needsUrl && !customId) errors.push(`Button ${n}: ID/URL required`);
+      const label = labelEl?.value.trim();
+      const customId = idEl?.value.trim();
+      const url = urlEl?.value.trim();
+      if (!label) { fieldError(labelEl, `Button ${n}: Label required`); hasErrors = true; }
+      if (style === 'link' && !url) { fieldError(urlEl, `Button ${n}: URL required for Link style`); hasErrors = true; }
+      else if (style !== 'link' && !customId) { fieldError(idEl, `Button ${n}: Custom ID required`); hasErrors = true; }
     });
 
     // Select menus
     document.querySelectorAll('.select-row').forEach((row, i) => {
       const n = i + 1;
-      const menuId = row.querySelector('.select-id')?.value.trim();
-      if (!menuId) { errors.push(`Select Menu ${n}: Menu ID required`); return; }
+      const idEl = row.querySelector('.select-id');
+      const menuId = idEl?.value.trim();
+      const body = row.querySelector('.component-body');
+      if (!menuId) {
+        fieldError(idEl, `Select Menu ${n}: Menu ID required`);
+        hasErrors = true; return;
+      }
       const options = row.querySelectorAll('.select-option');
-      if (options.length === 0) { errors.push(`Select Menu ${n}: Add at least one option`); return; }
+      if (options.length === 0) {
+        rowError(body, `Select Menu ${n}: Add at least one option`);
+        hasErrors = true; return;
+      }
       options.forEach((opt, j) => {
         const m = j + 1;
-        const label = opt.querySelector('.option-label')?.value.trim();
-        const value = opt.querySelector('.option-value')?.value.trim();
-        const desc = opt.querySelector('.option-desc')?.value.trim();
-        if (!label || !value || !desc) errors.push(`Menu ${n} Option ${m}: all fields required`);
-        else if (value !== menuId) errors.push(`Menu ${n} Option ${m}: Option ID must match Menu ID`);
+        const labelEl = opt.querySelector('.option-label');
+        const valueEl = opt.querySelector('.option-value');
+        const descEl = opt.querySelector('.option-desc');
+        const label = labelEl?.value.trim();
+        const value = valueEl?.value.trim();
+        const desc = descEl?.value.trim();
+        if (!label) { fieldError(labelEl, `Menu ${n} Option ${m}: Label required`); hasErrors = true; }
+        if (!value) { fieldError(valueEl, `Menu ${n} Option ${m}: Value required`); hasErrors = true; }
+        if (!desc) { fieldError(descEl, `Menu ${n} Option ${m}: Description required`); hasErrors = true; }
+        if (value && value !== menuId) { fieldError(valueEl, `Menu ${n} Option ${m}: Value must match Menu ID`); hasErrors = true; }
       });
     });
 
     // Modals
+    const allModalIds = [];
     document.querySelectorAll('.modal-row').forEach((row, i) => {
       const n = i + 1;
-      const title = row.querySelector('.modal-title')?.value.trim();
-      const customId = row.querySelector('.modal-id')?.value.trim();
-      if (!title || !customId) { errors.push(`Modal ${n}: ID and Title required`); return; }
+      const titleEl = row.querySelector('.modal-title');
+      const idEl = row.querySelector('.modal-id');
+      const title = titleEl?.value.trim();
+      const customId = idEl?.value.trim();
+      const body = row.querySelector('.component-body');
+      if (!title) { fieldError(titleEl, `Modal ${n}: Title required`); hasErrors = true; }
+      if (!customId) { fieldError(idEl, `Modal ${n}: ID required`); hasErrors = true; }
+      if (customId) {
+        if (allModalIds.includes(customId)) {
+          fieldError(idEl, `Modal ${n}: Duplicate ID "${customId}"`); hasErrors = true;
+          // also mark the earlier modal with the same id
+          document.querySelectorAll('.modal-row').forEach((r2, i2) => {
+            if (i2 < i && r2.querySelector('.modal-id')?.value.trim() === customId) {
+              fieldError(r2.querySelector('.modal-id'), `Modal ${i2 + 1}: Duplicate ID "${customId}"`);
+            }
+          });
+        }
+        allModalIds.push(customId);
+      }
+      if (!title || !customId) return;
       const inputs = row.querySelectorAll('.modal-input');
-      if (inputs.length === 0) { errors.push(`Modal ${n}: Add at least one text input`); return; }
+      if (inputs.length === 0) {
+        rowError(body, `Modal ${n}: Add at least one text input`);
+        hasErrors = true; return;
+      }
       let validInputCount = 0;
       inputs.forEach((inp, j) => {
         const m = j + 1;
-        const label = inp.querySelector('.input-label')?.value.trim();
-        const id = inp.querySelector('.input-id')?.value.trim();
-        const placeholder = inp.querySelector('.input-placeholder')?.value.trim() || '';
-        const minLen = parseInt(inp.querySelector('.input-minlen')?.value || '0', 10);
-        const maxLen = parseInt(inp.querySelector('.input-maxlen')?.value || '0', 10);
-        if (!label) errors.push(`Modal ${n} Input ${m}: Label required`);
-        else if (label.length > 45) errors.push(`Modal ${n} Input ${m}: Label max 45 chars`);
-        if (placeholder.length > 100) errors.push(`Modal ${n} Input ${m}: Placeholder max 100 chars`);
-        if (minLen > 4000 || maxLen > 4000) errors.push(`Modal ${n} Input ${m}: Length can't exceed 4000`);
-        else if (maxLen > 0 && maxLen < minLen) errors.push(`Modal ${n} Input ${m}: Max < Min`);
+        const labelEl = inp.querySelector('.input-label');
+        const idInpEl = inp.querySelector('.input-id');
+        const placeholderEl = inp.querySelector('.input-placeholder');
+        const minLenEl = inp.querySelector('.input-minlen');
+        const maxLenEl = inp.querySelector('.input-maxlen');
+        const label = labelEl?.value.trim();
+        const id = idInpEl?.value.trim();
+        const placeholder = placeholderEl?.value.trim() || '';
+        const minLen = parseInt(minLenEl?.value || '0', 10);
+        const maxLen = parseInt(maxLenEl?.value || '0', 10);
+        if (!label) { fieldError(labelEl, `Modal ${n} Input ${m}: Label required`); hasErrors = true; }
+        else if (label.length > 45) { fieldError(labelEl, `Modal ${n} Input ${m}: Label max 45 chars`); hasErrors = true; }
+        if (placeholder.length > 100) { fieldError(placeholderEl, `Modal ${n} Input ${m}: Placeholder max 100 chars`); hasErrors = true; }
+        if (minLen > 4000) { fieldError(minLenEl, `Modal ${n} Input ${m}: Min can't exceed 4000`); hasErrors = true; }
+        if (maxLen > 4000) { fieldError(maxLenEl, `Modal ${n} Input ${m}: Max can't exceed 4000`); hasErrors = true; }
+        if (!minLen && !maxLen) {} // both 0 is fine
+        else if (maxLen > 0 && maxLen < minLen) { fieldError(maxLenEl, `Modal ${n} Input ${m}: Max < Min`); hasErrors = true; }
         if (id) validInputCount++;
       });
-      if (validInputCount === 0) errors.push(`Modal ${n}: Add at least one valid input`);
+      if (validInputCount === 0) {
+        rowError(body, `Modal ${n}: Add at least one valid input (Input ID required)`);
+        hasErrors = true;
+      }
     });
 
-    if (errors.length > 0) {
-      error.textContent = errors.join('\n');
-      return;
-    }    if (errorFlag) return;
+    if (hasErrors) return;
 
     // Build code — Author
     const authorNameS = sanitize(authorName);
@@ -262,6 +338,8 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function clearAll() {
+    clearFieldErrors();
+    error.textContent = '';
     document.querySelectorAll('.form-input, .form-textarea').forEach(input => {
       if (input.id === 'color') {
         input.value = '#7289da';
