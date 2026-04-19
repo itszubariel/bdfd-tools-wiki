@@ -55,6 +55,14 @@ document.addEventListener('DOMContentLoaded', () => {
     rowError(formRowEl, msg);
   }
 
+  function isValidHex(val) {
+    return /^#[0-9A-Fa-f]{6}$/.test(val);
+  }
+
+  function isValidUrl(val) {
+    try { new URL(val); return true; } catch { return false; }
+  }
+
   function generateEmbed() {
     error.textContent = '';
     clearFieldErrors();
@@ -69,6 +77,14 @@ document.addEventListener('DOMContentLoaded', () => {
       formRowError(document.getElementById('authorName'), "Author Name required when Icon/URL is set");
       hasErrors = true;
     }
+    if (authorIcon && !isValidUrl(authorIcon)) {
+      formRowError(document.getElementById('authorIcon'), "Author Icon: invalid URL");
+      hasErrors = true;
+    }
+    if (authorUrl && !isValidUrl(authorUrl)) {
+      formRowError(document.getElementById('authorUrl'), "Author URL: invalid URL");
+      hasErrors = true;
+    }
 
     // Title
     const titleVal = document.getElementById('title').value.trim();
@@ -77,12 +93,39 @@ document.addEventListener('DOMContentLoaded', () => {
       formRowError(document.getElementById('title'), "Title required when Title URL is set");
       hasErrors = true;
     }
+    if (titleUrl && !isValidUrl(titleUrl)) {
+      formRowError(document.getElementById('titleUrl'), "Title URL: invalid URL");
+      hasErrors = true;
+    }
+
+    // Color
+    const colorVal = document.getElementById('color').value.trim();
+    if (colorVal && !isValidHex(colorVal)) {
+      formRowError(document.getElementById('color'), "Color: must be a valid hex code (e.g. #7289da)");
+      hasErrors = true;
+    }
+
+    // Thumbnail / Image
+    const thumbnailVal = document.getElementById('thumbnail').value.trim();
+    if (thumbnailVal && !isValidUrl(thumbnailVal)) {
+      formRowError(document.getElementById('thumbnail'), "Thumbnail: invalid URL");
+      hasErrors = true;
+    }
+    const imageVal = document.getElementById('image').value.trim();
+    if (imageVal && !isValidUrl(imageVal)) {
+      formRowError(document.getElementById('image'), "Image: invalid URL");
+      hasErrors = true;
+    }
 
     // Footer
     const footerVal = document.getElementById('footer').value.trim();
     const footerIcon = document.getElementById('footerIcon').value.trim();
     if (footerIcon && !footerVal) {
       formRowError(document.getElementById('footer'), "Footer Text required when Footer Icon is set");
+      hasErrors = true;
+    }
+    if (footerIcon && !isValidUrl(footerIcon)) {
+      formRowError(document.getElementById('footerIcon'), "Footer Icon: invalid URL");
       hasErrors = true;
     }
 
@@ -116,6 +159,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const formRow = row.querySelector('.form-row');
       if (!label) { bodyRowError(formRow, `Button ${n}: Label required`); hasErrors = true; }
       if (style === 'link' && !url) { bodyRowError(formRow, `Button ${n}: URL required for Link style`); hasErrors = true; }
+      else if (style === 'link' && url && !isValidUrl(url)) { bodyRowError(formRow, `Button ${n}: invalid URL`); hasErrors = true; }
       else if (style !== 'link' && !customId) { bodyRowError(formRow, `Button ${n}: Custom ID required`); hasErrors = true; }
     });
 
