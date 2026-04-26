@@ -333,14 +333,14 @@
     font-weight: bold;
     width: fit-content;
     margin-top: -.5rem;
-    display: flex;
+    display: inline-block;
 	text-shadow: 0px 0px 5px rgb(0 0 0 / 100%);
 	cursor: pointer;
 	transition: all 0.2s;
 }
 .valid-color:hover {
 	transform: scale(1.05);
-	opacity: 0.8;
+	background-color: rgba(255, 255, 255, 0.1);
 }
 .copy-success {
 	color: #4CAF50;
@@ -348,6 +348,8 @@
 	opacity: 0;
 	transition: opacity 0.3s;
 	white-space: nowrap;
+	margin-left: 0.5rem;
+	display: inline;
 }
 .copy-success.show {
 	opacity: 1;
@@ -381,7 +383,7 @@
     	<input type="color" id="colorPicker" class="color-input" value="#000000" oninput="colorPickerChange()">
   	</div>
   	<div class="error" id="errorText"></div>
-  	<div id="validColorDisplay" style="display: flex; align-items: center; gap: 0.5rem;">
+  	<div id="validColorDisplay">
 		<div class="valid-color" style="background:#000000" onclick="copyToClipboard('#000000', 'colorCopySuccess')">#000000</div>
 		<span class="copy-success" id="colorCopySuccess">Copied!</span>
 	</div>
@@ -389,7 +391,7 @@
 <div class="picker-container">
   	<h2 id="random-color"><a class="header" href="#random-color">Random Color</a></h2>
   	<p>Generate a random color.</p>
-	<div class="random-result" style="display: flex; align-items: center; gap: 0.5rem;">
+	<div class="random-result">
   		<button id="randomColorButton" onclick="generateRandomColor()">Generate</button>
   		<div id="randomColorResult" class="random-color-result clickable-color" onclick="copyRandomColor()"></div>
 		<span class="copy-success" id="randomCopySuccess">Copied!</span>
@@ -438,10 +440,10 @@ $description[⬅️ Border color hex]
 $color[#673ab7]
 </code></pre>
 <discord-messages>
-    <discord-message role-color="#E67E22" author="RainbowKey">
+    <discord-message author="RainbowKey" role-color="#E67E22">
         !example
     </discord-message>
-    <discord-message verified role-color="#378afa" bot author="BDFD Support">
+    <discord-message bot verified author="BDFD Support" role-color="#378afa">
         <none>
         <discord-embed slot="embeds" color="#673ab7">
             <discord-embed-description slot="description">
@@ -2624,7 +2626,7 @@ Unix date: &lt;t:1917043200:D&gt;
     <discord-message author="RainbowKey" role-color="#E67E22">
         !example
     </discord-message>
-    <discord-message bot verified role-color="#378afa" author="BDFD Support">
+    <discord-message role-color="#378afa" author="BDFD Support" bot verified>
         Unix date: <div class="discord-time-mark">January 10, 2030</div>
     </discord-message>
 </discord-messages>
@@ -2822,10 +2824,10 @@ Unix date: &lt;t:1917043200:D&gt;
 $sendMessage[[%{DOL}%Hello\\; this is pretty cool\\; right%{DOL}%\\]]
 </code></pre>
 <discord-messages>
-    <discord-message role-color="#ffffff" author="Zubariel">
+    <discord-message author="Zubariel" role-color="#ffffff">
         !example
     </discord-message>
-    <discord-message verified role-color="#378afa" author="BDFD Support" bot>
+    <discord-message role-color="#378afa" bot verified author="BDFD Support">
         [$Hello; this is pretty cool; right$]
     </discord-message>
 </discord-messages>
@@ -3421,9 +3423,9 @@ $color[#673ab7]
     <discord-message author="Zubariel" role-color="#ffffff">
         !example
     </discord-message>
-    <discord-message author="BDFD Support" verified bot role-color="#378afa">
+    <discord-message bot verified role-color="#378afa" author="BDFD Support">
         <none>
-        <discord-embed color="#673ab7" embed-title="Hello" slot="embeds">
+        <discord-embed embed-title="Hello" slot="embeds" color="#673ab7">
             <discord-embed-description slot="description">
                 Welcome to embed builder.
             </discord-embed-description>
