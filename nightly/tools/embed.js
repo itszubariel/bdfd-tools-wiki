@@ -227,12 +227,16 @@ function switchMode(mode) {
   }
 }
 
-function makeHeader(title, body) {
+function makeHeader(title, body, onRemove) {
   const header = document.createElement("div");
   header.className = "component-header";
   const titleEl = document.createElement("span");
   titleEl.className = "component-title";
   titleEl.textContent = title;
+
+  const btnGroup = document.createElement("div");
+  btnGroup.style.cssText = "display:flex;gap:0.5rem;align-items:center;";
+
   const collapseBtn = document.createElement("button");
   collapseBtn.className = "collapse-btn";
   collapseBtn.textContent = "▲";
@@ -241,8 +245,18 @@ function makeHeader(title, body) {
     body.style.display = collapsed ? "" : "none";
     collapseBtn.textContent = collapsed ? "▲" : "▼";
   };
+  btnGroup.appendChild(collapseBtn);
+
+  if (onRemove) {
+    const removeBtn = document.createElement("button");
+    removeBtn.className = "remove-btn-red remove-btn-small";
+    removeBtn.textContent = "✕";
+    removeBtn.onclick = onRemove;
+    btnGroup.appendChild(removeBtn);
+  }
+
   header.appendChild(titleEl);
-  header.appendChild(collapseBtn);
+  header.appendChild(btnGroup);
   return header;
 }
 
@@ -257,18 +271,16 @@ function addFieldRow() {
       <input class="form-input field-name" placeholder="Field Name">
       <input class="form-input field-value" placeholder="Field Value">
     </div>
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:0.75rem;">
+    <div style="display:flex;align-items:center;margin-top:0.75rem;">
       <label class="checkbox-label" style="margin:0;">
         <input type="checkbox" class="form-checkbox field-inline">
         <span>Inline</span>
       </label>
-      <button class="remove-btn-red remove-btn-small">Remove</button>
     </div>
   `;
-  row.appendChild(makeHeader(`Field #${fieldCount}`, body));
+  row.appendChild(makeHeader(`Field #${fieldCount}`, body, () => row.remove()));
   row.appendChild(body);
   document.getElementById("dynamicFields").appendChild(row);
-  body.querySelector(".remove-btn-red").onclick = () => row.remove();
 }
 
 function addButtonRow() {
@@ -293,24 +305,20 @@ function addButtonRow() {
       <input class="form-input button-emoji" placeholder="Emoji">
       <input class="form-input button-url" placeholder="URL (for Link style)">
     </div>
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:0.75rem;">
-      <div style="display:flex;gap:1.5rem;align-items:center;">
-        <label class="checkbox-label" style="margin:0;">
-          <input type="checkbox" class="form-checkbox button-disabled">
-          <span>Disabled</span>
-        </label>
-        <label class="checkbox-label" style="margin:0;">
-          <input type="checkbox" class="form-checkbox button-newrow">
-          <span>New Row</span>
-        </label>
-      </div>
-      <button class="remove-btn-red remove-btn-small">Remove</button>
+    <div style="display:flex;gap:1.5rem;align-items:center;margin-top:0.75rem;">
+      <label class="checkbox-label" style="margin:0;">
+        <input type="checkbox" class="form-checkbox button-disabled">
+        <span>Disabled</span>
+      </label>
+      <label class="checkbox-label" style="margin:0;">
+        <input type="checkbox" class="form-checkbox button-newrow">
+        <span>New Row</span>
+      </label>
     </div>
   `;
-  row.appendChild(makeHeader(`Button #${buttonCount}`, body));
+  row.appendChild(makeHeader(`Button #${buttonCount}`, body, () => row.remove()));
   row.appendChild(body);
   document.getElementById("dynamicFields").appendChild(row);
-  body.querySelector(".remove-btn-red").onclick = () => row.remove();
 }
 
 function addSelectRow() {
@@ -329,10 +337,9 @@ function addSelectRow() {
     <div class="options-container" style="margin-top:1rem;"></div>
     <div style="display:flex;gap:0.75rem;margin-top:0.75rem;">
       <button class="add-field-btn add-option-btn">+ Option</button>
-      <button class="add-field-btn remove-btn-red">Remove Menu</button>
     </div>
   `;
-  row.appendChild(makeHeader(`Select Menu #${selectCount}`, body));
+  row.appendChild(makeHeader(`Select Menu #${selectCount}`, body, () => row.remove()));
   row.appendChild(body);
   document.getElementById("dynamicFields").appendChild(row);
 
@@ -378,8 +385,6 @@ function addSelectRow() {
     option.appendChild(optBody);
     optionsContainer.appendChild(option);
   };
-  const removeMenuBtns = body.querySelectorAll(".remove-btn-red");
-  removeMenuBtns[removeMenuBtns.length - 1].onclick = () => row.remove();
 }
 
 function addModalRow() {
@@ -396,10 +401,9 @@ function addModalRow() {
     <div class="modal-inputs-container" style="margin-top:1rem;"></div>
     <div style="display:flex;gap:0.75rem;margin-top:0.75rem;">
       <button class="add-field-btn add-modal-input-btn">+ Text Input</button>
-      <button class="add-field-btn remove-btn-red">Remove Modal</button>
     </div>
   `;
-  row.appendChild(makeHeader(`Modal #${modalCount}`, body));
+  row.appendChild(makeHeader(`Modal #${modalCount}`, body, () => row.remove()));
   row.appendChild(body);
   document.getElementById("dynamicFields").appendChild(row);
 
@@ -457,8 +461,6 @@ function addModalRow() {
     input.appendChild(inpBody);
     inputsContainer.appendChild(input);
   };
-  const btns = body.querySelectorAll(".remove-btn-red");
-  btns[btns.length - 1].onclick = () => row.remove();
 }
 
 function generateNormalEmbed() {
@@ -1340,25 +1342,12 @@ function cv2AddCard(type, doRefresh = true) {
   body.className = "component-body";
   body.innerHTML = cv2CardBody(type);
 
-  // Header — exactly makeHeader() but we need the card reference for remove,
-  // so we build it inline the same way makeHeader does
-  const hdr = document.createElement("div");
-  hdr.className = "component-header";
-  const titleEl = document.createElement("span");
-  titleEl.className = "component-title";
-  titleEl.textContent = label;
-  const collapseBtn = document.createElement("button");
-  collapseBtn.className = "collapse-btn";
-  collapseBtn.textContent = "▲";
-  collapseBtn.onclick = () => {
-    const collapsed = body.style.display === "none";
-    body.style.display = collapsed ? "" : "none";
-    collapseBtn.textContent = collapsed ? "▲" : "▼";
-  };
-  hdr.appendChild(titleEl);
-  hdr.appendChild(collapseBtn);
-
-  card.appendChild(hdr);
+  // Header — collapse + ✕ remove, using the shared makeHeader pattern
+  card.appendChild(makeHeader(label, body, () => {
+    card.remove();
+    cv2RefreshAllDropdowns();
+    saveCV2State();
+  }));
   card.appendChild(body);
 
   // Remove button lives at the bottom of the body, right-aligned — same as Normal mode
