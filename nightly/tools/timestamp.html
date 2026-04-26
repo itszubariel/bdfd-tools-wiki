@@ -316,9 +316,12 @@
 	font-size: 0.9rem;
 	opacity: 0;
 	transition: opacity 0.3s;
-	white-space: nowrap;
-	position: absolute;
-	margin-top: 0.5rem;
+	display: block;
+	height: 0;
+	overflow: visible;
+	margin-top: -1rem;
+	margin-bottom: 1rem;
+	text-align: center;
 }
 .copy-success.show {
 	opacity: 1;
@@ -369,8 +372,8 @@
 		<p>Unix timestamp:</p>
         <span id="unixtime-display" class="clickable-timestamp" onclick="copyTimestamp('unixtime-display', 'unixCopySuccess')">0</span>
         <div class="timestamp" id="timestamp-info"></div>
-        <span class="copy-success" id="unixCopySuccess">Copied!</span>
     </div>
+    <span class="copy-success" id="unixCopySuccess">Copied!</span>
 </div>
 <div class="converter-section">
     <h2 id="unix-timestamp-to-date"><a class="header" href="#unix-timestamp-to-date">Unix Timestamp to Date</a></h2>
@@ -379,8 +382,8 @@
     <div class="result">
 		<p>Date and time:</p>
         <span id="date-display" class="clickable-timestamp" onclick="copyTimestamp('date-display', 'dateCopySuccess')">Not set</span>
-        <span class="copy-success" id="dateCopySuccess">Copied!</span>
     </div>
+    <span class="copy-success" id="dateCopySuccess">Copied!</span>
 	<div class="timestamp" id="date-info"></div>
 </div>
 <div class="converter-section">
@@ -414,7 +417,7 @@ Unix date: &lt;t:1917043200:D&gt;
     <discord-message author="RainbowKey" role-color="#E67E22">
         !example
     </discord-message>
-    <discord-message author="BDFD Support" bot role-color="#378afa" verified>
+    <discord-message author="BDFD Support" bot verified role-color="#378afa">
         Unix date: <div class="discord-time-mark">January 10, 2030</div>
     </discord-message>
 </discord-messages>
