@@ -287,6 +287,7 @@
 	content: "Click Generate to create a random color";
 	color: rgba(255, 255, 255, 0.5);
 	font-weight: normal;
+	font-size: 1.1rem;
 }
 #randomColorButton {
 	outline: none;
@@ -321,15 +322,11 @@
     border-radius: var(--border-radius);
     font-weight: bold;
     width: fit-content;
+    margin-left: -1.6rem;
     margin-top: -.5rem;
-    display: inline-block;
+    display: flex;
 	text-shadow: 0px 0px 5px rgb(0 0 0 / 100%);
 	cursor: pointer;
-	transition: all 0.2s;
-}
-.valid-color:hover {
-	transform: scale(1.05);
-	background-color: rgba(255, 255, 255, 0.1);
 }
 .copy-success {
 	color: #4CAF50;
@@ -337,19 +334,15 @@
 	opacity: 0;
 	transition: opacity 0.3s;
 	white-space: nowrap;
+	position: absolute;
+	margin-top: 0.5rem;
 	margin-left: 0.5rem;
-	display: inline;
 }
 .copy-success.show {
 	opacity: 1;
 }
 .clickable-color {
 	cursor: pointer;
-	transition: all 0.2s;
-}
-.clickable-color:hover {
-	opacity: 0.8;
-	transform: scale(1.02);
 }
 </style>
 <p>Here you can choose a color to use in your command.</p>
@@ -372,7 +365,7 @@
     	<input type="color" id="colorPicker" class="color-input" value="#000000" oninput="colorPickerChange()">
   	</div>
   	<div class="error" id="errorText"></div>
-  	<div id="validColorDisplay">
+  	<div id="validColorDisplay" style="position: relative;">
 		<div class="valid-color" style="background:#000000" onclick="copyToClipboard('#000000', 'colorCopySuccess')">#000000</div>
 		<span class="copy-success" id="colorCopySuccess">Copied!</span>
 	</div>
@@ -380,10 +373,10 @@
 <div class="picker-container">
   	<h2 id="random-color"><a class="header" href="#random-color">Random Color</a></h2>
   	<p>Generate a random color.</p>
-	<div class="random-result">
+	<div class="random-result" style="position: relative;">
   		<button id="randomColorButton" onclick="generateRandomColor()">Generate</button>
   		<div id="randomColorResult" class="random-color-result clickable-color" onclick="copyRandomColor()"></div>
-		<span class="copy-success" id="randomCopySuccess">Copied!</span>
+		<span class="copy-success" id="randomCopySuccess" style="position: absolute; top: 100%; left: 50%; transform: translateX(-50%); margin-top: 0.5rem;">Copied!</span>
 	</div>
 </div>
 <h2 id="functions"><a class="header" href="#functions">Functions</a></h2>
@@ -429,10 +422,10 @@ $description[⬅️ Border color hex]
 $color[#673ab7]
 </code></pre>
 <discord-messages>
-    <discord-message author="RainbowKey" role-color="#E67E22">
+    <discord-message role-color="#E67E22" author="RainbowKey">
         !example
     </discord-message>
-    <discord-message role-color="#378afa" verified author="BDFD Support" bot>
+    <discord-message author="BDFD Support" bot role-color="#378afa" verified>
         <none>
         <discord-embed slot="embeds" color="#673ab7">
             <discord-embed-description slot="description">
