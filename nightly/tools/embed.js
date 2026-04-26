@@ -221,7 +221,9 @@ function switchMode(mode) {
   } else if (mode === "compv2") {
     compV2Builder.style.display = "";
     btnCV2.classList.add("active");
-    loadCV2State();
+    // DO NOT call loadCV2State() here — cards are already in the DOM
+    // Just refresh dropdowns in case names changed while in another mode
+    cv2RefreshAllDropdowns();
   }
 }
 
@@ -993,6 +995,9 @@ document.addEventListener("DOMContentLoaded", () => {
   btnSend.classList.remove("active");
   btnCV2.classList.remove("active");
 
+  // Always load CV2 state once on startup — cards live in the DOM even when hidden
+  loadCV2State();
+
   if (currentMode === "send") {
     sendBuilder.style.display = "";
     btnSend.classList.add("active");
@@ -1000,7 +1005,7 @@ document.addEventListener("DOMContentLoaded", () => {
   } else if (currentMode === "compv2") {
     compV2Builder.style.display = "";
     btnCV2.classList.add("active");
-    loadCV2State();
+    // loadCV2State() already called above
   } else {
     normalBuilder.style.display = "";
     btnNormal.classList.add("active");
@@ -1128,6 +1133,10 @@ document.addEventListener("DOMContentLoaded", () => {
   });
   document.getElementById("cv2ClearBtn").addEventListener("click", () => {
     document.getElementById("cv2Components").innerHTML = "";
+    // Reset per-type counters
+    Object.keys(cv2Counters).forEach((k) => {
+      cv2Counters[k] = 0;
+    });
     document.getElementById("cv2Output").textContent =
       "Generated code appears here...";
     document.getElementById("cv2CharCount").textContent = "0 characters";
@@ -1141,6 +1150,10 @@ document.addEventListener("DOMContentLoaded", () => {
 // ═══════════════════════════════════════════════════════════════════════════════
 
 // ─── CV2 state persistence ────────────────────────────────────────────────────
+
+// Track per-type counters for numbering (persists across mode switches)
+const cv2Counters = {};
+
 function saveCV2State() {
   const cards = [];
   document.querySelectorAll("#cv2Components .cv2-comp-card").forEach((card) => {
@@ -1155,14 +1168,16 @@ function saveCV2State() {
   localStorage.setItem(CV2_KEY, JSON.stringify({ components: cards }));
 }
 
+// Only called once on initial page load — never on mode switch
 function loadCV2State() {
   const raw = localStorage.getItem(CV2_KEY);
   if (!raw) return;
   try {
     const state = JSON.parse(raw);
     if (!state.components) return;
+    // Restore each card and populate its fields BEFORE refreshing dropdowns
     state.components.forEach((comp) => {
-      const card = cv2AddCard(comp.type, false);
+      const card = cv2AddCard(comp.type, false); // doRefresh=false, no dropdown refresh yet
       if (!card) return;
       Object.entries(comp.fields).forEach(([key, val]) => {
         const el = card.querySelector(`[data-cv2field="${key}"]`);
@@ -1171,6 +1186,7 @@ function loadCV2State() {
         else el.value = val;
       });
     });
+    // Now that all name/id fields are populated, refresh dropdowns once
     cv2RefreshAllDropdowns();
   } catch (e) {}
 }
@@ -1305,6 +1321,12 @@ function cv2AddCard(type, doRefresh = true) {
   const info = CV2_BADGE_LABELS[type];
   if (!info) return null;
 
+  // Increment per-type counter for numbering
+  if (!cv2Counters[type]) cv2Counters[type] = 0;
+  cv2Counters[type]++;
+  const num = cv2Counters[type];
+  const label = `${info[0]} #${num}`;
+
   const card = document.createElement("div");
   card.className = "cv2-comp-card";
   card.dataset.type = type;
@@ -1314,16 +1336,13 @@ function cv2AddCard(type, doRefresh = true) {
   body.className = "cv2-comp-body";
   body.innerHTML = cv2CardBody(type);
 
-  // Header — same pattern as Normal Embed Builder's makeHeader()
+  // Header — identical pattern to Normal Embed Builder's makeHeader()
   const hdr = document.createElement("div");
   hdr.className = "component-header";
 
-  const titleWrap = document.createElement("span");
-  titleWrap.className = "component-title";
-  const badge = document.createElement("span");
-  badge.className = `cv2-badge ${info[1]}`;
-  badge.textContent = info[0];
-  titleWrap.appendChild(badge);
+  const titleEl = document.createElement("span");
+  titleEl.className = "component-title";
+  titleEl.textContent = label;
 
   // Button group: collapse + remove
   const btnGroup = document.createElement("div");
@@ -1349,7 +1368,7 @@ function cv2AddCard(type, doRefresh = true) {
 
   btnGroup.appendChild(collapseBtn);
   btnGroup.appendChild(removeBtn);
-  hdr.appendChild(titleWrap);
+  hdr.appendChild(titleEl);
   hdr.appendChild(btnGroup);
 
   card.appendChild(hdr);
