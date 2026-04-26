@@ -1221,7 +1221,10 @@ function cv2Optgroup(label, names, required) {
 function cv2PopulateSelect(sel, groups, required) {
   if (!sel) return;
   const prev = sel.value;
-  sel.innerHTML = required ? "" : '<option value="">— none —</option>';
+  // Required fields get a "— select —" placeholder; optional get "— none —"
+  sel.innerHTML = required
+    ? '<option value="">— select —</option>'
+    : '<option value="">— none —</option>';
   groups.forEach(([label, names]) => {
     sel.innerHTML += cv2Optgroup(label, names, required);
   });
@@ -1402,11 +1405,14 @@ function cv2CardBody(type) {
     `<div class="cv2-field-group">
        <textarea class="form-input form-textarea" data-cv2field="${field}" placeholder="${placeholder}" style="min-height:7rem;"></textarea>
      </div>`;
-  const cb = (field, label) =>
-    `<label class="checkbox-label" style="margin-top:0.5rem;">
-       <input type="checkbox" class="form-checkbox" data-cv2field="${field}">
-       <span>${label}</span>
-     </label>`;
+  // Checkbox rendered as a full-height cell so it aligns with adjacent inputs
+  const cbCell = (field, label) =>
+    `<div class="cv2-field-group" style="display:flex;align-items:center;padding-top:0.25rem;">
+       <label class="checkbox-label" style="margin:0;">
+         <input type="checkbox" class="form-checkbox" data-cv2field="${field}">
+         <span>${label}</span>
+       </label>
+     </div>`;
   const sel = (field, options, label = "") =>
     `<div class="cv2-field-group">
        ${label ? `<span class="cv2-field-label">${label}</span>` : ""}
@@ -1417,10 +1423,11 @@ function cv2CardBody(type) {
        ${label ? `<span class="cv2-field-label">${label}</span>` : ""}
        <select class="form-input" data-cv2field="${field}"><option value="">— none —</option></select>
      </div>`;
+  // Required dynamic select — starts with a "— select —" placeholder so it's never visually empty
   const dynSelReq = (field, label = "") =>
     `<div class="cv2-field-group">
        ${label ? `<span class="cv2-field-label">${label}</span>` : ""}
-       <select class="form-input" data-cv2field="${field}"></select>
+       <select class="form-input" data-cv2field="${field}"><option value="">— select —</option></select>
      </div>`;
 
   switch (type) {
@@ -1428,7 +1435,7 @@ function cv2CardBody(type) {
       return `<div class="cv2-grid3">
         ${fi("name", "Container Name (required)")}
         ${fi("color", "Color (hex, optional)")}
-        <div class="cv2-field-group" style="display:flex;align-items:flex-end;">${cb("spoiler", "Spoiler")}</div>
+        ${cbCell("spoiler", "Spoiler")}
       </div>`;
 
     case "textdisplay":
@@ -1437,7 +1444,7 @@ function cv2CardBody(type) {
 
     case "separator":
       return `<div class="cv2-grid3">
-        <div class="cv2-field-group" style="display:flex;align-items:flex-end;">${cb("divider", "Show Divider Line")}</div>
+        ${cbCell("divider", "Show Divider Line")}
         ${sel("spacing", `<option value="">Default</option><option value="small">Small</option><option value="large">Large</option>`, "Spacing")}
         ${dynSel("container", "Container (optional)")}
       </div>`;
@@ -1454,7 +1461,7 @@ function cv2CardBody(type) {
         ${fi("description", "Description (optional)")}
       </div>
       <div class="cv2-grid2 cv2-mt">
-        <div class="cv2-field-group" style="display:flex;align-items:flex-end;">${cb("spoiler", "Spoiler")}</div>
+        ${cbCell("spoiler", "Spoiler")}
         ${dynSelReq("sectionName", "Section Name (required)")}
       </div>`;
 
@@ -1470,7 +1477,7 @@ function cv2CardBody(type) {
         ${fi("description", "Description (optional)")}
       </div>
       <div class="cv2-grid2 cv2-mt">
-        <div class="cv2-field-group" style="display:flex;align-items:flex-end;">${cb("spoiler", "Spoiler")}</div>
+        ${cbCell("spoiler", "Spoiler")}
         ${dynSelReq("galleryId", "Gallery ID (required)")}
       </div>`;
 
@@ -1488,7 +1495,7 @@ function cv2CardBody(type) {
       </div>
       <div class="cv2-grid2 cv2-mt">
         ${fi("emoji", "Emoji (optional)")}
-        <div class="cv2-field-group" style="display:flex;align-items:flex-end;">${cb("disabled", "Disabled")}</div>
+        ${cbCell("disabled", "Disabled")}
       </div>
       <div class="cv2-mt">${dynSelReq("actionRowOrSection", "Action Row or Section (required)")}</div>`;
 
@@ -1502,7 +1509,7 @@ function cv2CardBody(type) {
       <div class="cv2-grid3 cv2-mt">
         ${fi("min", "Min (optional)", "type='number' min='0'")}
         ${fi("max", "Max (optional)", "type='number' min='0'")}
-        <div class="cv2-field-group" style="display:flex;align-items:flex-end;">${cb("disabled", "Disabled")}</div>
+        ${cbCell("disabled", "Disabled")}
       </div>
       <div class="cv2-mt">${dynSelReq("actionRowId", "Action Row ID (required)")}</div>`;
 
