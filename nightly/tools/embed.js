@@ -316,7 +316,9 @@ function addButtonRow() {
       </label>
     </div>
   `;
-  row.appendChild(makeHeader(`Button #${buttonCount}`, body, () => row.remove()));
+  row.appendChild(
+    makeHeader(`Button #${buttonCount}`, body, () => row.remove()),
+  );
   row.appendChild(body);
   document.getElementById("dynamicFields").appendChild(row);
 }
@@ -339,7 +341,9 @@ function addSelectRow() {
       <button class="add-field-btn add-option-btn">+ Option</button>
     </div>
   `;
-  row.appendChild(makeHeader(`Select Menu #${selectCount}`, body, () => row.remove()));
+  row.appendChild(
+    makeHeader(`Select Menu #${selectCount}`, body, () => row.remove()),
+  );
   row.appendChild(body);
   document.getElementById("dynamicFields").appendChild(row);
 
@@ -1343,22 +1347,26 @@ function cv2AddCard(type, doRefresh = true) {
   body.innerHTML = cv2CardBody(type);
 
   // Header — collapse + ✕ remove, using the shared makeHeader pattern
-  card.appendChild(makeHeader(label, body, () => {
-    card.remove();
-    cv2RefreshAllDropdowns();
-    saveCV2State();
-  }));
+  card.appendChild(
+    makeHeader(label, body, () => {
+      card.remove();
+      cv2RefreshAllDropdowns();
+      saveCV2State();
+    }),
+  );
   card.appendChild(body);
 
   document.getElementById("cv2Components").appendChild(card);
 
   // Wire name/id inputs to refresh dropdowns on change
-  card.querySelectorAll("[data-cv2field='name'],[data-cv2field='id']").forEach((el) => {
-    el.addEventListener("input", () => {
-      cv2RefreshAllDropdowns();
-      saveCV2State();
+  card
+    .querySelectorAll("[data-cv2field='name'],[data-cv2field='id']")
+    .forEach((el) => {
+      el.addEventListener("input", () => {
+        cv2RefreshAllDropdowns();
+        saveCV2State();
+      });
     });
-  });
   card.addEventListener("input", saveCV2State);
   card.addEventListener("change", saveCV2State);
 
@@ -1390,65 +1398,108 @@ function cv2CardBody(type) {
 
   // Row helpers — use .form-row so the existing auto-fit grid CSS applies
   const row = (...cells) => `<div class="form-row">${cells.join("")}</div>`;
-  const rowMt = (...cells) => `<div class="form-row" style="margin-top:0.75rem;">${cells.join("")}</div>`;
+  const rowMt = (...cells) =>
+    `<div class="form-row" style="margin-top:0.75rem;">${cells.join("")}</div>`;
   // Inline flex bar for checkboxes (left) — mirrors the bottom bar in Normal mode
   const cbBar = (...items) =>
     `<div style="display:flex;gap:1.5rem;align-items:center;margin-top:0.75rem;">${items.join("")}</div>`;
 
   switch (type) {
     case "container":
-      return row(fi("name","Container Name (required)"), fi("color","Color (hex, optional)"))
-           + cbBar(cb("spoiler","Spoiler"));
+      return (
+        row(
+          fi("name", "Container Name (required)"),
+          fi("color", "Color (hex, optional)"),
+        ) + cbBar(cb("spoiler", "Spoiler"))
+      );
 
     case "textdisplay":
-      return `${ta("content","Content (required)")}`
-           + rowMt(dynSel("containerOrSection","Container or Section (optional)"));
+      return (
+        `${ta("content", "Content (required)")}` +
+        rowMt(dynSel("containerOrSection", "Container or Section (optional)"))
+      );
 
     case "separator":
-      return row(
-          sel("spacing",`<option value="">Spacing: Default</option><option value="small">Spacing: Small</option><option value="large">Spacing: Large</option>`),
-          dynSel("container","Container (optional)")
-        )
-        + cbBar(cb("divider","Show Divider Line"));
+      return (
+        row(
+          sel(
+            "spacing",
+            `<option value="">Spacing: Default</option><option value="small">Spacing: Small</option><option value="large">Spacing: Large</option>`,
+          ),
+          dynSel("container", "Container (optional)"),
+        ) + cbBar(cb("divider", "Show Divider Line"))
+      );
 
     case "section":
-      return row(fi("name","Section Name (required)"), dynSel("container","Container (optional)"));
+      return row(
+        fi("name", "Section Name (required)"),
+        dynSel("container", "Container (optional)"),
+      );
 
     case "thumbnail":
-      return row(fi("url","URL (required)"), fi("description","Description (optional)"))
-           + rowMt(dynSelReq("sectionName"))
-           + cbBar(cb("spoiler","Spoiler"));
+      return (
+        row(
+          fi("url", "URL (required)"),
+          fi("description", "Description (optional)"),
+        ) +
+        rowMt(dynSelReq("sectionName")) +
+        cbBar(cb("spoiler", "Spoiler"))
+      );
 
     case "mediagallery":
-      return row(fi("id","Gallery ID (required)"), dynSel("container","Container (optional)"));
+      return row(
+        fi("id", "Gallery ID (required)"),
+        dynSel("container", "Container (optional)"),
+      );
 
     case "mediaitem":
-      return row(fi("url","URL (required)"), fi("description","Description (optional)"))
-           + rowMt(dynSelReq("galleryId"))
-           + cbBar(cb("spoiler","Spoiler"));
+      return (
+        row(
+          fi("url", "URL (required)"),
+          fi("description", "Description (optional)"),
+        ) +
+        rowMt(dynSelReq("galleryId")) +
+        cbBar(cb("spoiler", "Spoiler"))
+      );
 
     case "actionrow":
-      return row(fi("id","Action Row ID (required)"), dynSel("container","Container (optional)"));
+      return row(
+        fi("id", "Action Row ID (required)"),
+        dynSel("container", "Container (optional)"),
+      );
 
     case "buttoncv2":
-      return row(
-          fi("id","ID or URL (required)"),
-          fi("label","Label (optional)"),
-          sel("style",`<option value="">Style: Default</option><option value="primary">Primary</option><option value="secondary">Secondary</option><option value="success">Success</option><option value="danger">Danger</option><option value="link">Link</option>`)
-        )
-        + rowMt(fi("emoji","Emoji (optional)"), dynSelReq("actionRowOrSection"))
-        + cbBar(cb("disabled","Disabled"));
+      return (
+        row(
+          fi("id", "ID or URL (required)"),
+          fi("label", "Label (optional)"),
+          sel(
+            "style",
+            `<option value="">Style: Default</option><option value="primary">Primary</option><option value="secondary">Secondary</option><option value="success">Success</option><option value="danger">Danger</option><option value="link">Link</option>`,
+          ),
+        ) +
+        rowMt(
+          fi("emoji", "Emoji (optional)"),
+          dynSelReq("actionRowOrSection"),
+        ) +
+        cbBar(cb("disabled", "Disabled"))
+      );
 
     case "userselect":
     case "roleselect":
     case "mentionable":
-      return row(fi("id","ID (required)"), fi("placeholder","Placeholder (optional)"))
-           + rowMt(
-               fi("min","Min (optional)","type='number' min='0'"),
-               fi("max","Max (optional)","type='number' min='0'"),
-               dynSelReq("actionRowId")
-             )
-           + cbBar(cb("disabled","Disabled"));
+      return (
+        row(
+          fi("id", "ID (required)"),
+          fi("placeholder", "Placeholder (optional)"),
+        ) +
+        rowMt(
+          fi("min", "Min (optional)", "type='number' min='0'"),
+          fi("max", "Max (optional)", "type='number' min='0'"),
+          dynSelReq("actionRowId"),
+        ) +
+        cbBar(cb("disabled", "Disabled"))
+      );
 
     default:
       return "";
@@ -1497,38 +1548,57 @@ function generateCV2() {
     const el = card.querySelector(`[data-cv2field="${field}"]`);
     if (el) {
       const formRow = el.closest(".form-row");
-      if (formRow) { bodyRowError(formRow, msg); hasErrors = true; return; }
+      if (formRow) {
+        bodyRowError(formRow, msg);
+        hasErrors = true;
+        return;
+      }
     }
     cv2FieldError(card, msg);
   }
 
-  const cards = Array.from(document.querySelectorAll("#cv2Components [data-type]"));
+  const cards = Array.from(
+    document.querySelectorAll("#cv2Components [data-type]"),
+  );
   if (cards.length === 0) {
-    document.getElementById("cv2Error").textContent = "Add at least one component first.";
+    document.getElementById("cv2Error").textContent =
+      "Add at least one component first.";
     return;
   }
 
   // Collect names for uniqueness / cross-reference checks
   const containerNames = new Set();
-  const sectionNames   = new Set();
-  const allNames       = new Set();
+  const sectionNames = new Set();
+  const allNames = new Set();
 
   // First pass: uniqueness
   cards.forEach((card) => {
     const type = card.dataset.type;
     if (type === "container") {
       const name = cv2f("name", card);
-      if (!name) { cv2InputError(card, "name", "Container Name is required"); return; }
-      if (containerNames.has(name)) cv2InputError(card, "name", `Duplicate container name "${name}"`);
-      if (allNames.has(name))       cv2InputError(card, "name", `Name "${name}" clashes with a Section`);
-      containerNames.add(name); allNames.add(name);
+      if (!name) {
+        cv2InputError(card, "name", "Container Name is required");
+        return;
+      }
+      if (containerNames.has(name))
+        cv2InputError(card, "name", `Duplicate container name "${name}"`);
+      if (allNames.has(name))
+        cv2InputError(card, "name", `Name "${name}" clashes with a Section`);
+      containerNames.add(name);
+      allNames.add(name);
     }
     if (type === "section") {
       const name = cv2f("name", card);
-      if (!name) { cv2InputError(card, "name", "Section Name is required"); return; }
-      if (sectionNames.has(name)) cv2InputError(card, "name", `Duplicate section name "${name}"`);
-      if (allNames.has(name))     cv2InputError(card, "name", `Name "${name}" clashes with a Container`);
-      sectionNames.add(name); allNames.add(name);
+      if (!name) {
+        cv2InputError(card, "name", "Section Name is required");
+        return;
+      }
+      if (sectionNames.has(name))
+        cv2InputError(card, "name", `Duplicate section name "${name}"`);
+      if (allNames.has(name))
+        cv2InputError(card, "name", `Name "${name}" clashes with a Container`);
+      sectionNames.add(name);
+      allNames.add(name);
     }
   });
 
@@ -1539,7 +1609,11 @@ function generateCV2() {
     if (type === "container") {
       const color = cv2f("color", card);
       if (color && !isValidHex(color))
-        cv2InputError(card, "color", "Color must be a valid hex (e.g. #5865F2)");
+        cv2InputError(
+          card,
+          "color",
+          "Color must be a valid hex (e.g. #5865F2)",
+        );
     }
 
     if (type === "textdisplay") {
@@ -1550,66 +1624,129 @@ function generateCV2() {
     if (type === "section") {
       const name = cv2f("name", card);
       if (name) {
-        const hasText = cards.some(c => c.dataset.type === "textdisplay" && cv2f("containerOrSection", c) === name);
-        if (!hasText) cv2FieldError(card, `Section "${name}": must have at least one Text Display attached`);
-        const hasAccessory = cards.some(c =>
-          (c.dataset.type === "thumbnail" && cv2f("sectionName", c) === name) ||
-          (c.dataset.type === "buttoncv2" && cv2f("actionRowOrSection", c) === name)
+        const hasText = cards.some(
+          (c) =>
+            c.dataset.type === "textdisplay" &&
+            cv2f("containerOrSection", c) === name,
         );
-        if (!hasAccessory) cv2FieldError(card, `Section "${name}": must have at least one Thumbnail or Button CV2 accessory`);
-        const textCount  = cards.filter(c => c.dataset.type === "textdisplay" && cv2f("containerOrSection", c) === name).length;
-        const thumbCount = cards.filter(c => c.dataset.type === "thumbnail"   && cv2f("sectionName", c) === name).length;
-        if (textCount + thumbCount > 3) cv2FieldError(card, `Section "${name}": max 3 components (Text Displays + Thumbnails)`);
+        if (!hasText)
+          cv2FieldError(
+            card,
+            `Section "${name}": must have at least one Text Display attached`,
+          );
+        const hasAccessory = cards.some(
+          (c) =>
+            (c.dataset.type === "thumbnail" &&
+              cv2f("sectionName", c) === name) ||
+            (c.dataset.type === "buttoncv2" &&
+              cv2f("actionRowOrSection", c) === name),
+        );
+        if (!hasAccessory)
+          cv2FieldError(
+            card,
+            `Section "${name}": must have at least one Thumbnail or Button CV2 accessory`,
+          );
+        const textCount = cards.filter(
+          (c) =>
+            c.dataset.type === "textdisplay" &&
+            cv2f("containerOrSection", c) === name,
+        ).length;
+        const thumbCount = cards.filter(
+          (c) =>
+            c.dataset.type === "thumbnail" && cv2f("sectionName", c) === name,
+        ).length;
+        if (textCount + thumbCount > 3)
+          cv2FieldError(
+            card,
+            `Section "${name}": max 3 components (Text Displays + Thumbnails)`,
+          );
       }
     }
 
     if (type === "thumbnail") {
       const url = cv2f("url", card);
       if (!url) cv2InputError(card, "url", "URL is required");
-      else if (!isValidUrl(url)) cv2InputError(card, "url", "URL must start with http:// or https://");
-      if (!cv2f("sectionName", card)) cv2InputError(card, "sectionName", "Section Name is required");
+      else if (!isValidUrl(url))
+        cv2InputError(card, "url", "URL must start with http:// or https://");
+      if (!cv2f("sectionName", card))
+        cv2InputError(card, "sectionName", "Section Name is required");
     }
 
     if (type === "mediagallery") {
-      if (!cv2f("id", card)) cv2InputError(card, "id", "Gallery ID is required");
+      if (!cv2f("id", card))
+        cv2InputError(card, "id", "Gallery ID is required");
     }
 
     if (type === "mediaitem") {
       const url = cv2f("url", card);
       if (!url) cv2InputError(card, "url", "URL is required");
-      else if (!isValidUrl(url)) cv2InputError(card, "url", "URL must start with http:// or https://");
+      else if (!isValidUrl(url))
+        cv2InputError(card, "url", "URL must start with http:// or https://");
       const gid = cv2f("galleryId", card);
       if (!gid) cv2InputError(card, "galleryId", "Gallery ID is required");
       else {
-        const galleryExists = cards.some(c => c.dataset.type === "mediagallery" && cv2f("id", c) === gid);
-        if (!galleryExists) cv2InputError(card, "galleryId", `Gallery ID "${gid}" does not match any Media Gallery`);
+        const galleryExists = cards.some(
+          (c) => c.dataset.type === "mediagallery" && cv2f("id", c) === gid,
+        );
+        if (!galleryExists)
+          cv2InputError(
+            card,
+            "galleryId",
+            `Gallery ID "${gid}" does not match any Media Gallery`,
+          );
       }
     }
 
     if (type === "actionrow") {
       const rowId = cv2f("id", card);
-      if (!rowId) { cv2InputError(card, "id", "Action Row ID is required"); return; }
-      const children = cards.filter(c =>
-        ["buttoncv2","userselect","roleselect","mentionable"].includes(c.dataset.type) &&
-        (cv2f("actionRowOrSection", c) === rowId || cv2f("actionRowId", c) === rowId)
+      if (!rowId) {
+        cv2InputError(card, "id", "Action Row ID is required");
+        return;
+      }
+      const children = cards.filter(
+        (c) =>
+          ["buttoncv2", "userselect", "roleselect", "mentionable"].includes(
+            c.dataset.type,
+          ) &&
+          (cv2f("actionRowOrSection", c) === rowId ||
+            cv2f("actionRowId", c) === rowId),
       );
-      if (children.length === 0) cv2FieldError(card, `Action Row "${rowId}": must contain at least one Button or Select`);
-      const buttons = children.filter(c => c.dataset.type === "buttoncv2");
-      const selects = children.filter(c => ["userselect","roleselect","mentionable"].includes(c.dataset.type));
-      if (buttons.length > 0 && selects.length > 0) cv2FieldError(card, `Action Row "${rowId}": cannot mix Buttons and Selects`);
-      if (selects.length > 1) cv2FieldError(card, `Action Row "${rowId}": max 1 Select per row`);
-      if (buttons.length > 5) cv2FieldError(card, `Action Row "${rowId}": max 5 Buttons per row`);
+      if (children.length === 0)
+        cv2FieldError(
+          card,
+          `Action Row "${rowId}": must contain at least one Button or Select`,
+        );
+      const buttons = children.filter((c) => c.dataset.type === "buttoncv2");
+      const selects = children.filter((c) =>
+        ["userselect", "roleselect", "mentionable"].includes(c.dataset.type),
+      );
+      if (buttons.length > 0 && selects.length > 0)
+        cv2FieldError(
+          card,
+          `Action Row "${rowId}": cannot mix Buttons and Selects`,
+        );
+      if (selects.length > 1)
+        cv2FieldError(card, `Action Row "${rowId}": max 1 Select per row`);
+      if (buttons.length > 5)
+        cv2FieldError(card, `Action Row "${rowId}": max 5 Buttons per row`);
     }
 
     if (type === "buttoncv2") {
       if (!cv2f("id", card)) cv2InputError(card, "id", "ID/URL is required");
-      if (!cv2f("label", card) && !cv2f("emoji", card)) cv2InputError(card, "label", "Must have a Label or Emoji");
-      if (!cv2f("actionRowOrSection", card)) cv2InputError(card, "actionRowOrSection", "Action Row or Section is required");
+      if (!cv2f("label", card) && !cv2f("emoji", card))
+        cv2InputError(card, "label", "Must have a Label or Emoji");
+      if (!cv2f("actionRowOrSection", card))
+        cv2InputError(
+          card,
+          "actionRowOrSection",
+          "Action Row or Section is required",
+        );
     }
 
-    if (["userselect","roleselect","mentionable"].includes(type)) {
+    if (["userselect", "roleselect", "mentionable"].includes(type)) {
       if (!cv2f("id", card)) cv2InputError(card, "id", "ID is required");
-      if (!cv2f("actionRowId", card)) cv2InputError(card, "actionRowId", "Action Row ID is required");
+      if (!cv2f("actionRowId", card))
+        cv2InputError(card, "actionRowId", "Action Row ID is required");
     }
   });
 
@@ -1620,8 +1757,8 @@ function generateCV2() {
   }
 
   // Code generation — containers first, then rest in order
-  const containerCards = cards.filter(c => c.dataset.type === "container");
-  const otherCards     = cards.filter(c => c.dataset.type !== "container");
+  const containerCards = cards.filter((c) => c.dataset.type === "container");
+  const otherCards = cards.filter((c) => c.dataset.type !== "container");
   const ordered = [...containerCards, ...otherCards];
 
   const lines = [];
@@ -1630,49 +1767,99 @@ function generateCV2() {
     let parts;
 
     if (type === "container") {
-      parts = cv2Trim([cv2f("name",card), cv2f("color",card), cv2f("spoiler",card) === "true" ? "true" : ""]);
+      parts = cv2Trim([
+        cv2f("name", card),
+        cv2f("color", card),
+        cv2f("spoiler", card) === "true" ? "true" : "",
+      ]);
       lines.push(`$addContainer[${parts.join(";")}]`);
     } else if (type === "textdisplay") {
-      parts = cv2Trim([sanitizeInput(cv2f("content",card)), cv2f("containerOrSection",card)]);
+      parts = cv2Trim([
+        sanitizeInput(cv2f("content", card)),
+        cv2f("containerOrSection", card),
+      ]);
       lines.push(`$addTextDisplay[${parts.join(";")}]`);
     } else if (type === "separator") {
-      const divider   = cv2f("divider",card) === "true" ? "true" : "";
-      const spacing   = cv2f("spacing",card);
-      const container = cv2f("container",card);
+      const divider = cv2f("divider", card) === "true" ? "true" : "";
+      const spacing = cv2f("spacing", card);
+      const container = cv2f("container", card);
       parts = cv2Trim([divider, spacing, container]);
-      lines.push(parts.length === 0 || (parts.length === 1 && parts[0] === "") ? `$addSeparator[]` : `$addSeparator[${parts.join(";")}]`);
+      lines.push(
+        parts.length === 0 || (parts.length === 1 && parts[0] === "")
+          ? `$addSeparator[]`
+          : `$addSeparator[${parts.join(";")}]`,
+      );
     } else if (type === "section") {
-      parts = cv2Trim([cv2f("name",card), cv2f("container",card)]);
+      parts = cv2Trim([cv2f("name", card), cv2f("container", card)]);
       lines.push(`$addSection[${parts.join(";")}]`);
     } else if (type === "thumbnail") {
-      parts = cv2Trim([cv2f("url",card), sanitizeInput(cv2f("description",card)), cv2f("spoiler",card) === "true" ? "true" : "", cv2f("sectionName",card)]);
+      parts = cv2Trim([
+        cv2f("url", card),
+        sanitizeInput(cv2f("description", card)),
+        cv2f("spoiler", card) === "true" ? "true" : "",
+        cv2f("sectionName", card),
+      ]);
       lines.push(`$addThumbnail[${parts.join(";")}]`);
     } else if (type === "mediagallery") {
-      parts = cv2Trim([cv2f("id",card), cv2f("container",card)]);
+      parts = cv2Trim([cv2f("id", card), cv2f("container", card)]);
       lines.push(`$addMediaGallery[${parts.join(";")}]`);
     } else if (type === "mediaitem") {
-      parts = cv2Trim([cv2f("url",card), sanitizeInput(cv2f("description",card)), cv2f("spoiler",card) === "true" ? "true" : "", cv2f("galleryId",card)]);
+      parts = cv2Trim([
+        cv2f("url", card),
+        sanitizeInput(cv2f("description", card)),
+        cv2f("spoiler", card) === "true" ? "true" : "",
+        cv2f("galleryId", card),
+      ]);
       lines.push(`$addMediaGalleryItem[${parts.join(";")}]`);
     } else if (type === "actionrow") {
-      parts = cv2Trim([cv2f("id",card), cv2f("container",card)]);
+      parts = cv2Trim([cv2f("id", card), cv2f("container", card)]);
       lines.push(`$addActionRow[${parts.join(";")}]`);
     } else if (type === "buttoncv2") {
-      parts = cv2Trim([cv2f("id",card), sanitizeInput(cv2f("label",card)), cv2f("style",card), cv2f("disabled",card) === "true" ? "true" : "", sanitizeInput(cv2f("emoji",card)), cv2f("actionRowOrSection",card)]);
+      parts = cv2Trim([
+        cv2f("id", card),
+        sanitizeInput(cv2f("label", card)),
+        cv2f("style", card),
+        cv2f("disabled", card) === "true" ? "true" : "",
+        sanitizeInput(cv2f("emoji", card)),
+        cv2f("actionRowOrSection", card),
+      ]);
       lines.push(`$addButtonCV2[${parts.join(";")}]`);
     } else if (type === "userselect") {
-      parts = cv2Trim([cv2f("id",card), sanitizeInput(cv2f("placeholder",card)), cv2f("min",card), cv2f("max",card), cv2f("disabled",card) === "true" ? "true" : "", cv2f("actionRowId",card)]);
+      parts = cv2Trim([
+        cv2f("id", card),
+        sanitizeInput(cv2f("placeholder", card)),
+        cv2f("min", card),
+        cv2f("max", card),
+        cv2f("disabled", card) === "true" ? "true" : "",
+        cv2f("actionRowId", card),
+      ]);
       lines.push(`$addUserSelect[${parts.join(";")}]`);
     } else if (type === "roleselect") {
-      parts = cv2Trim([cv2f("id",card), sanitizeInput(cv2f("placeholder",card)), cv2f("min",card), cv2f("max",card), cv2f("disabled",card) === "true" ? "true" : "", cv2f("actionRowId",card)]);
+      parts = cv2Trim([
+        cv2f("id", card),
+        sanitizeInput(cv2f("placeholder", card)),
+        cv2f("min", card),
+        cv2f("max", card),
+        cv2f("disabled", card) === "true" ? "true" : "",
+        cv2f("actionRowId", card),
+      ]);
       lines.push(`$addRoleSelect[${parts.join(";")}]`);
     } else if (type === "mentionable") {
-      parts = cv2Trim([cv2f("id",card), sanitizeInput(cv2f("placeholder",card)), cv2f("min",card), cv2f("max",card), cv2f("disabled",card) === "true" ? "true" : "", cv2f("actionRowId",card)]);
+      parts = cv2Trim([
+        cv2f("id", card),
+        sanitizeInput(cv2f("placeholder", card)),
+        cv2f("min", card),
+        cv2f("max", card),
+        cv2f("disabled", card) === "true" ? "true" : "",
+        cv2f("actionRowId", card),
+      ]);
       lines.push(`$addMentionableSelect[${parts.join(";")}]`);
     }
   });
 
   const code = lines.join("\n");
   document.getElementById("cv2Output").textContent = code;
-  document.getElementById("cv2CharCount").textContent = code.length + " characters";
+  document.getElementById("cv2CharCount").textContent =
+    code.length + " characters";
   saveCV2State();
 }
