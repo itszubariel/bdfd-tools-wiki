@@ -440,10 +440,10 @@ $description[⬅️ Border color hex]
 $color[#673ab7]
 </code></pre>
 <discord-messages>
-    <discord-message role-color="#E67E22" author="RainbowKey">
+    <discord-message author="RainbowKey" role-color="#E67E22">
         !example
     </discord-message>
-    <discord-message verified bot author="BDFD Support" role-color="#378afa">
+    <discord-message author="BDFD Support" bot verified role-color="#378afa">
         <none>
         <discord-embed slot="embeds" color="#673ab7">
             <discord-embed-description slot="description">
@@ -463,114 +463,105 @@ $color[#673ab7]
 <p>How <a href="https://wiki.botdesignerdiscord.com/nightl/bdscript/color.md"><code>$color[]</code></a> and <a href="https://wiki.botdesignerdiscord.com/nightl/bdscript/description.md"><code>$description[]</code></a> works?</p>
 </div>
 </div>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="text-editor"><a class="header" href="#text-editor">Text Editor</a></h1>
-<p>Here you can use the basic editor features to write codes more conveniently.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="color-1"><a class="header" href="#color-1">Color</a></h1>
 <style>
 .editPage {
 	visibility: hidden;
 }
-#stats-container p, #another-info p {
-    display: inline-block;
-    margin-right: 7.5px;
-    background-color: var(--card-hover);
-    padding: 5px;
-    font-size: 1.5rem;
-    border-radius: 10px;
-	margin-top:  -.5rem;
-    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+.picker-container {
+    background: var(--card-bg);
+	border-radius: var(--border-radius);
+	border: 1px solid rgba(255, 255, 255, 0.05);
+	margin-top: 1.5rem;
+	padding-bottom: 0rem;
+	padding-left: 1.5rem;
+	padding-right: 1.5rem;
+	box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
 }
-
-#stats-container span {
-    font-weight: bold;
+.picker-container h2 {
+    margin-top: -.5rem;
+    padding-top: 1.5rem;
 }
-
-#stats-container, #another-info {
-    margin-top: 2rem; 
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    flex-wrap: wrap;
-}
-
-#stats-container {
-	margin-bottom: 1rem;
-}
-
-#another-info  {
-	margin-top: 1.25rem;
-	margin-bottom: -1rem;
-}
-
-#editor, #name {
-	width: 96%;
-	font-size: 1.5rem;
-	min-height: 1.3rem;
-	max-height: 100em;
-	border-radius: 10px;
-	border-width: 0;
-	color: #fff;
-	background: hsl(0deg 0% 100% / 7%);
-	padding: 7px;
-	font-size: 1.5rem;
-	margin: -2rem auto;
-	display: block;
-	outline: none;
-}
-
-#editor {
-	height: 40rem;
-	resize: vertical;
-}
-
-#name {
-	white-space: nowrap;
-	overflow: auto;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-	height: 1.7rem;
-	margin-bottom: 2rem;
-	margin-top: -1rem;
-	resize: none;
-}
-
-#scriptType {
+.picker-container p {
 	margin-top: -1.5rem;
 }
-
-#text-editorui {
-	user-select: none;
-	-webkit-user-select: none;
-	margin-top: 1rem;
-	margin-bottom: 1rem;
-	background-color: var(--card-bg);
-	padding: 10px;
-	border-radius: 10px;
+.input-row {
+	display: flex;
+	gap: 1rem;
+	margin-top: -1rem;
+	margin-bottom: 1.5rem;
+	align-items: center;
 }
-
-#text-editorui p {
-	user-select: none;
+.hex-input {
+    flex: 1 !important;
+    color: #fff;
+    padding-top: 2.25rem;
+	padding-bottom: 2.25rem;
+	padding-left: 1rem;
+    background: hsl(0deg 0% 100% / 7%);
+    border-radius: var(--border-radius);
+	border-width: 0;
+    font-family: monospace;
+    font-size: 1.5rem;
+    height: 3rem;
+    width: 65%;
+    outline: none;
+	touch-action: manipulation;
 	-webkit-user-select: none;
-	margin-bottom: -.5rem;
-	margin-top: .5rem;
-	font-size: 1rem;
-	color: var(--text-secondary);
+	user-select: none;
 }
-
-#searchText, #replaceText {
-	padding: 1rem;
-	background: hsl(0deg 0% 100% / 7%);
-	color: #fff;
+.color-input {
+    background: hsl(0deg 0% 100% / 7%);
 	font-size: 1.5rem;
 	display: block;
 	outline: none;
-	border-radius: 10px;
+	border-radius: var(--border-radius);
 	border-width: 0;
-	width: 99.5%;
-	height: 3rem;
+	height: 5.5rem;
+    padding: 0;
+    width: 5.5rem;
+    touch-action: manipulation;
+	-webkit-user-select: none;
+	user-select: none;
+}
+.color-input::-webkit-color-swatch {
+	border-radius: var(--border-radius);
+	border-width: 0;
+}
+.random-result {
+    display: flex;
+    align-items: center;
 }
 
-#text-editorui button {
+#randomColorResult {
+	padding: .9rem;
+	width: 100%;
+	border-radius: var(--border-radius);
+	margin-top: -2.5rem !important;
+	margin-bottom: 0 !important;
+	color: #fff;
+	font-weight: bold;
+	transition: .3s;
+	min-height: 1.5rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+#randomColorResult:hover {
+	color: #000;
+	opacity: 0.6;
+	transition: .3s;
+}
+#randomColorResult:empty {
+	background: transparent;
+	border: 2px dashed rgba(255, 255, 255, 0.3);
+}
+#randomColorResult:empty:before {
+	content: "Click Generate to create a random color";
+	color: rgba(255, 255, 255, 0.5);
+	font-weight: normal;
+}
+#randomColorButton {
 	outline: none;
 	touch-action: manipulation;
 	-webkit-user-select: none;
@@ -579,557 +570,153 @@ $color[#673ab7]
 	padding-right: 1rem;
 	height: 4rem;
 	border: none;
-	border-radius: 10px;
+	border-radius: var(--border-radius);
 	cursor: pointer;
+	margin-bottom: 1.5rem !important;
 	margin-top: -1rem !important;
+    margin-right: 1rem !important;
 	font-size: 1.5rem;
 	margin: 0.25%;
 	color: #fff;
 	background: hsl(0deg 0% 100% / 7%);
 	box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
 }
-
-#error-message {
-	margin-top: -1rem;
-	margin-bottom: 3rem;
-	display: flex;
-	flex-direction: row;
-    justify-content: center;
-    align-items: center;
-}
-
-#highlightedText span {
-	color: var(--link-color);
-}
-
-#highlightedText a {
-	color: white !important;
-}
-
-#highlightedText {
-	overflow-x: auto;
-	color: #fff;
-	font-size: 1.5rem;
-	border-radius: 10px;
-	border-width: 0;
-	padding: 10px;
-	height: 100%;
-	word-break: break-all;
-	background: hsl(0deg 0% 100% / 7%);
-}
-
-#highlightedText p {
-	margin-top: -.3rem;
-	margin-bottom: .5rem;
-}
-
-#highlightedText h1 {
-  	display: inline;
-}
-
-#highlightedText h2 {
-  	display: inline;
-}
-
-#highlightedText h3 {
-  	display: inline;
-}
-
-#highlightedText spoiler {
-	user-select: none;
-	-webkit-user-select: none;
-	background: #111111;
-	color: #111111;
-	padding-left: .25rem;
-	padding-right: .25rem;
-	cursor: pointer !important;
-}
-
-#highlightedText spoiler.spoiler-active {
-  	background: #2e2e2e94;
-  	color: #ababab;
-  	cursor: text !important;
-  	user-select: auto;
-  	-webkit-user-select: auto;
-}
-
-#highlightedText quote::before {
-	content: "";
-	margin-right: 5px;
-	border-radius: 10px;
-	border-style: solid;
-	border-width: 2px;
-	border-color: #535353;
-}
-
-#highlightedText hgSCode {
-	background: #2a2a2a;
-	color: #919191;
-	padding-left: .3rem;
-	padding-right: .3rem;
-	border-style: solid;
-	border-width: 1px;
-	border-color: #4b4b4b;
-	border-radius: 5px;
-}
-
-.line-number {
-    border-right-width: 2px;
-	color: hsl(0deg 0% 100% / 30%) !important;
-    border-color: hsl(0deg 0% 100% / 30%);
-    border-right-style: solid;
-    display: inline-block;
-    width: 4.2rem;
-	margin-right: 1rem;
-	white-space: nowrap;
-	-webkit-user-select: none;
-	user-select: none;
-}
-
-.channel, .mention {
-    border-radius: 5px;
-    color: hsl(0deg 0% 100% / 50%) !important;
-    background-color: hsl(0deg 0% 100% / 10%) !important;  
-    font-weight: bold;  
-    padding: 2px;
-}
-
-.timestamp {
-	color: #bbb !important;
-	background-color: hsl(0deg 0% 100% / 5%) !important;  
-}
-
-.hg-code {
-    border-radius: 5px;
-    border-width: 2px;
-    border-style: solid;
-    border-color: hsl(0deg 0% 100% / 10%) !important;
-    color: hsl(0deg 0% 100% / 40%) !important;
-    background-color: hsl(0deg 0% 100% / 5%) !important;
-    padding: 1px;
-    display: inline-block;
-}
-
-.close-btn {
-	user-select: none;
-	-webkit-user-select: none;
-	outline: none;
-	transition: .3s;
-    color: hsl(0deg 0% 100% / 75%) !important;
-    padding: 1px 7px;
-	border-color: var(--link-color) !important;
-    width: 25px;
-	border-radius: 60px;
-	cursor: pointer;
-}
-
-.close-btn:hover {
-	transition: .3s;
-    background-color: var(--card-bg);
-    border-style: solid;
-	border-width: 1px;
-}
-
-.scriptdiv {
-    position: relative;
-}
-
-.scriptdiv button:hover {
-	color: var(--link-color);
-	border-color: var(--link-color);
-	border-radius: 9px;
-	opacity: 0.9;
-	transition: 0.2s;
-}
-
-.scriptdiv button {
-	outline: none;
-  	position: absolute;
-  	top: 0.3rem;
- 	user-select: none;
-    -webkit-user-select: none;
-	touch-action: manipulation;
- 	outline: none;
- 	color: #fff;
- 	margin: 1.5px 5px;
-	padding: 5px;
-	cursor: pointer;
- 	width: 3.2rem;
-    height: 3.2rem;
-	font-size: 1.5rem;
-    border-style: solid;
-    border-width: 1px;
-    border-radius: 10px;
-    border-color: #aeaeae;
-    background: rgb(255 255 255 / 10%);
-    opacity: 0.8;
-    transition: 0.2s;
-}
-	
-.scriptdiv button:nth-of-type(1) {
-	right: 4.4rem;
-}
-
-.scriptdiv button:nth-of-type(2) {
-  	right: 0.8rem;
-}
-
-#error-message {
-    display: block !important;
-	text-align: center;
-}
-
-#error-message button {
-	outline: none;
-	transition: .4s;
-	display: inline-block;
-	margin-right: 7.5px;
-	background-color: var(--card-bg);
-	padding: 1rem;
-	color: hsl(0deg 0% 100% / 70%);;
-	font-size: 1.5rem;
-	border-radius: 10px;
-	border: none;
-	border-width: .1px;
-	box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
-}
-
-#error-message button:hover {
-	transition: .4s;
+.error {
 	color: var(--error);
-	border-style: solid;
+	font-size: 1rem;
+	min-height: 1rem;
+	padding-bottom: 1rem;
+	margin-top: -1.5rem;
 }
-
-#nameScript {
-    position: relative;
-}
-
-#nameScript span {
-	user-select: none;
-	-webkit-user-select: none;
-    position: absolute;
-    top: 50%;
-    right: 2rem;
-    transform: translateY(-50%);
-    color: #888;
-    font-size: 0.8em;    
-}
-
-#nameScript textarea {
-	padding: 1rem;
-	border-radius: 10px;
-	font-size: 1.5rem;
-	height: 3.5rem;
-}
-
-@media (max-width: 950px) {
-	#nameScript span {
-    	top: -35%;
-  	}
-}
-
-#selectors {
-  outline: none;
-  user-select: none;
-  -webkit-user-select: none;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 1.5rem;
-  margin-top: -1rem;
-  flex-wrap: wrap;
-}
-
-#selectors select {
-	cursor: pointer;
-  	outline: none;
-  	text-decoration: none;
-  	touch-action: manipulation;
-  	-webkit-tap-highlight-color: transparent;
-  	width: 15rem;
- 	padding: 8px 5px;
-  	background: var(--card-bg);
-  	color: rgb(255 255 255 / 80%);
-  	border-radius: 10px;
-  	box-sizing: border-box;
-  	border: 0;
-}
-
-@media (max-width: 350px) {
-	#selectors select {
-		width: 85%;
-	}
-}
-
-#selectors select option {
-	outline: none;
-	color: var(--text-primary);
-	background-color: var(--card-bg);
-}
-
-#settings, #tips {
-	margin-top: 1rem;
-	background-color: var(--card-bg);
-	border-radius: 10px;
-	padding: 1rem;
-}
-
-#tips em, #tips strong, #tips a {
-  	display: block;
-}
-
-#tips h1 {
-	margin-top: -2.25rem;
-}
-
-#tips h2 {
-	margin-top: -1.9rem;
-}
-
-#tips h3 {
-	margin-top: .1rem;
-}
-
-#tips h3:hover {
-	border: 0;
-}
-
-#settings summary, #text-editorui summary, #tips summary {
-	user-select: none;
-	-webkit-user-select: none;
-	outline: none;
-	background-color: var(--card-bg);
-	border-radius: 10px;
-	cursor: pointer;
-	padding: 0rem;
-	padding-bottom: .75rem;
-	margin-bottom: -.5rem;
-	margin-top: -.1rem;
-	font-size: 2.5rem;
-}
-
-.setting-item {
+.valid-color {
+    color: white;
+    padding: 4px 8px;
+    border-radius: var(--border-radius);
+    font-weight: bold;
+    width: fit-content;
+    margin-left: -1.6rem;
+    margin-top: -.5rem;
     display: flex;
-    align-items: center;
-    margin-bottom: 1rem;
-}
-
-#settings .setting-item p {
-    flex: 1;
-    margin-right: 10px;
-    text-align: left;
-    word-wrap: break-word;
-    line-height: 1.4;
-}
-
-#settings .setting-item button {
+	text-shadow: 0px 0px 5px rgb(0 0 0 / 100%);
 	cursor: pointer;
-	outline: none;
-	transition: 0.2s;
-    width: 15rem;
-	padding: .75rem;
-	border-radius: 10px;
-	border: 0;
-	background: linear-gradient(to right, rgb(255 255 255 / 40%), rgb(1 192 36 / 75%));
-    box-sizing: border-box;
-	color: rgb(255 255 255 / 90%);
 }
-
-#settings .setting-item #textWrappingButton, #settings .setting-item #brokeLinksButton, #settings .setting-item #caseSensitiveButton  {
-	background: linear-gradient(to left, rgb(255 255 255 / 40%), rgb(192 1 1 / 75%));
+.copy-success {
+	color: #4CAF50;
+	font-size: 0.9rem;
+	opacity: 0;
+	transition: opacity 0.3s;
+	white-space: nowrap;
+	position: absolute;
+	margin-top: 0.5rem;
+	margin-left: 0.5rem;
 }
-
-@media (max-width: 475px) {
-    .setting-item {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    #settings .setting-item p {
-		text-align: center;
-        margin-right: 0;
-        margin-bottom: 0.5rem;
-    }
-
-    #settings .setting-item button {
-        width: 100%;
-    }
+.copy-success.show {
+	opacity: 1;
 }
-
-#settings .setting-item button:hover {
-	transform: scale(1.025);
-	transition: 0.2s;
-	color: #fff;
-}
-
-#settings hr {
-    border: 0;
-    height: 1px;
-    background: hsl(0deg 0% 100% / 20%);
-	border-radius: 10px;
-	margin: 5px 0;
-}
-
-.setting-item:last-child {
-	user-select: none;
-	-webkit-user-select: none;
-	margin-top: -2.25rem;
-    margin-bottom: -1.25rem;
-    display: flex;
-    justify-content: center;
-	text-align: center;
-	font-size: 1.3rem;
-}
-
-#autocomplete {
-    white-space: normal;
-    width: auto;
-    margin-bottom: 3rem;
-    margin-top: -1.75rem;
-    display: block !important;
-	border-radius: 10px;
-	background: var(--card-bg);
-	border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-#autocomplete span {
-    display: block;
-    color: var(--text-secondary);
-	margin-top: .5rem;
-    margin-bottom: .5rem;
-	margin-left: .5rem;
-	margin-right: 1rem;
-    cursor: pointer;
-    padding: .5rem;
-    width: 100%;
-    transition: 0.2s;
-}
-
-#autocomplete span.selected, #autocomplete span:hover {
-	border-left-color: var(--link-color);
-	border-left-width: 2.5px;
-	border-top-left-radius: 0;
-	border-bottom-left-radius: 0;
-	border-left-style: solid;
-	transition: 0.2s;
+.clickable-color {
+	cursor: pointer;
 }
 </style>
-<script src="../theme/autocomplete.js" defer></script>
-<div id="stats-container">
-	<p>Words: <span id="wordCount">0</span></p>
-	<p>Spaces: <span id="spaceCount">0</span></p>
-    <p>Lines: <span id="lineCount">0</span></p>
-    <p>Characters: <span id="charCount">0</span></p>
-	<p>Bytes: <span id="byteCount">0</span></p>
+<p>Here you can choose a color to use in your command.</p>
+<div id="admonition-note" class="admonition admonish-note" role="note" aria-labelledby="admonition-note-title">
+<div class="admonition-title">
+<div id="admonition-note-title">
+<p>Note</p>
 </div>
-<div id="command-editor">
-	<p id="scriptType">Name • Command</p>
-	<div id="nameScript">
-		<textarea id="name" oninput="nameScript(); typeScript()"></textarea>
-		<span>0/50</span>
-	</div>
-	<div id="selectors">
-  		<select name="type" onchange="typeScript()">
-			<option selected value="auto">Auto</option>
-			<option value="command">Command</option>
-			<option value="slash">Slash Command</option>
-			<option value="callback">Callback</option>
-			<option value="file">File</option>
-		</select>
-		<select name="language" onchange="bdscript2()">
-			<option selected value="bds2">BDScript 2</option>
-			<option value="bds">BDScript</option>
-			<option value="bdsu">BDScript Unstable</option>
-		</select>
-	</div>
-	<p id="error-message"></p>
-	<p id="autocomplete"></p>
-	<div class="scriptdiv">
-		<textarea id="editor" oninput="updateStats(); checkBrackets(); bdscript2()"></textarea><br>
-	 	<button class="fa fa-regular fa-paste clip-button" onclick="copyCodeText() title="Copy" aria-label="Copy"></button>
-	  	<button class="fa fa-file-word-o" onclick="saveFile()" title="Save as file" aria-label="Save as file"></button>
+<a class="admonition-anchor-link" href="tools/editor.html#admonition-note"></a>
+</div>
+<div>
+<p>Hex colors are codes that represent colors using hexadecimal values for red, green, and blue. A shorthand like #090 is a compact version of #009900, meaning no red, full green, and no blue, resulting in a pure green. The format #RGB expands each digit to RRGGBB, making it easy to define web colors, including in BDFD’s color functions for customizing bot messages.</p>
+</div>
+</div>
+<div class="picker-container">
+	<h2 id="color-picker-1"><a class="header" href="#color-picker-1">Color Picker</a></h2>
+  	<p>Select the color.</p>
+  	<div class="input-row">
+    	<input type="text" id="hexInput" class="hex-input" maxlength="20" placeholder="#000000" oninput="hexInputChange()">
+    	<input type="color" id="colorPicker" class="color-input" value="#000000" oninput="colorPickerChange()">
+  	</div>
+  	<div class="error" id="errorText"></div>
+  	<div id="validColorDisplay" style="position: relative;">
+		<div class="valid-color" style="background:#000000" onclick="copyToClipboard('#000000', 'colorCopySuccess')">#000000</div>
+		<span class="copy-success" id="colorCopySuccess">Copied!</span>
 	</div>
 </div>
-<div id="another-info">
-  <p>[<span id="openCount">0</span></p>
-  <p>]<span id="closeCount">0</span></p>
-		<p>Escaped Characters: <span id="escapesCount">0</span></p>
-		<p>Special Characters: <span id="specialChars">0</span></p>
+<div class="picker-container">
+  	<h2 id="random-color-1"><a class="header" href="#random-color-1">Random Color</a></h2>
+  	<p>Generate a random color.</p>
+	<div class="random-result" style="position: relative;">
+  		<button id="randomColorButton" onclick="generateRandomColor()">Generate</button>
+  		<div id="randomColorResult" class="random-color-result clickable-color" onclick="copyRandomColor()"></div>
+		<span class="copy-success" id="randomCopySuccess" style="position: absolute; top: 100%; left: 50%; transform: translateX(-50%); margin-top: 0.5rem;">Copied!</span>
+	</div>
 </div>
-<details id="text-editorui">
-  <summary>Editor</summary>
-	<label for="searchText">Find:</label>
-	<input type="text" id="searchText"><br>
-	<label for="replaceText">Replace:</label>
-	<input type="text" id="replaceText"><br>
-	<button id="highlightButton" onclick="toggleHighlight()">Find</button>
-	<button onclick="replaceOneText()">Replace</button>
-	<button onclick="replaceText()">Replace all</button>
-	<p><i class="fa fa-info" aria-hidden="true"></i> Regex is supported</p>
-</details>
-<div id="highlightedText"></div>
-<details id="settings">
-  <summary>Settings</summary>
-  <div class="setting-item">
-    <p>Toggles the visibility of the editor's useful buttons panel (save as file, copy text).</p>
-    <button onclick="editorAreaButtons()" id="usefulButtonsButton">Useful buttons</button>
-  </div>
-  <hr>
-  <div class="setting-item">
-    <p>Toggles case sensitivity for the find function in the editor.</p>
-    <button onclick="editorFindCase()" id="caseSensitiveButton">Sensitive case</button>
-  </div>
-  <hr>
-  <div class="setting-item">
-    <p>Disables all links on the page to avoid misclicking.</p>
-    <button onclick="editorBrokeLinks()" id="brokeLinksButton">Break all links</button>
-  </div>
-  <hr>
-  <div class="setting-item">
-    <p>Displaying warnings.</p>
-    <button onclick="editorWarning()" id="changeWarningsButton">Warnings</button>
-  </div>
-  <hr>
-  <div class="setting-item">
-    <p>Displaying errors.</p>
-    <button onclick="editorError()" id="changeErrorsButton">Errors</button>
-  </div>
-  <hr>
-  <div class="setting-item">
-    <p>Text wrapping in text editor.</p>
-    <button onclick="editorWrapping()" id="textWrappingButton">Text Wrapping</button>
-  </div>
-  <hr>
-  <div class="setting-item">
-    <p>Highlighting in  text editor.</p>
-    <button onclick="textHighlighting()" id="findHighlightingButton">Highlighting</button>
-  </div>
-  <hr>
-  <div class="setting-item">
-    <p>Suggest functions as you type.</p>
-    <button onclick="changeAutocomplete()" id="changeAutocompleteButton">Autocomplete</button>
-  </div>
-  <hr>
-  <div class="setting-item">
-    <p>Number each line.</p>
-    <button onclick="changeCodeLines()" id="changeCodeLines">Line Number</button>
-  </div>
-  <div class="setting-item">
-    <p id="internetConnection">Loading...</p>
-  </div>
-</details>
-<details id="tips">
-  <summary>Tips</summary>
-	<em>*Italics*</em>
-	<strong>**Bold**</strong>
-	<del>~~Line Through~~</del>
-	<a>[Hyperlink Text](Link)</a>
-	<a>[BDScript 2 Hyperlink Text\](Link)</a>
-	<h3 id="small-header"><a class="header" href="#small-header">### Small Header</a></h3>
-	<h2 id="header"><a class="header" href="#header">## Header</a></h2>
-	<h1 id="big-header"><a class="header" href="#big-header"># Big Header</a></h1>
-</details>
+<h2 id="functions-1"><a class="header" href="#functions-1">Functions</a></h2>
+<p>Here are all the functions related to hex colors.</p>
+<div id="admonition-note-1" class="admonition admonish-note" role="note" aria-labelledby="admonition-note-1-title">
+<div class="admonition-title">
+<div id="admonition-note-1-title">
+<p>Note</p>
+</div>
+<a class="admonition-anchor-link" href="tools/editor.html#admonition-note-1"></a>
+</div>
+<div>
+<p>You can use color hex in the “Color hex” parameters.</p>
+</div>
+</div>
+<p><strong>SET</strong>:</p>
+<ul>
+<li><a href="https://wiki.botdesignerdiscord.com/nightl/bdscript/addContainer.md"><code>$addContainer[]</code></a></li>
+<li><a href="https://wiki.botdesignerdiscord.com/nightl/bdscript/color.md"><code>$color[]</code></a></li>
+<li><a href="https://wiki.botdesignerdiscord.com/nightl/bdscript/colorRole.md"><code>$colorRole[]</code></a></li>
+<li><a href="https://wiki.botdesignerdiscord.com/nightl/bdscript/createRole.md"><code>$createRole[]</code></a></li>
+<li><a href="https://wiki.botdesignerdiscord.com/nightl/bdscript/editEmbedIn.md"><code>$editEmbedIn[]</code></a></li>
+<li><a href="https://wiki.botdesignerdiscord.com/nightl/bdscript/editMessage.md"><code>$editMessage[]</code></a></li>
+<li><a href="https://wiki.botdesignerdiscord.com/nightl/bdscript/embedSuppressErrors.md"><code>$embedSuppressErrors[]</code></a></li>
+<li><a href="https://wiki.botdesignerdiscord.com/nightl/bdscript/modifyRole.md"><code>$modifyRole[]</code></a></li>
+<li><a href="https://wiki.botdesignerdiscord.com/nightl/bdscript/sendEmbedMessage.md"><code>$sendEmbedMessage[]</code></a></li>
+<li><a href="https://wiki.botdesignerdiscord.com/nightl/bdscript/webhookColor.md"><code>$webhookColor[]</code></a></li>
+<li><a href="https://wiki.botdesignerdiscord.com/nightl/bdscript/webhookSend.md"><code>$webhookSend[]</code></a></li>
+</ul>
+<p><strong>GET</strong>:</p>
+<ul>
+<li><a href="https://wiki.botdesignerdiscord.com/nightl/bdscript/getRoleColor.md"><code>$getRoleColor[]</code></a></li>
+<li><a href="https://wiki.botdesignerdiscord.com/nightl/bdscript/roleInfo.md"><code>$roleInfo[]</code></a></li>
+<li><a href="https://rainb0wkey.github.io/bdfd-wiki/nightly/bdscript/userBannerColor.md"><code>$userBannerColor[]</code></a></li>
+</ul>
+<p><strong>CHECK</strong>:</p>
+<ul>
+<li><a href="https://wiki.botdesignerdiscord.com/nightl/bdscript/isValidHex.md"><code>$isValidHex[]</code></a></li>
+</ul>
+<h2 id="example-1"><a class="header" href="#example-1">Example</a></h2>
+<pre><code>$nomention
+$description[⬅️ Border color hex]
+$color[#673ab7]
+</code></pre>
+<discord-messages>
+    <discord-message role-color="#E67E22" author="RainbowKey">
+        !example
+    </discord-message>
+    <discord-message author="BDFD Support" verified bot role-color="#378afa">
+        <none>
+        <discord-embed color="#673ab7" slot="embeds">
+            <discord-embed-description slot="description">
+                ⬅️ Border color hex
+            </discord-embed-description>
+        </discord-embed>
+    </discord-message>
+</discord-messages>
+<div id="admonition-what-is-this" class="admonition admonish-question" role="note" aria-labelledby="admonition-what-is-this-title">
+<div class="admonition-title">
+<div id="admonition-what-is-this-title">
+<p>What is this?</p>
+</div>
+<a class="admonition-anchor-link" href="tools/editor.html#admonition-what-is-this"></a>
+</div>
+<div>
+<p>How <a href="https://wiki.botdesignerdiscord.com/nightl/bdscript/color.md"><code>$color[]</code></a> and <a href="https://wiki.botdesignerdiscord.com/nightl/bdscript/description.md"><code>$description[]</code></a> works?</p>
+</div>
+</div>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="json-editor"><a class="header" href="#json-editor">JSON Editor</a></h1>
 <style>
 .description {
@@ -2611,7 +2198,7 @@ input[type="checkbox"] {
 <div class="current-time">
     <span id="current-time"></span>
 </div>
-<h2 id="functions-1"><a class="header" href="#functions-1">Functions</a></h2>
+<h2 id="functions-2"><a class="header" href="#functions-2">Functions</a></h2>
 <p>Here are all the functions related to unix timestamp.</p>
 <p><strong>GET</strong>:</p>
 <ul>
@@ -2624,7 +2211,7 @@ input[type="checkbox"] {
 <li><a href="https://wiki.botdesignerdiscord.com/nightl/bdscript/messageEditedTimestamp.md"><code>$messageEditedTimestamp[]</code></a></li>
 <li><a href="https://wiki.botdesignerdiscord.com/nightl/bdscript/premiumExpireTime.md"><code>$premiumExpireTime</code></a></li>
 </ul>
-<h2 id="example-1"><a class="header" href="#example-1">Example</a></h2>
+<h2 id="example-2"><a class="header" href="#example-2">Example</a></h2>
 <pre><code>$nomention
 Unix date: &lt;t:1917043200:D&gt;
 </code></pre>
@@ -2632,7 +2219,7 @@ Unix date: &lt;t:1917043200:D&gt;
     <discord-message role-color="#E67E22" author="RainbowKey">
         !example
     </discord-message>
-    <discord-message verified role-color="#378afa" bot author="BDFD Support">
+    <discord-message author="BDFD Support" bot verified role-color="#378afa">
         Unix date: <div class="discord-time-mark">January 10, 2030</div>
     </discord-message>
 </discord-messages>
@@ -2813,7 +2400,7 @@ Unix date: &lt;t:1917043200:D&gt;
 <p><span class="highlight-span">\</span> → <span class="output-span">\\</span></p>
 </div>
 </div>
-<h2 id="functions-2"><a class="header" href="#functions-2">Functions</a></h2>
+<h2 id="functions-3"><a class="header" href="#functions-3">Functions</a></h2>
 <div id="admonition-note-2" class="admonition admonish-note" role="note" aria-labelledby="admonition-note-2-title">
 <div class="admonition-title">
 <div id="admonition-note-2-title">
@@ -2825,15 +2412,15 @@ Unix date: &lt;t:1917043200:D&gt;
 <p>Use in BDFD functions like <a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/sendMessage.md"><code>$sendMessage[]</code></a>, <a href="https://wiki.botdesignerdiscord.com/nightly/guides/general/bds2/asyncScopes.md"><code>$async[]</code></a>, embeds, etc.</p>
 </div>
 </div>
-<h2 id="example-2"><a class="header" href="#example-2">Example</a></h2>
+<h2 id="example-3"><a class="header" href="#example-3">Example</a></h2>
 <pre><code>$nomention
 $sendMessage[[%{DOL}%Hello\\; this is pretty cool\\; right%{DOL}%\\]]
 </code></pre>
 <discord-messages>
-    <discord-message role-color="#ffffff" author="Zubariel">
+    <discord-message author="Zubariel" role-color="#ffffff">
         !example
     </discord-message>
-    <discord-message verified role-color="#378afa" bot author="BDFD Support">
+    <discord-message bot role-color="#378afa" author="BDFD Support" verified>
         [$Hello; this is pretty cool; right$]
     </discord-message>
 </discord-messages>
@@ -3396,7 +2983,7 @@ select.form-input option {
   <div class="error" id="cv2Error"></div>
 </div>
 </div>
-<h2 id="functions-3"><a class="header" href="#functions-3">Functions</a></h2>
+<h2 id="functions-4"><a class="header" href="#functions-4">Functions</a></h2>
 <div id="admonition-note-1" class="admonition admonish-note" role="note" aria-labelledby="admonition-note-1-title">
 <div class="admonition-title">
 <div id="admonition-note-1-title">
@@ -3419,7 +3006,7 @@ select.form-input option {
 <li><a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/addThumbnail.md"><code>$addThumbnail[]</code></a>, <a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/addMediaGallery.md"><code>$addMediaGallery[]</code></a>, <a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/addMediaGalleryItem.md"><code>$addMediaGalleryItem[]</code></a></li>
 <li><a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/addActionRow.md"><code>$addActionRow[]</code></a>, <a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/addButtonCV2.md"><code>$addButtonCV2[]</code></a>, <a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/addUserSelect.md"><code>$addUserSelect[]</code></a>, <a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/addRoleSelect.md"><code>$addRoleSelect[]</code></a>, <a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/addMentionableSelect.md"><code>$addMentionableSelect[]</code></a></li>
 </ul>
-<h2 id="example-3"><a class="header" href="#example-3">Example</a></h2>
+<h2 id="example-4"><a class="header" href="#example-4">Example</a></h2>
 <pre><code>$nomention
 $title[Hello]
 $description[Welcome to embed builder.]
@@ -3429,9 +3016,9 @@ $color[#673ab7]
     <discord-message author="Zubariel" role-color="#ffffff">
         !example
     </discord-message>
-    <discord-message bot verified author="BDFD Support" role-color="#378afa">
+    <discord-message role-color="#378afa" verified author="BDFD Support" bot>
         <none>
-        <discord-embed slot="embeds" color="#673ab7" embed-title="Hello">
+        <discord-embed slot="embeds" embed-title="Hello" color="#673ab7">
             <discord-embed-description slot="description">
                 Welcome to embed builder.
             </discord-embed-description>
@@ -3989,7 +3576,7 @@ $color[#673ab7]
 </div>
 </div>
 </div>
-<h2 id="functions-4"><a class="header" href="#functions-4">Functions</a></h2>
+<h2 id="functions-5"><a class="header" href="#functions-5">Functions</a></h2>
 <div id="admonition-note-1" class="admonition admonish-note" role="note" aria-labelledby="admonition-note-1-title">
 <div class="admonition-title">
 <div id="admonition-note-1-title">
@@ -4011,7 +3598,7 @@ $color[#673ab7]
 </ul>
 <p><strong>Custom Functions:</strong>
 Add any BDFD function to customize its color and style.</p>
-<h2 id="example-4"><a class="header" href="#example-4">Example</a></h2>
+<h2 id="example-5"><a class="header" href="#example-5">Example</a></h2>
 <p><strong>Generated JSON:</strong></p>
 <pre><code class="language-json">{
   "defaultTextHighlight": { "color": 4288341353, "style": 0 },
