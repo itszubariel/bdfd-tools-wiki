@@ -1156,7 +1156,7 @@ const cv2Counters = {};
 
 function saveCV2State() {
   const cards = [];
-  document.querySelectorAll("#cv2Components .cv2-comp-card").forEach((card) => {
+  document.querySelectorAll("#cv2Components [data-type]").forEach((card) => {
     const type = card.dataset.type;
     const fields = {};
     card.querySelectorAll("[data-cv2field]").forEach((el) => {
@@ -1197,7 +1197,7 @@ function loadCV2State() {
 function cv2GetNames(type) {
   const names = [];
   document
-    .querySelectorAll(`#cv2Components .cv2-comp-card[data-type="${type}"]`)
+    .querySelectorAll(`#cv2Components [data-type="${type}"]`)
     .forEach((card) => {
       const nameEl =
         card.querySelector("[data-cv2field='name']") ||
@@ -1242,7 +1242,7 @@ function cv2RefreshAllDropdowns() {
   const galleries = cv2GetNames("mediagallery");
   const actionRows = cv2GetNames("actionrow");
 
-  document.querySelectorAll("#cv2Components .cv2-comp-card").forEach((card) => {
+  document.querySelectorAll("#cv2Components [data-type]").forEach((card) => {
     const type = card.dataset.type;
 
     // Container/Section dropdown (Text Display)
@@ -1330,27 +1330,23 @@ function cv2AddCard(type, doRefresh = true) {
   const num = cv2Counters[type];
   const label = `${info[0]} #${num}`;
 
+  // Outer wrapper — same class pattern as .field-row / .button-row in Normal mode
   const card = document.createElement("div");
-  card.className = "cv2-comp-card";
+  card.className = "field-row"; // reuse existing card CSS
   card.dataset.type = type;
 
-  // Body (created first so collapse-btn can reference it)
+  // Body created first so makeHeader's collapse btn can reference it
   const body = document.createElement("div");
-  body.className = "cv2-comp-body";
+  body.className = "component-body";
   body.innerHTML = cv2CardBody(type);
 
-  // Header — identical pattern to Normal Embed Builder's makeHeader()
+  // Header — exactly makeHeader() but we need the card reference for remove,
+  // so we build it inline the same way makeHeader does
   const hdr = document.createElement("div");
   hdr.className = "component-header";
-
   const titleEl = document.createElement("span");
   titleEl.className = "component-title";
   titleEl.textContent = label;
-
-  // Button group: collapse + remove
-  const btnGroup = document.createElement("div");
-  btnGroup.style.cssText = "display:flex;gap:0.5rem;align-items:center;";
-
   const collapseBtn = document.createElement("button");
   collapseBtn.className = "collapse-btn";
   collapseBtn.textContent = "▲";
@@ -1359,7 +1355,15 @@ function cv2AddCard(type, doRefresh = true) {
     body.style.display = collapsed ? "" : "none";
     collapseBtn.textContent = collapsed ? "▲" : "▼";
   };
+  hdr.appendChild(titleEl);
+  hdr.appendChild(collapseBtn);
 
+  card.appendChild(hdr);
+  card.appendChild(body);
+
+  // Remove button lives at the bottom of the body, right-aligned — same as Normal mode
+  const removeBar = document.createElement("div");
+  removeBar.style.cssText = "display:flex;justify-content:flex-end;margin-top:0.75rem;";
   const removeBtn = document.createElement("button");
   removeBtn.className = "remove-btn-red remove-btn-small";
   removeBtn.textContent = "Remove";
@@ -1368,27 +1372,18 @@ function cv2AddCard(type, doRefresh = true) {
     cv2RefreshAllDropdowns();
     saveCV2State();
   };
-
-  btnGroup.appendChild(collapseBtn);
-  btnGroup.appendChild(removeBtn);
-  hdr.appendChild(titleEl);
-  hdr.appendChild(btnGroup);
-
-  card.appendChild(hdr);
-  card.appendChild(body);
+  removeBar.appendChild(removeBtn);
+  body.appendChild(removeBar);
 
   document.getElementById("cv2Components").appendChild(card);
 
   // Wire name/id inputs to refresh dropdowns on change
-  card
-    .querySelectorAll("[data-cv2field='name'],[data-cv2field='id']")
-    .forEach((el) => {
-      el.addEventListener("input", () => {
-        cv2RefreshAllDropdowns();
-        saveCV2State();
-      });
+  card.querySelectorAll("[data-cv2field='name'],[data-cv2field='id']").forEach((el) => {
+    el.addEventListener("input", () => {
+      cv2RefreshAllDropdowns();
+      saveCV2State();
     });
-  // Auto-save all other fields
+  });
   card.addEventListener("input", saveCV2State);
   card.addEventListener("change", saveCV2State);
 
@@ -1397,121 +1392,88 @@ function cv2AddCard(type, doRefresh = true) {
 }
 
 function cv2CardBody(type) {
+  // Helpers that produce the same markup as Normal mode
   const fi = (field, placeholder, extra = "") =>
-    `<div class="cv2-field-group">
-       <input class="form-input" data-cv2field="${field}" placeholder="${placeholder}" ${extra}>
-     </div>`;
+    `<input class="form-input" data-cv2field="${field}" placeholder="${placeholder}" ${extra}>`;
   const ta = (field, placeholder) =>
-    `<div class="cv2-field-group">
-       <textarea class="form-input form-textarea" data-cv2field="${field}" placeholder="${placeholder}" style="min-height:7rem;"></textarea>
-     </div>`;
-  // Checkbox rendered as a full-height cell so it aligns with adjacent inputs
-  const cbCell = (field, label) =>
-    `<div class="cv2-field-group" style="display:flex;align-items:center;padding-top:0.25rem;">
-       <label class="checkbox-label" style="margin:0;">
-         <input type="checkbox" class="form-checkbox" data-cv2field="${field}">
-         <span>${label}</span>
-       </label>
-     </div>`;
-  const sel = (field, options, label = "") =>
-    `<div class="cv2-field-group">
-       ${label ? `<span class="cv2-field-label">${label}</span>` : ""}
-       <select class="form-input" data-cv2field="${field}">${options}</select>
-     </div>`;
-  const dynSel = (field, label = "") =>
-    `<div class="cv2-field-group">
-       ${label ? `<span class="cv2-field-label">${label}</span>` : ""}
-       <select class="form-input" data-cv2field="${field}"><option value="">— none —</option></select>
-     </div>`;
-  // Required dynamic select — starts with a "— select —" placeholder so it's never visually empty
-  const dynSelReq = (field, label = "") =>
-    `<div class="cv2-field-group">
-       ${label ? `<span class="cv2-field-label">${label}</span>` : ""}
-       <select class="form-input" data-cv2field="${field}"><option value="">— select —</option></select>
-     </div>`;
+    `<textarea class="form-input form-textarea" data-cv2field="${field}" placeholder="${placeholder}"></textarea>`;
+  const cb = (field, lbl) =>
+    `<label class="checkbox-label" style="margin:0;">
+       <input type="checkbox" class="form-checkbox" data-cv2field="${field}">
+       <span>${lbl}</span>
+     </label>`;
+  const sel = (field, options) =>
+    `<select class="form-input" data-cv2field="${field}">${options}</select>`;
+  const dynSel = (field, placeholder) =>
+    `<select class="form-input" data-cv2field="${field}">
+       <option value="">— none —</option>
+     </select>`;
+  const dynSelReq = (field) =>
+    `<select class="form-input" data-cv2field="${field}">
+       <option value="">— select —</option>
+     </select>`;
+
+  // Row helpers — use .form-row so the existing auto-fit grid CSS applies
+  const row = (...cells) => `<div class="form-row">${cells.join("")}</div>`;
+  const rowMt = (...cells) => `<div class="form-row" style="margin-top:0.75rem;">${cells.join("")}</div>`;
+  // Inline flex bar for checkboxes (left) — mirrors the bottom bar in Normal mode
+  const cbBar = (...items) =>
+    `<div style="display:flex;gap:1.5rem;align-items:center;margin-top:0.75rem;">${items.join("")}</div>`;
 
   switch (type) {
     case "container":
-      return `<div class="cv2-grid3">
-        ${fi("name", "Container Name (required)")}
-        ${fi("color", "Color (hex, optional)")}
-        ${cbCell("spoiler", "Spoiler")}
-      </div>`;
+      return row(fi("name","Container Name (required)"), fi("color","Color (hex, optional)"))
+           + cbBar(cb("spoiler","Spoiler"));
 
     case "textdisplay":
-      return `${ta("content", "Content (required)")}
-      <div class="cv2-mt">${dynSel("containerOrSection", "Container or Section (optional)")}</div>`;
+      return `${ta("content","Content (required)")}`
+           + rowMt(dynSel("containerOrSection","Container or Section (optional)"));
 
     case "separator":
-      return `<div class="cv2-grid3">
-        ${cbCell("divider", "Show Divider Line")}
-        ${sel("spacing", `<option value="">Default</option><option value="small">Small</option><option value="large">Large</option>`, "Spacing")}
-        ${dynSel("container", "Container (optional)")}
-      </div>`;
+      return row(
+          sel("spacing",`<option value="">Spacing: Default</option><option value="small">Spacing: Small</option><option value="large">Spacing: Large</option>`),
+          dynSel("container","Container (optional)")
+        )
+        + cbBar(cb("divider","Show Divider Line"));
 
     case "section":
-      return `<div class="cv2-grid2">
-        ${fi("name", "Section Name (required)")}
-        ${dynSel("container", "Container (optional)")}
-      </div>`;
+      return row(fi("name","Section Name (required)"), dynSel("container","Container (optional)"));
 
     case "thumbnail":
-      return `<div class="cv2-grid2">
-        ${fi("url", "URL (required)")}
-        ${fi("description", "Description (optional)")}
-      </div>
-      <div class="cv2-grid2 cv2-mt">
-        ${cbCell("spoiler", "Spoiler")}
-        ${dynSelReq("sectionName", "Section Name (required)")}
-      </div>`;
+      return row(fi("url","URL (required)"), fi("description","Description (optional)"))
+           + rowMt(dynSelReq("sectionName"))
+           + cbBar(cb("spoiler","Spoiler"));
 
     case "mediagallery":
-      return `<div class="cv2-grid2">
-        ${fi("id", "Gallery ID (required)")}
-        ${dynSel("container", "Container (optional)")}
-      </div>`;
+      return row(fi("id","Gallery ID (required)"), dynSel("container","Container (optional)"));
 
     case "mediaitem":
-      return `<div class="cv2-grid2">
-        ${fi("url", "URL (required)")}
-        ${fi("description", "Description (optional)")}
-      </div>
-      <div class="cv2-grid2 cv2-mt">
-        ${cbCell("spoiler", "Spoiler")}
-        ${dynSelReq("galleryId", "Gallery ID (required)")}
-      </div>`;
+      return row(fi("url","URL (required)"), fi("description","Description (optional)"))
+           + rowMt(dynSelReq("galleryId"))
+           + cbBar(cb("spoiler","Spoiler"));
 
     case "actionrow":
-      return `<div class="cv2-grid2">
-        ${fi("id", "Action Row ID (required)")}
-        ${dynSel("container", "Container (optional)")}
-      </div>`;
+      return row(fi("id","Action Row ID (required)"), dynSel("container","Container (optional)"));
 
     case "buttoncv2":
-      return `<div class="cv2-grid3">
-        ${fi("id", "ID or URL (required)")}
-        ${fi("label", "Label (optional)")}
-        ${sel("style", `<option value="">Default</option><option value="primary">Primary</option><option value="secondary">Secondary</option><option value="success">Success</option><option value="danger">Danger</option><option value="link">Link</option>`, "Style")}
-      </div>
-      <div class="cv2-grid2 cv2-mt">
-        ${fi("emoji", "Emoji (optional)")}
-        ${cbCell("disabled", "Disabled")}
-      </div>
-      <div class="cv2-mt">${dynSelReq("actionRowOrSection", "Action Row or Section (required)")}</div>`;
+      return row(
+          fi("id","ID or URL (required)"),
+          fi("label","Label (optional)"),
+          sel("style",`<option value="">Style: Default</option><option value="primary">Primary</option><option value="secondary">Secondary</option><option value="success">Success</option><option value="danger">Danger</option><option value="link">Link</option>`)
+        )
+        + rowMt(fi("emoji","Emoji (optional)"), dynSelReq("actionRowOrSection"))
+        + cbBar(cb("disabled","Disabled"));
 
     case "userselect":
     case "roleselect":
     case "mentionable":
-      return `<div class="cv2-grid2">
-        ${fi("id", "ID (required)")}
-        ${fi("placeholder", "Placeholder (optional)")}
-      </div>
-      <div class="cv2-grid3 cv2-mt">
-        ${fi("min", "Min (optional)", "type='number' min='0'")}
-        ${fi("max", "Max (optional)", "type='number' min='0'")}
-        ${cbCell("disabled", "Disabled")}
-      </div>
-      <div class="cv2-mt">${dynSelReq("actionRowId", "Action Row ID (required)")}</div>`;
+      return row(fi("id","ID (required)"), fi("placeholder","Placeholder (optional)"))
+           + rowMt(
+               fi("min","Min (optional)","type='number' min='0'"),
+               fi("max","Max (optional)","type='number' min='0'"),
+               dynSelReq("actionRowId")
+             )
+           + cbBar(cb("disabled","Disabled"));
 
     default:
       return "";
@@ -1540,7 +1502,7 @@ function generateCV2() {
   const errors = [];
 
   const cards = Array.from(
-    document.querySelectorAll("#cv2Components .cv2-comp-card"),
+    document.querySelectorAll("#cv2Components [data-type]"),
   );
   if (cards.length === 0) {
     showToast("Add at least one component first", true);
