@@ -1472,228 +1472,156 @@ function cv2Trim(parts) {
 }
 
 function generateCV2() {
-  const errEl = document.getElementById("cv2Error");
-  errEl.textContent = "";
-  const errors = [];
+  clearInlineErrors();
+  document.getElementById("cv2Error").textContent = "";
+  let hasErrors = false;
 
-  const cards = Array.from(
-    document.querySelectorAll("#cv2Components [data-type]"),
-  );
+  // Helper: show inline error after the first .form-row inside a card
+  function cv2FieldError(card, msg) {
+    const formRow = card.querySelector(".form-row");
+    if (formRow) bodyRowError(formRow, msg);
+    else {
+      const body = card.querySelector(".component-body");
+      if (body) {
+        const span = document.createElement("div");
+        span.className = "inline-error";
+        span.textContent = msg;
+        body.prepend(span);
+      }
+    }
+    hasErrors = true;
+  }
+
+  // Helper: show inline error after the .form-row containing a specific field
+  function cv2InputError(card, field, msg) {
+    const el = card.querySelector(`[data-cv2field="${field}"]`);
+    if (el) {
+      const formRow = el.closest(".form-row");
+      if (formRow) { bodyRowError(formRow, msg); hasErrors = true; return; }
+    }
+    cv2FieldError(card, msg);
+  }
+
+  const cards = Array.from(document.querySelectorAll("#cv2Components [data-type]"));
   if (cards.length === 0) {
-    showToast("Add at least one component first", true);
+    document.getElementById("cv2Error").textContent = "Add at least one component first.";
     return;
   }
 
-  // Collect names for uniqueness checks
+  // Collect names for uniqueness / cross-reference checks
   const containerNames = new Set();
-  const sectionNames = new Set();
-  const allNames = new Set(); // containers + sections combined (must not clash)
+  const sectionNames   = new Set();
+  const allNames       = new Set();
 
   // First pass: uniqueness
-  cards.forEach((card, i) => {
+  cards.forEach((card) => {
     const type = card.dataset.type;
-    const n = i + 1;
     if (type === "container") {
       const name = cv2f("name", card);
-      if (!name) {
-        errors.push(`Component ${n} (Container): Name is required`);
-        return;
-      }
-      if (containerNames.has(name))
-        errors.push(`Component ${n} (Container): Duplicate name "${name}"`);
-      if (allNames.has(name))
-        errors.push(
-          `Component ${n} (Container): Name "${name}" clashes with a Section`,
-        );
-      containerNames.add(name);
-      allNames.add(name);
+      if (!name) { cv2InputError(card, "name", "Container Name is required"); return; }
+      if (containerNames.has(name)) cv2InputError(card, "name", `Duplicate container name "${name}"`);
+      if (allNames.has(name))       cv2InputError(card, "name", `Name "${name}" clashes with a Section`);
+      containerNames.add(name); allNames.add(name);
     }
     if (type === "section") {
       const name = cv2f("name", card);
-      if (!name) {
-        errors.push(`Component ${n} (Section): Name is required`);
-        return;
-      }
-      if (sectionNames.has(name))
-        errors.push(`Component ${n} (Section): Duplicate name "${name}"`);
-      if (allNames.has(name))
-        errors.push(
-          `Component ${n} (Section): Name "${name}" clashes with a Container`,
-        );
-      sectionNames.add(name);
-      allNames.add(name);
+      if (!name) { cv2InputError(card, "name", "Section Name is required"); return; }
+      if (sectionNames.has(name)) cv2InputError(card, "name", `Duplicate section name "${name}"`);
+      if (allNames.has(name))     cv2InputError(card, "name", `Name "${name}" clashes with a Container`);
+      sectionNames.add(name); allNames.add(name);
     }
   });
 
   // Second pass: per-component validation
-  cards.forEach((card, i) => {
+  cards.forEach((card) => {
     const type = card.dataset.type;
-    const n = i + 1;
 
     if (type === "container") {
       const color = cv2f("color", card);
       if (color && !isValidHex(color))
-        errors.push(
-          `Component ${n} (Container): Color must be a valid hex (e.g. #5865F2)`,
-        );
+        cv2InputError(card, "color", "Color must be a valid hex (e.g. #5865F2)");
     }
 
     if (type === "textdisplay") {
       if (!cv2f("content", card))
-        errors.push(`Component ${n} (Text Display): Content is required`);
+        cv2InputError(card, "content", "Content is required");
     }
 
     if (type === "section") {
       const name = cv2f("name", card);
       if (name) {
-        // Must have at least one Text Display attached
-        const hasText = cards.some(
-          (c) =>
-            c.dataset.type === "textdisplay" &&
-            cv2f("containerOrSection", c) === name,
+        const hasText = cards.some(c => c.dataset.type === "textdisplay" && cv2f("containerOrSection", c) === name);
+        if (!hasText) cv2FieldError(card, `Section "${name}": must have at least one Text Display attached`);
+        const hasAccessory = cards.some(c =>
+          (c.dataset.type === "thumbnail" && cv2f("sectionName", c) === name) ||
+          (c.dataset.type === "buttoncv2" && cv2f("actionRowOrSection", c) === name)
         );
-        if (!hasText)
-          errors.push(
-            `Component ${n} (Section "${name}"): Must have at least one Text Display attached`,
-          );
-        // Must have at least one accessory (Thumbnail or Button CV2)
-        const hasAccessory = cards.some(
-          (c) =>
-            (c.dataset.type === "thumbnail" &&
-              cv2f("sectionName", c) === name) ||
-            (c.dataset.type === "buttoncv2" &&
-              cv2f("actionRowOrSection", c) === name),
-        );
-        if (!hasAccessory)
-          errors.push(
-            `Component ${n} (Section "${name}"): Must have at least one Thumbnail or Button CV2 accessory`,
-          );
-        // Max 3 components (Text Displays + Thumbnails)
-        const textCount = cards.filter(
-          (c) =>
-            c.dataset.type === "textdisplay" &&
-            cv2f("containerOrSection", c) === name,
-        ).length;
-        const thumbCount = cards.filter(
-          (c) =>
-            c.dataset.type === "thumbnail" && cv2f("sectionName", c) === name,
-        ).length;
-        if (textCount + thumbCount > 3)
-          errors.push(
-            `Component ${n} (Section "${name}"): Max 3 components (Text Displays + Thumbnails)`,
-          );
+        if (!hasAccessory) cv2FieldError(card, `Section "${name}": must have at least one Thumbnail or Button CV2 accessory`);
+        const textCount  = cards.filter(c => c.dataset.type === "textdisplay" && cv2f("containerOrSection", c) === name).length;
+        const thumbCount = cards.filter(c => c.dataset.type === "thumbnail"   && cv2f("sectionName", c) === name).length;
+        if (textCount + thumbCount > 3) cv2FieldError(card, `Section "${name}": max 3 components (Text Displays + Thumbnails)`);
       }
     }
 
     if (type === "thumbnail") {
       const url = cv2f("url", card);
-      if (!url) errors.push(`Component ${n} (Thumbnail): URL is required`);
-      else if (!isValidUrl(url))
-        errors.push(
-          `Component ${n} (Thumbnail): URL must start with http:// or https://`,
-        );
-      if (!cv2f("sectionName", card))
-        errors.push(`Component ${n} (Thumbnail): Section Name is required`);
+      if (!url) cv2InputError(card, "url", "URL is required");
+      else if (!isValidUrl(url)) cv2InputError(card, "url", "URL must start with http:// or https://");
+      if (!cv2f("sectionName", card)) cv2InputError(card, "sectionName", "Section Name is required");
     }
 
     if (type === "mediagallery") {
-      if (!cv2f("id", card))
-        errors.push(`Component ${n} (Media Gallery): Gallery ID is required`);
+      if (!cv2f("id", card)) cv2InputError(card, "id", "Gallery ID is required");
     }
 
     if (type === "mediaitem") {
       const url = cv2f("url", card);
-      if (!url) errors.push(`Component ${n} (Media Item): URL is required`);
-      else if (!isValidUrl(url))
-        errors.push(
-          `Component ${n} (Media Item): URL must start with http:// or https://`,
-        );
+      if (!url) cv2InputError(card, "url", "URL is required");
+      else if (!isValidUrl(url)) cv2InputError(card, "url", "URL must start with http:// or https://");
       const gid = cv2f("galleryId", card);
-      if (!gid)
-        errors.push(`Component ${n} (Media Item): Gallery ID is required`);
+      if (!gid) cv2InputError(card, "galleryId", "Gallery ID is required");
       else {
-        const galleryExists = cards.some(
-          (c) => c.dataset.type === "mediagallery" && cv2f("id", c) === gid,
-        );
-        if (!galleryExists)
-          errors.push(
-            `Component ${n} (Media Item): Gallery ID "${gid}" does not match any Media Gallery`,
-          );
+        const galleryExists = cards.some(c => c.dataset.type === "mediagallery" && cv2f("id", c) === gid);
+        if (!galleryExists) cv2InputError(card, "galleryId", `Gallery ID "${gid}" does not match any Media Gallery`);
       }
     }
 
     if (type === "actionrow") {
       const rowId = cv2f("id", card);
-      if (!rowId) {
-        errors.push(`Component ${n} (Action Row): Action Row ID is required`);
-        return;
-      }
-      // Must contain at least one button or select
-      const children = cards.filter(
-        (c) =>
-          ["buttoncv2", "userselect", "roleselect", "mentionable"].includes(
-            c.dataset.type,
-          ) &&
-          (cv2f("actionRowOrSection", c) === rowId ||
-            cv2f("actionRowId", c) === rowId),
+      if (!rowId) { cv2InputError(card, "id", "Action Row ID is required"); return; }
+      const children = cards.filter(c =>
+        ["buttoncv2","userselect","roleselect","mentionable"].includes(c.dataset.type) &&
+        (cv2f("actionRowOrSection", c) === rowId || cv2f("actionRowId", c) === rowId)
       );
-      if (children.length === 0)
-        errors.push(
-          `Component ${n} (Action Row "${rowId}"): Must contain at least one Button or Select`,
-        );
-      const buttons = children.filter((c) => c.dataset.type === "buttoncv2");
-      const selects = children.filter((c) =>
-        ["userselect", "roleselect", "mentionable"].includes(c.dataset.type),
-      );
-      if (buttons.length > 0 && selects.length > 0)
-        errors.push(
-          `Component ${n} (Action Row "${rowId}"): Cannot mix Buttons and Selects`,
-        );
-      if (selects.length > 1)
-        errors.push(
-          `Component ${n} (Action Row "${rowId}"): Max 1 Select per row`,
-        );
-      if (buttons.length > 5)
-        errors.push(
-          `Component ${n} (Action Row "${rowId}"): Max 5 Buttons per row`,
-        );
+      if (children.length === 0) cv2FieldError(card, `Action Row "${rowId}": must contain at least one Button or Select`);
+      const buttons = children.filter(c => c.dataset.type === "buttoncv2");
+      const selects = children.filter(c => ["userselect","roleselect","mentionable"].includes(c.dataset.type));
+      if (buttons.length > 0 && selects.length > 0) cv2FieldError(card, `Action Row "${rowId}": cannot mix Buttons and Selects`);
+      if (selects.length > 1) cv2FieldError(card, `Action Row "${rowId}": max 1 Select per row`);
+      if (buttons.length > 5) cv2FieldError(card, `Action Row "${rowId}": max 5 Buttons per row`);
     }
 
     if (type === "buttoncv2") {
-      if (!cv2f("id", card))
-        errors.push(`Component ${n} (Button CV2): ID/URL is required`);
-      const label = cv2f("label", card);
-      const emoji = cv2f("emoji", card);
-      if (!label && !emoji)
-        errors.push(`Component ${n} (Button CV2): Must have a Label or Emoji`);
-      if (!cv2f("actionRowOrSection", card))
-        errors.push(
-          `Component ${n} (Button CV2): Action Row or Section is required`,
-        );
+      if (!cv2f("id", card)) cv2InputError(card, "id", "ID/URL is required");
+      if (!cv2f("label", card) && !cv2f("emoji", card)) cv2InputError(card, "label", "Must have a Label or Emoji");
+      if (!cv2f("actionRowOrSection", card)) cv2InputError(card, "actionRowOrSection", "Action Row or Section is required");
     }
 
-    if (["userselect", "roleselect", "mentionable"].includes(type)) {
-      const label = {
-        userselect: "User Select",
-        roleselect: "Role Select",
-        mentionable: "Mentionable Select",
-      }[type];
-      if (!cv2f("id", card))
-        errors.push(`Component ${n} (${label}): ID is required`);
-      if (!cv2f("actionRowId", card))
-        errors.push(`Component ${n} (${label}): Action Row ID is required`);
+    if (["userselect","roleselect","mentionable"].includes(type)) {
+      if (!cv2f("id", card)) cv2InputError(card, "id", "ID is required");
+      if (!cv2f("actionRowId", card)) cv2InputError(card, "actionRowId", "Action Row ID is required");
     }
   });
 
-  if (errors.length > 0) {
-    errors.forEach((e, i) => setTimeout(() => showToast(e, true), i * 150));
-    errEl.textContent = errors[0];
+  if (hasErrors) {
+    const first = document.querySelector("#cv2Components .inline-error");
+    if (first) first.scrollIntoView({ behavior: "smooth", block: "center" });
     return;
   }
 
   // Code generation — containers first, then rest in order
-  const containerCards = cards.filter((c) => c.dataset.type === "container");
-  const otherCards = cards.filter((c) => c.dataset.type !== "container");
+  const containerCards = cards.filter(c => c.dataset.type === "container");
+  const otherCards     = cards.filter(c => c.dataset.type !== "container");
   const ordered = [...containerCards, ...otherCards];
 
   const lines = [];
@@ -1702,97 +1630,49 @@ function generateCV2() {
     let parts;
 
     if (type === "container") {
-      parts = cv2Trim([
-        cv2f("name", card),
-        cv2f("color", card),
-        cv2f("spoiler", card) === "true" ? "true" : "",
-      ]);
+      parts = cv2Trim([cv2f("name",card), cv2f("color",card), cv2f("spoiler",card) === "true" ? "true" : ""]);
       lines.push(`$addContainer[${parts.join(";")}]`);
     } else if (type === "textdisplay") {
-      parts = cv2Trim([
-        sanitizeInput(cv2f("content", card)),
-        cv2f("containerOrSection", card),
-      ]);
+      parts = cv2Trim([sanitizeInput(cv2f("content",card)), cv2f("containerOrSection",card)]);
       lines.push(`$addTextDisplay[${parts.join(";")}]`);
     } else if (type === "separator") {
-      const divider = cv2f("divider", card) === "true" ? "true" : "";
-      const spacing = cv2f("spacing", card);
-      const container = cv2f("container", card);
+      const divider   = cv2f("divider",card) === "true" ? "true" : "";
+      const spacing   = cv2f("spacing",card);
+      const container = cv2f("container",card);
       parts = cv2Trim([divider, spacing, container]);
-      if (parts.length === 0 || (parts.length === 1 && parts[0] === ""))
-        lines.push(`$addSeparator[]`);
-      else lines.push(`$addSeparator[${parts.join(";")}]`);
+      lines.push(parts.length === 0 || (parts.length === 1 && parts[0] === "") ? `$addSeparator[]` : `$addSeparator[${parts.join(";")}]`);
     } else if (type === "section") {
-      parts = cv2Trim([cv2f("name", card), cv2f("container", card)]);
+      parts = cv2Trim([cv2f("name",card), cv2f("container",card)]);
       lines.push(`$addSection[${parts.join(";")}]`);
     } else if (type === "thumbnail") {
-      parts = cv2Trim([
-        cv2f("url", card),
-        sanitizeInput(cv2f("description", card)),
-        cv2f("spoiler", card) === "true" ? "true" : "",
-        cv2f("sectionName", card),
-      ]);
+      parts = cv2Trim([cv2f("url",card), sanitizeInput(cv2f("description",card)), cv2f("spoiler",card) === "true" ? "true" : "", cv2f("sectionName",card)]);
       lines.push(`$addThumbnail[${parts.join(";")}]`);
     } else if (type === "mediagallery") {
-      parts = cv2Trim([cv2f("id", card), cv2f("container", card)]);
+      parts = cv2Trim([cv2f("id",card), cv2f("container",card)]);
       lines.push(`$addMediaGallery[${parts.join(";")}]`);
     } else if (type === "mediaitem") {
-      parts = cv2Trim([
-        cv2f("url", card),
-        sanitizeInput(cv2f("description", card)),
-        cv2f("spoiler", card) === "true" ? "true" : "",
-        cv2f("galleryId", card),
-      ]);
+      parts = cv2Trim([cv2f("url",card), sanitizeInput(cv2f("description",card)), cv2f("spoiler",card) === "true" ? "true" : "", cv2f("galleryId",card)]);
       lines.push(`$addMediaGalleryItem[${parts.join(";")}]`);
     } else if (type === "actionrow") {
-      parts = cv2Trim([cv2f("id", card), cv2f("container", card)]);
+      parts = cv2Trim([cv2f("id",card), cv2f("container",card)]);
       lines.push(`$addActionRow[${parts.join(";")}]`);
     } else if (type === "buttoncv2") {
-      parts = cv2Trim([
-        cv2f("id", card),
-        sanitizeInput(cv2f("label", card)),
-        cv2f("style", card),
-        cv2f("disabled", card) === "true" ? "true" : "",
-        sanitizeInput(cv2f("emoji", card)),
-        cv2f("actionRowOrSection", card),
-      ]);
+      parts = cv2Trim([cv2f("id",card), sanitizeInput(cv2f("label",card)), cv2f("style",card), cv2f("disabled",card) === "true" ? "true" : "", sanitizeInput(cv2f("emoji",card)), cv2f("actionRowOrSection",card)]);
       lines.push(`$addButtonCV2[${parts.join(";")}]`);
     } else if (type === "userselect") {
-      parts = cv2Trim([
-        cv2f("id", card),
-        sanitizeInput(cv2f("placeholder", card)),
-        cv2f("min", card),
-        cv2f("max", card),
-        cv2f("disabled", card) === "true" ? "true" : "",
-        cv2f("actionRowId", card),
-      ]);
+      parts = cv2Trim([cv2f("id",card), sanitizeInput(cv2f("placeholder",card)), cv2f("min",card), cv2f("max",card), cv2f("disabled",card) === "true" ? "true" : "", cv2f("actionRowId",card)]);
       lines.push(`$addUserSelect[${parts.join(";")}]`);
     } else if (type === "roleselect") {
-      parts = cv2Trim([
-        cv2f("id", card),
-        sanitizeInput(cv2f("placeholder", card)),
-        cv2f("min", card),
-        cv2f("max", card),
-        cv2f("disabled", card) === "true" ? "true" : "",
-        cv2f("actionRowId", card),
-      ]);
+      parts = cv2Trim([cv2f("id",card), sanitizeInput(cv2f("placeholder",card)), cv2f("min",card), cv2f("max",card), cv2f("disabled",card) === "true" ? "true" : "", cv2f("actionRowId",card)]);
       lines.push(`$addRoleSelect[${parts.join(";")}]`);
     } else if (type === "mentionable") {
-      parts = cv2Trim([
-        cv2f("id", card),
-        sanitizeInput(cv2f("placeholder", card)),
-        cv2f("min", card),
-        cv2f("max", card),
-        cv2f("disabled", card) === "true" ? "true" : "",
-        cv2f("actionRowId", card),
-      ]);
+      parts = cv2Trim([cv2f("id",card), sanitizeInput(cv2f("placeholder",card)), cv2f("min",card), cv2f("max",card), cv2f("disabled",card) === "true" ? "true" : "", cv2f("actionRowId",card)]);
       lines.push(`$addMentionableSelect[${parts.join(";")}]`);
     }
   });
 
   const code = lines.join("\n");
   document.getElementById("cv2Output").textContent = code;
-  document.getElementById("cv2CharCount").textContent =
-    code.length + " characters";
+  document.getElementById("cv2CharCount").textContent = code.length + " characters";
   saveCV2State();
 }
