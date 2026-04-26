@@ -345,12 +345,13 @@
 	opacity: 0;
 	transition: opacity 0.3s;
 	white-space: nowrap;
-	display: inline-block;
 	margin-left: 0.5rem;
-	vertical-align: middle;
+	overflow: hidden;
+	max-width: 0;
 }
 .copy-success.show {
 	opacity: 1;
+	max-width: 5rem;
 }
 .clickable-color {
 	cursor: pointer;
@@ -376,7 +377,7 @@
     	<input type="color" id="colorPicker" class="color-input" value="#000000" oninput="colorPickerChange()">
   	</div>
   	<div class="error" id="errorText"></div>
-  	<div id="validColorDisplay" style="position: relative;">
+  	<div id="validColorDisplay" style="position: relative; display: flex; align-items: center;">
 		<div class="valid-color" style="background:#000000" onclick="copyToClipboard('#000000', 'colorCopySuccess')">#000000</div>
 		<span class="copy-success" id="colorCopySuccess">Copied!</span>
 	</div>
@@ -433,12 +434,12 @@ $description[⬅️ Border color hex]
 $color[#673ab7]
 </code></pre>
 <discord-messages>
-    <discord-message role-color="#E67E22" author="RainbowKey">
+    <discord-message author="RainbowKey" role-color="#E67E22">
         !example
     </discord-message>
-    <discord-message author="BDFD Support" verified bot role-color="#378afa">
+    <discord-message author="BDFD Support" bot verified role-color="#378afa">
         <none>
-        <discord-embed color="#673ab7" slot="embeds">
+        <discord-embed slot="embeds" color="#673ab7">
             <discord-embed-description slot="description">
                 ⬅️ Border color hex
             </discord-embed-description>
@@ -687,10 +688,10 @@ $description[⬅️ Border color hex]
 $color[#673ab7]
 </code></pre>
 <discord-messages>
-    <discord-message author="RainbowKey" role-color="#E67E22">
+    <discord-message role-color="#E67E22" author="RainbowKey">
         !example
     </discord-message>
-    <discord-message author="BDFD Support" verified role-color="#378afa" bot>
+    <discord-message bot verified author="BDFD Support" role-color="#378afa">
         <none>
         <discord-embed slot="embeds" color="#673ab7">
             <discord-embed-description slot="description">
@@ -2209,7 +2210,7 @@ input[type="checkbox"] {
 Unix date: &lt;t:1917043200:D&gt;
 </code></pre>
 <discord-messages>
-    <discord-message author="RainbowKey" role-color="#E67E22">
+    <discord-message role-color="#E67E22" author="RainbowKey">
         !example
     </discord-message>
     <discord-message bot author="BDFD Support" role-color="#378afa" verified>
@@ -2413,7 +2414,7 @@ $sendMessage[[%{DOL}%Hello\\; this is pretty cool\\; right%{DOL}%\\]]
     <discord-message role-color="#ffffff" author="Zubariel">
         !example
     </discord-message>
-    <discord-message bot author="BDFD Support" verified role-color="#378afa">
+    <discord-message author="BDFD Support" role-color="#378afa" bot verified>
         [$Hello; this is pretty cool; right$]
     </discord-message>
 </discord-messages>
@@ -3009,9 +3010,9 @@ $color[#673ab7]
     <discord-message role-color="#ffffff" author="Zubariel">
         !example
     </discord-message>
-    <discord-message bot verified role-color="#378afa" author="BDFD Support">
+    <discord-message bot role-color="#378afa" author="BDFD Support" verified>
         <none>
-        <discord-embed slot="embeds" embed-title="Hello" color="#673ab7">
+        <discord-embed embed-title="Hello" slot="embeds" color="#673ab7">
             <discord-embed-description slot="description">
                 Welcome to embed builder.
             </discord-embed-description>
