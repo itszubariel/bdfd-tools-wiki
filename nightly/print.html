@@ -398,10 +398,10 @@ $description[⬅️ Border color hex]
 $color[#673ab7]
 </code></pre>
 <discord-messages>
-    <discord-message role-color="#E67E22" author="RainbowKey">
+    <discord-message author="RainbowKey" role-color="#E67E22">
         !example
     </discord-message>
-    <discord-message verified bot author="BDFD Support" role-color="#378afa">
+    <discord-message role-color="#378afa" author="BDFD Support" bot verified>
         <none>
         <discord-embed slot="embeds" color="#673ab7">
             <discord-embed-description slot="description">
@@ -2548,7 +2548,7 @@ Unix date: &lt;t:1917043200:D&gt;
     <discord-message role-color="#E67E22" author="RainbowKey">
         !example
     </discord-message>
-    <discord-message verified bot author="BDFD Support" role-color="#378afa">
+    <discord-message verified role-color="#378afa" author="BDFD Support" bot>
         Unix date: <div class="discord-time-mark">January 10, 2030</div>
     </discord-message>
 </discord-messages>
@@ -2749,7 +2749,7 @@ $sendMessage[[%{DOL}%Hello\\; this is pretty cool\\; right%{DOL}%\\]]
     <discord-message role-color="#ffffff" author="Zubariel">
         !example
     </discord-message>
-    <discord-message author="BDFD Support" bot role-color="#378afa" verified>
+    <discord-message verified bot author="BDFD Support" role-color="#378afa">
         [$Hello; this is pretty cool; right$]
     </discord-message>
 </discord-messages>
@@ -3088,6 +3088,8 @@ select.form-input option {
 	padding: 0.3rem;
 	gap: 0.3rem;
 	box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+	flex-wrap: wrap;
+	justify-content: center;
 }
 .mode-btn {
 	outline: none;
@@ -3118,6 +3120,101 @@ select.form-input option {
 	margin-left: 0.2rem;
 	font-weight: 700;
 }
+/* CompV2 component type badges */
+.cv2-badge {
+	display: inline-block;
+	padding: 0.2rem 0.7rem;
+	border-radius: 0.4rem;
+	font-size: 1.1rem;
+	font-weight: 700;
+	letter-spacing: 0.03em;
+	text-transform: uppercase;
+	margin-right: 0.5rem;
+	vertical-align: middle;
+}
+.cv2-badge-container    { background: hsl(260deg 70% 45% / 80%); }
+.cv2-badge-textdisplay  { background: hsl(200deg 70% 40% / 80%); }
+.cv2-badge-separator    { background: hsl(0deg 0% 40% / 80%); }
+.cv2-badge-section      { background: hsl(160deg 60% 35% / 80%); }
+.cv2-badge-thumbnail    { background: hsl(30deg 70% 40% / 80%); }
+.cv2-badge-mediagallery { background: hsl(340deg 60% 40% / 80%); }
+.cv2-badge-mediaitem    { background: hsl(340deg 50% 50% / 80%); }
+.cv2-badge-actionrow    { background: hsl(220deg 60% 40% / 80%); }
+.cv2-badge-buttoncv2    { background: hsl(240deg 60% 45% / 80%); }
+.cv2-badge-userselect   { background: hsl(120deg 50% 35% / 80%); }
+.cv2-badge-roleselect   { background: hsl(90deg 50% 35% / 80%); }
+.cv2-badge-mentionable  { background: hsl(60deg 50% 35% / 80%); }
+/* CompV2 reference table */
+.cv2-ref-table {
+	width: 100%;
+	border-collapse: collapse;
+	font-size: 1.2rem;
+	margin-top: 0.5rem;
+}
+.cv2-ref-table th {
+	text-align: left;
+	padding: 0.5rem 0.75rem;
+	background: hsl(0deg 0% 100% / 8%);
+	color: rgba(255,255,255,0.7);
+	font-weight: 600;
+	border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+.cv2-ref-table td {
+	padding: 0.45rem 0.75rem;
+	border-bottom: 1px solid rgba(255,255,255,0.05);
+	color: rgba(255,255,255,0.85);
+	font-family: monospace;
+	vertical-align: top;
+}
+.cv2-ref-table tr:last-child td { border-bottom: none; }
+.cv2-ref-table td:first-child { color: hsl(200deg 80% 70%); font-weight: 600; }
+/* CompV2 component card */
+.cv2-comp-card {
+	background: hsl(0deg 0% 100% / 5%);
+	border-radius: var(--border-radius);
+	padding: 1rem;
+	margin-bottom: 1rem;
+	margin-top: 1rem;
+	border: 1px solid rgba(255,255,255,0.08);
+}
+.cv2-comp-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 0.75rem;
+}
+.cv2-comp-title {
+	display: flex;
+	align-items: center;
+	gap: 0.4rem;
+	font-size: 1.3rem;
+	font-weight: 600;
+	color: rgba(255,255,255,0.9);
+}
+.cv2-grid2 {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 1rem;
+}
+.cv2-grid3 {
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr;
+	gap: 1rem;
+}
+@media (max-width: 640px) {
+	.cv2-grid2, .cv2-grid3 { grid-template-columns: 1fr; }
+}
+.cv2-field-group {
+	display: flex;
+	flex-direction: column;
+	gap: 0.4rem;
+}
+.cv2-field-label {
+	font-size: 1.1rem;
+	color: rgba(255,255,255,0.55);
+	font-weight: 500;
+}
+.cv2-mt { margin-top: 0.75rem; }
 </style>
 <p>Here you can make embeds using the respective text inputs. (Auto escapes escapeable characters inside of text fields.)</p>
 <div id="admonition-note" class="admonition admonish-note" role="note" aria-labelledby="admonition-note-title">
@@ -3135,6 +3232,7 @@ select.form-input option {
   <div class="mode-toggle">
     <button class="mode-btn active" id="modeNormal">Normal Embed Builder</button>
     <button class="mode-btn" id="modeSend">Send Embed Builder</button>
+    <button class="mode-btn" id="modeCompV2">CompV2 Builder</button>
   </div>
 </div>
 <div id="normalBuilder">
@@ -3270,6 +3368,68 @@ select.form-input option {
   <div class="error" id="s_error"></div>
 </div>
 </div>
+<!-- ═══════════════════════════════════════════════════════════
+     COMPV2 BUILDER
+     ═══════════════════════════════════════════════════════════ -->
+<div id="compV2Builder" style="display:none;">
+<div class="picker-container">
+  <h2 id="compv2-builder"><a class="header" href="#compv2-builder">CompV2 Builder</a></h2>
+  <p>Add components below to generate Components V2 code.</p>
+<!-- Add Components card -->
+<div class="form-group">
+    <label>Add Components</label>
+    <div class="flex-buttons" id="cv2AddButtons">
+      <button class="add-field-btn" id="cv2AddContainer">+ Container</button>
+      <button class="add-field-btn" id="cv2AddTextDisplay">+ Text Display</button>
+      <button class="add-field-btn" id="cv2AddSeparator">+ Separator</button>
+      <button class="add-field-btn" id="cv2AddSection">+ Section</button>
+      <button class="add-field-btn" id="cv2AddThumbnail">+ Thumbnail</button>
+      <button class="add-field-btn" id="cv2AddMediaGallery">+ Media Gallery</button>
+      <button class="add-field-btn" id="cv2AddMediaItem">+ Media Item</button>
+      <button class="add-field-btn" id="cv2AddActionRow">+ Action Row</button>
+      <button class="add-field-btn" id="cv2AddButtonCV2">+ Button CV2</button>
+      <button class="add-field-btn" id="cv2AddUserSelect">+ User Select</button>
+      <button class="add-field-btn" id="cv2AddRoleSelect">+ Role Select</button>
+      <button class="add-field-btn" id="cv2AddMentionable">+ Mentionable Select</button>
+    </div>
+  </div>
+<!-- Dynamic component cards go here -->
+<div id="cv2Components"></div>
+<!-- Output -->
+<div class="btn-row">
+    <button id="cv2GenerateBtn" class="generate-btn">Generate Code</button>
+    <button id="cv2CopyBtn" class="copy-btn">Copy Output</button>
+    <button id="cv2ClearBtn" class="clear-btn">Clear All</button>
+  </div>
+  <div id="cv2Output" class="output">Generated code appears here...</div>
+  <div class="char-count" id="cv2CharCount">0 characters</div>
+  <div class="error" id="cv2Error"></div>
+</div>
+<!-- Parameter Reference -->
+<div class="picker-container" style="margin-top:1.5rem;margin-bottom:1.5rem;">
+  <h2 id="parameter-reference"><a class="header" href="#parameter-reference">Parameter Reference</a></h2>
+  <p>CompV2 function signatures for reference.</p>
+  <table class="cv2-ref-table">
+    <thead>
+      <tr><th>Function</th><th>Parameters</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>$addContainer</td><td>name;color?;spoiler?</td></tr>
+      <tr><td>$addTextDisplay</td><td>content;containerOrSectionName?</td></tr>
+      <tr><td>$addSeparator</td><td>divider?;spacing?;containerName?</td></tr>
+      <tr><td>$addSection</td><td>name;containerName?</td></tr>
+      <tr><td>$addThumbnail</td><td>url;description?;spoiler?;sectionName</td></tr>
+      <tr><td>$addMediaGallery</td><td>galleryID;containerName?</td></tr>
+      <tr><td>$addMediaGalleryItem</td><td>url;description?;spoiler?;galleryID</td></tr>
+      <tr><td>$addActionRow</td><td>rowID;containerName?</td></tr>
+      <tr><td>$addButtonCV2</td><td>id;label?;style?;disabled?;emoji?;actionRowOrSectionID</td></tr>
+      <tr><td>$addUserSelect</td><td>id;placeholder?;min?;max?;disabled?;actionRowID</td></tr>
+      <tr><td>$addRoleSelect</td><td>id;placeholder?;min?;max?;disabled?;actionRowID</td></tr>
+      <tr><td>$addMentionableSelect</td><td>id;placeholder?;min?;max?;disabled?;actionRowID</td></tr>
+    </tbody>
+  </table>
+</div>
+</div>
 <h2 id="functions-3"><a class="header" href="#functions-3">Functions</a></h2>
 <div id="admonition-note-1" class="admonition admonish-note" role="note" aria-labelledby="admonition-note-1-title">
 <div class="admonition-title">
@@ -3289,6 +3449,9 @@ select.form-input option {
 <li><a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/addField.md"><code>$addField[]</code></a>, <a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/addButton.md"><code>$addButton[]</code></a>, <a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/addSelectMenuOption.md"><code>$addSelectMenuOption[]</code></a></li>
 <li><a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/newModal.md"><code>$newModal[]</code></a>, <a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/addTextInput.md"><code>$addTextInput[]</code></a></li>
 <li><a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/sendEmbedMessage.md"><code>$sendEmbedMessage[]</code></a></li>
+<li><a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/addContainer.md"><code>$addContainer[]</code></a>, <a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/addTextDisplay.md"><code>$addTextDisplay[]</code></a>, <a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/addSeparator.md"><code>$addSeparator[]</code></a>, <a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/addSection.md"><code>$addSection[]</code></a></li>
+<li><a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/addThumbnail.md"><code>$addThumbnail[]</code></a>, <a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/addMediaGallery.md"><code>$addMediaGallery[]</code></a>, <a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/addMediaGalleryItem.md"><code>$addMediaGalleryItem[]</code></a></li>
+<li><a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/addActionRow.md"><code>$addActionRow[]</code></a>, <a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/addButtonCV2.md"><code>$addButtonCV2[]</code></a>, <a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/addUserSelect.md"><code>$addUserSelect[]</code></a>, <a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/addRoleSelect.md"><code>$addRoleSelect[]</code></a>, <a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/addMentionableSelect.md"><code>$addMentionableSelect[]</code></a></li>
 </ul>
 <h2 id="example-3"><a class="header" href="#example-3">Example</a></h2>
 <pre><code>$nomention
@@ -3297,10 +3460,10 @@ $description[Welcome to embed builder.]
 $color[#673ab7]
 </code></pre>
 <discord-messages>
-    <discord-message role-color="#ffffff" author="Zubariel">
+    <discord-message author="Zubariel" role-color="#ffffff">
         !example
     </discord-message>
-    <discord-message bot author="BDFD Support" role-color="#378afa" verified>
+    <discord-message author="BDFD Support" bot role-color="#378afa" verified>
         <none>
         <discord-embed color="#673ab7" slot="embeds" embed-title="Hello">
             <discord-embed-description slot="description">
