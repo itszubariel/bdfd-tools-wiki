@@ -440,12 +440,12 @@ $description[⬅️ Border color hex]
 $color[#673ab7]
 </code></pre>
 <discord-messages>
-    <discord-message role-color="#E67E22" author="RainbowKey">
+    <discord-message author="RainbowKey" role-color="#E67E22">
         !example
     </discord-message>
-    <discord-message author="BDFD Support" bot role-color="#378afa" verified>
+    <discord-message role-color="#378afa" bot author="BDFD Support" verified>
         <none>
-        <discord-embed slot="embeds" color="#673ab7">
+        <discord-embed color="#673ab7" slot="embeds">
             <discord-embed-description slot="description">
                 ⬅️ Border color hex
             </discord-embed-description>
@@ -1914,7 +1914,10 @@ input[type="checkbox"] {
 	opacity: 0;
 	transition: opacity 0.3s;
 	white-space: nowrap;
-	margin-left: 0.5rem;
+	position: absolute;
+	margin-top: 0.5rem;
+	left: 50%;
+	transform: translateX(-50%);
 }
 .copy-success.show {
 	opacity: 1;
@@ -1940,13 +1943,6 @@ input[type="checkbox"] {
 	word-break: break-all;
 	transition: 0.3s;
 	cursor: pointer;
-	display: inline-block;
-	padding: 0.5rem;
-	border-radius: var(--border-radius);
-}
-.total-value:hover {
-	background-color: rgba(255, 255, 255, 0.1);
-	transform: scale(1.02);
 }
 .total-section h2 {
 	margin-top: 0;
@@ -2396,11 +2392,11 @@ input[type="checkbox"] {
             <span class="permission-value" id="value-create_invite">1</span>
         </label>
     </div>
-    <div class="total-section">
+    <div class="total-section" style="position: relative;">
         <h2 id="current-permission-value"><a class="header" href="#current-permission-value">Current Permission Value:</a></h2>
         <div class="total-value" id="totalValue" onclick="copyPermissionValue()">0</div>
-        <span class="copy-success" id="permissionCopySuccess">Copied!</span>
         <div class="hex-value" id="hexValue">0x0</div>
+        <span class="copy-success" id="permissionCopySuccess">Copied!</span>
     </div>
     <div class="input-section">
         <input type="number" id="targetValue" placeholder="Enter permission value to find combinations." min="0">
@@ -2636,7 +2632,7 @@ Unix date: &lt;t:1917043200:D&gt;
     <discord-message author="RainbowKey" role-color="#E67E22">
         !example
     </discord-message>
-    <discord-message author="BDFD Support" verified role-color="#378afa" bot>
+    <discord-message bot verified author="BDFD Support" role-color="#378afa">
         Unix date: <div class="discord-time-mark">January 10, 2030</div>
     </discord-message>
 </discord-messages>
@@ -3430,12 +3426,12 @@ $description[Welcome to embed builder.]
 $color[#673ab7]
 </code></pre>
 <discord-messages>
-    <discord-message author="Zubariel" role-color="#ffffff">
+    <discord-message role-color="#ffffff" author="Zubariel">
         !example
     </discord-message>
-    <discord-message role-color="#378afa" verified author="BDFD Support" bot>
+    <discord-message verified role-color="#378afa" author="BDFD Support" bot>
         <none>
-        <discord-embed slot="embeds" color="#673ab7" embed-title="Hello">
+        <discord-embed embed-title="Hello" slot="embeds" color="#673ab7">
             <discord-embed-description slot="description">
                 Welcome to embed builder.
             </discord-embed-description>
