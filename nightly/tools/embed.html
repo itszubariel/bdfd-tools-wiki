@@ -546,34 +546,9 @@ select.form-input option {
 	margin-left: 0.2rem;
 	font-weight: 700;
 }
-/* CompV2 reference table */
-.cv2-ref-table {
-	width: 100%;
-	border-collapse: collapse;
-	font-size: 1.2rem;
-	margin-top: 0.5rem;
-}
-.cv2-ref-table th {
-	text-align: left;
-	padding: 0.5rem 0.75rem;
-	background: hsl(0deg 0% 100% / 8%);
-	color: rgba(255,255,255,0.7);
-	font-weight: 600;
-	border-bottom: 1px solid rgba(255,255,255,0.1);
-}
-.cv2-ref-table td {
-	padding: 0.45rem 0.75rem;
-	border-bottom: 1px solid rgba(255,255,255,0.05);
-	color: rgba(255,255,255,0.85);
-	font-family: monospace;
-	vertical-align: top;
-}
-.cv2-ref-table tr:last-child td { border-bottom: none; }
-.cv2-ref-table td:first-child { color: hsl(200deg 80% 70%); font-weight: 600; }
-.cv2-ref-table td:first-child a { color: inherit; text-decoration: none; border-bottom: 1px dashed hsl(200deg 80% 70% / 50%); }
-.cv2-ref-table td:first-child a:hover { border-bottom-style: solid; }
+
 </style>
-<p>Here you can make embeds using the respective text inputs. (Auto escapes escapeable characters inside of text fields.)</p>
+<p>Here you can make embeds using the respective text inputs. (supports normal components and components v2.)</p>
 <div id="admonition-note" class="admonition admonish-note" role="note" aria-labelledby="admonition-note-title">
 <div class="admonition-title">
 <div id="admonition-note-title">
@@ -582,7 +557,7 @@ select.form-input option {
 <a class="admonition-anchor-link" href="#admonition-note"></a>
 </div>
 <div>
-<p>Embed Builder creates Discord embeds with titles, descriptions, fields, buttons, select menus,  modals, and more.</p>
+<p>Embed Builder creates Discord embeds/containers with titles, descriptions, fields, buttons, select menus,  modals, and more.</p>
 </div>
 </div>
 <div class="mode-toggle-wrapper">
@@ -762,30 +737,6 @@ select.form-input option {
   <div class="char-count" id="cv2CharCount">0 characters</div>
   <div class="error" id="cv2Error"></div>
 </div>
-<!-- Parameter Reference -->
-<div class="picker-container" style="margin-top:1.5rem;margin-bottom:1.5rem;">
-  <h2 id="parameter-reference"><a class="header" href="#parameter-reference">Parameter Reference</a></h2>
-  <p>CompV2 function signatures for reference.</p>
-  <table class="cv2-ref-table">
-    <thead>
-      <tr><th>Function</th><th>Parameters</th></tr>
-    </thead>
-    <tbody>
-      <tr><td><a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/addContainer.md">$addContainer</a></td><td>name;color?;spoiler?</td></tr>
-      <tr><td><a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/addTextDisplay.md">$addTextDisplay</a></td><td>content;containerOrSectionName?</td></tr>
-      <tr><td><a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/addSeparator.md">$addSeparator</a></td><td>divider?;spacing?;containerName?</td></tr>
-      <tr><td><a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/addSection.md">$addSection</a></td><td>name;containerName?</td></tr>
-      <tr><td><a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/addThumbnail.md">$addThumbnail</a></td><td>url;description?;spoiler?;sectionName</td></tr>
-      <tr><td><a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/addMediaGallery.md">$addMediaGallery</a></td><td>galleryID;containerName?</td></tr>
-      <tr><td><a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/addMediaGalleryItem.md">$addMediaGalleryItem</a></td><td>url;description?;spoiler?;galleryID</td></tr>
-      <tr><td><a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/addActionRow.md">$addActionRow</a></td><td>rowID;containerName?</td></tr>
-      <tr><td><a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/addButtonCV2.md">$addButtonCV2</a></td><td>id;label?;style?;disabled?;emoji?;actionRowOrSectionID</td></tr>
-      <tr><td><a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/addUserSelect.md">$addUserSelect</a></td><td>id;placeholder?;min?;max?;disabled?;actionRowID</td></tr>
-      <tr><td><a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/addRoleSelect.md">$addRoleSelect</a></td><td>id;placeholder?;min?;max?;disabled?;actionRowID</td></tr>
-      <tr><td><a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/addMentionableSelect.md">$addMentionableSelect</a></td><td>id;placeholder?;min?;max?;disabled?;actionRowID</td></tr>
-    </tbody>
-  </table>
-</div>
 </div>
 <h2 id="functions"><a class="header" href="#functions">Functions</a></h2>
 <div id="admonition-note-1" class="admonition admonish-note" role="note" aria-labelledby="admonition-note-1-title">
@@ -820,7 +771,7 @@ $color[#673ab7]
     <discord-message role-color="#ffffff" author="Zubariel">
         !example
     </discord-message>
-    <discord-message bot author="BDFD Support" role-color="#378afa" verified>
+    <discord-message bot role-color="#378afa" author="BDFD Support" verified>
         <none>
         <discord-embed embed-title="Hello" color="#673ab7" slot="embeds">
             <discord-embed-description slot="description">
