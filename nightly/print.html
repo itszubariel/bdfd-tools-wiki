@@ -3222,11 +3222,14 @@ select.form-input option {
   <div class="form-group">
     <label>Destination</label>
     <div class="form-row">
-      <div>
+      <div style="display:flex;flex-direction:column;gap:0.4rem;">
         <input id="s_channelId" class="form-input" placeholder="Channel ID">
-        <span style="font-size:1.1rem;color:rgba(255,255,255,0.45);margin-top:0.4rem;display:block;">Required<span class="required-star">*</span></span>
+        <span style="font-size:1.1rem;color:rgba(255,255,255,0.45);">Channel ID <span class="required-star">*</span> required</span>
       </div>
-      <input id="s_content" class="form-input" placeholder="Content (text above embed, optional)">
+      <div style="display:flex;flex-direction:column;gap:0.4rem;">
+        <input id="s_content" class="form-input" placeholder="Content (text above embed)">
+        <span style="font-size:1.1rem;color:rgba(255,255,255,0.45);">Optional — text sent above the embed</span>
+      </div>
     </div>
   </div>
   <!-- Author -->
