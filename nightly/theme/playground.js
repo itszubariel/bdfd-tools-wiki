@@ -1860,7 +1860,7 @@ function updateCurrentTime() {
   if (!currentTimeEl) return;
 
   const timeInfo = getCurrentTimeInTimezone();
-  currentTimeEl.innerHTML = `${timeInfo.dateString}<br>${timeInfo.unixTime}<br><span style="font-size: 0.9em;">${timeInfo.timezone}</span>`;
+  currentTimeEl.innerHTML = `${timeInfo.dateString}<br><span class="clickable-timestamp" onclick="copyToClipboard('${timeInfo.unixTime}', 'currentTimeCopySuccess')" style="cursor:pointer;">${timeInfo.unixTime}</span><span class="copy-success" id="currentTimeCopySuccess" style="position:absolute; bottom:0.3rem; right:0.75rem; max-width:none; overflow:visible;">Copied!</span><br><span style="font-size: 0.9em;">${timeInfo.timezone}</span>`;
   updateTimerDisplay();
 }
 
