@@ -311,6 +311,24 @@
 	margin-top: -0.75rem;
 	margin-bottom: -0.75rem !important;
 }
+.copy-success {
+	color: #4CAF50;
+	font-size: 0.9rem;
+	opacity: 0;
+	transition: opacity 0.3s;
+	white-space: nowrap;
+}
+.copy-success.show {
+	opacity: 1;
+}
+.clickable-timestamp {
+	cursor: pointer;
+	transition: all 0.2s;
+}
+.clickable-timestamp:hover {
+	opacity: 0.8;
+	transform: scale(1.02);
+}
 #date-info {
 	margin-top: -2rem !important;
 	margin-left: -1rem;
@@ -350,9 +368,10 @@
     <h2 id="date-to-unix-timestamp"><a class="header" href="#date-to-unix-timestamp">Date to Unix Timestamp</a></h2>
     <p>Select a date and time:</p>
     <input type="datetime-local" id="datetimepicker" oninput="updateUnixTime()">
-    <div class="result">
+    <div class="result" style="display: flex; align-items: center; gap: 0.5rem;">
 		<p>Unix timestamp:</p>
-        <span id="unixtime-display">0</span>
+        <span id="unixtime-display" class="clickable-timestamp" onclick="copyTimestamp('unixtime-display', 'unixCopySuccess')">0</span>
+        <span class="copy-success" id="unixCopySuccess">Copied!</span>
         <div class="timestamp" id="timestamp-info"></div>
     </div>
 </div>
@@ -360,9 +379,10 @@
     <h2 id="unix-timestamp-to-date"><a class="header" href="#unix-timestamp-to-date">Unix Timestamp to Date</a></h2>
     <p>Enter Unix timestamp:</p>
     <input type="number" id="unix-input" placeholder="e.g., 1704067200" oninput="updateDateFromUnix()" onkeypress="if(event.key === 'Enter') updateDateFromUnix()" min="0">
-    <div class="result">
+    <div class="result" style="display: flex; align-items: center; gap: 0.5rem;">
 		<p>Date and time:</p>
-        <span id="date-display">Not set</span>
+        <span id="date-display" class="clickable-timestamp" onclick="copyTimestamp('date-display', 'dateCopySuccess')">Not set</span>
+        <span class="copy-success" id="dateCopySuccess">Copied!</span>
     </div>
 	<div class="timestamp" id="date-info"></div>
 </div>
@@ -397,7 +417,7 @@ Unix date: &lt;t:1917043200:D&gt;
     <discord-message role-color="#E67E22" author="RainbowKey">
         !example
     </discord-message>
-    <discord-message bot role-color="#378afa" author="BDFD Support" verified>
+    <discord-message verified role-color="#378afa" author="BDFD Support" bot>
         Unix date: <div class="discord-time-mark">January 10, 2030</div>
     </discord-message>
 </discord-messages>
