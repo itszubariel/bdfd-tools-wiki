@@ -430,9 +430,9 @@ $color[#673ab7]
     <discord-message author="RainbowKey" role-color="#E67E22">
         !example
     </discord-message>
-    <discord-message bot verified role-color="#378afa" author="BDFD Support">
+    <discord-message author="BDFD Support" verified bot role-color="#378afa">
         <none>
-        <discord-embed color="#673ab7" slot="embeds">
+        <discord-embed slot="embeds" color="#673ab7">
             <discord-embed-description slot="description">
                 ⬅️ Border color hex
             </discord-embed-description>
@@ -450,116 +450,6 @@ $color[#673ab7]
 <p>How <a href="https://wiki.botdesignerdiscord.com/nightl/bdscript/color.md"><code>$color[]</code></a> and <a href="https://wiki.botdesignerdiscord.com/nightl/bdscript/description.md"><code>$description[]</code></a> works?</p>
 </div>
 </div>
-<script>
-// Copy to clipboard function
-async function copyToClipboard(text, successElementId) {
-    try {
-        await navigator.clipboard.writeText(text);
-        showCopySuccess(successElementId);
-    } catch (err) {
-        // Fallback for older browsers
-        const textArea = document.createElement('textarea');
-        textArea.value = text;
-        document.body.appendChild(textArea);
-        textArea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textArea);
-        showCopySuccess(successElementId);
-    }
-}
-<p>// Show copy success message
-function showCopySuccess(elementId) {
-const successElement = document.getElementById(elementId);
-if (successElement) {
-successElement.classList.add(‘show’);
-setTimeout(() =&gt; {
-successElement.classList.remove(‘show’);
-}, 2000);
-}
-}</p>
-<p>// Copy random color to clipboard
-function copyRandomColor() {
-const randomColorElement = document.getElementById(‘randomColorResult’);
-if (randomColorElement &amp;&amp; randomColorElement.textContent.trim()) {
-copyToClipboard(randomColorElement.textContent.trim(), ‘randomCopySuccess’);
-}
-}</p>
-<p>// Existing functions (need to be updated to work with new copy functionality)
-function hexInputChange() {
-const hexInput = document.getElementById(‘hexInput’);
-const colorPicker = document.getElementById(‘colorPicker’);
-const errorText = document.getElementById(‘errorText’);
-const validColorDisplay = document.getElementById(‘validColorDisplay’);</p>
-<pre><code>let hex = hexInput.value.trim();
-
-// Clear previous error
-errorText.textContent = '';
-
-if (!hex) {
-    validColorDisplay.innerHTML = '&lt;div class="valid-color" style="background:#000000" onclick="copyToClipboard(\'#000000\', \'colorCopySuccess\')"&gt;#000000&lt;/div&gt;&lt;span class="copy-success" id="colorCopySuccess"&gt;Copied!&lt;/span&gt;';
-    validColorDisplay.style.display = 'flex';
-    validColorDisplay.style.alignItems = 'center';
-    validColorDisplay.style.gap = '0.5rem';
-    colorPicker.value = '#000000';
-    return;
-}
-
-// Add # if missing
-if (!hex.startsWith('#')) {
-    hex = '#' + hex;
-    hexInput.value = hex;
-}
-
-// Validate hex
-if (!/^#[0-9A-Fa-f]{3}$|^#[0-9A-Fa-f]{6}$/.test(hex)) {
-    errorText.textContent = 'Invalid hex color format. Use #RGB or #RRGGBB.';
-    return;
-}
-
-// Convert 3-digit to 6-digit hex
-let fullHex = hex;
-if (hex.length === 4) {
-    fullHex = '#' + hex[1] + hex[1] + hex[2] + hex[2] + hex[3] + hex[3];
-}
-
-// Update displays
-colorPicker.value = fullHex;
-validColorDisplay.innerHTML = `&lt;div class="valid-color" style="background:${fullHex}" onclick="copyToClipboard('${fullHex}', 'colorCopySuccess')"&gt;${fullHex}&lt;/div&gt;&lt;span class="copy-success" id="colorCopySuccess"&gt;Copied!&lt;/span&gt;`;
-validColorDisplay.style.display = 'flex';
-validColorDisplay.style.alignItems = 'center';
-validColorDisplay.style.gap = '0.5rem';
-</code></pre>
-<p>}</p>
-<p>function colorPickerChange() {
-const hexInput = document.getElementById(‘hexInput’);
-const colorPicker = document.getElementById(‘colorPicker’);
-const validColorDisplay = document.getElementById(‘validColorDisplay’);
-const errorText = document.getElementById(‘errorText’);</p>
-<pre><code>const hex = colorPicker.value;
-hexInput.value = hex;
-errorText.textContent = '';
-validColorDisplay.innerHTML = `&lt;div class="valid-color" style="background:${hex}" onclick="copyToClipboard('${hex}', 'colorCopySuccess')"&gt;${hex}&lt;/div&gt;&lt;span class="copy-success" id="colorCopySuccess"&gt;Copied!&lt;/span&gt;`;
-validColorDisplay.style.display = 'flex';
-validColorDisplay.style.alignItems = 'center';
-validColorDisplay.style.gap = '0.5rem';
-</code></pre>
-<p>}</p>
-<p>function generateRandomColor() {
-const randomColor = ‘#’ + Math.floor(Math.random() * 16777215).toString(16).padStart(6, ‘0’);
-const randomColorResult = document.getElementById(‘randomColorResult’);</p>
-<pre><code>randomColorResult.textContent = randomColor;
-randomColorResult.style.backgroundColor = randomColor;
-
-// Determine text color based on background brightness
-const r = parseInt(randomColor.substr(1, 2), 16);
-const g = parseInt(randomColor.substr(3, 2), 16);
-const b = parseInt(randomColor.substr(5, 2), 16);
-const brightness = (r * 299 + g * 587 + b * 114) / 1000;
-
-randomColorResult.style.color = brightness &gt; 128 ? '#000' : '#fff';
-</code></pre>
-<p>}
-</script></p>
 
             </main>
 
