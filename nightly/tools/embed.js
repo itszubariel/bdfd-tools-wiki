@@ -1227,10 +1227,33 @@ function cv2Optgroup(label, names, required) {
 function cv2PopulateSelect(sel, groups, required) {
   if (!sel) return;
   const prev = sel.value;
-  // Required fields get a "— select —" placeholder; optional get "— none —"
-  sel.innerHTML = required
-    ? '<option value="">— select —</option>'
-    : '<option value="">— none —</option>';
+
+  // Determine what this select is for based on the field name
+  const fieldName = sel.dataset.cv2field || "";
+  let placeholder = "";
+
+  if (fieldName === "actionRowId") {
+    placeholder = required ? "Select the action row" : "Select the action row";
+  } else if (fieldName === "container") {
+    placeholder = required ? "Select the container" : "Select the container";
+  } else if (fieldName === "sectionName") {
+    placeholder = required ? "Select the section" : "Select the section";
+  } else if (fieldName === "galleryId") {
+    placeholder = required ? "Select the gallery" : "Select the gallery";
+  } else if (fieldName === "actionRowOrSection") {
+    placeholder = required
+      ? "Select action row or section"
+      : "Select action row or section";
+  } else if (fieldName === "containerOrSection") {
+    placeholder = required
+      ? "Select container or section"
+      : "Select container or section";
+  } else {
+    // Fallback to generic placeholders
+    placeholder = required ? "Select an option" : "None";
+  }
+
+  sel.innerHTML = `<option value="">${placeholder}</option>`;
   groups.forEach(([label, names]) => {
     sel.innerHTML += cv2Optgroup(label, names, required);
   });
@@ -1389,11 +1412,11 @@ function cv2CardBody(type) {
     `<select class="form-input" data-cv2field="${field}">${options}</select>`;
   const dynSel = (field, placeholder) =>
     `<select class="form-input" data-cv2field="${field}">
-       <option value="">— none —</option>
+       <option value="">${placeholder}</option>
      </select>`;
-  const dynSelReq = (field) =>
+  const dynSelReq = (field, placeholder = "Select an option") =>
     `<select class="form-input" data-cv2field="${field}">
-       <option value="">— select —</option>
+       <option value="">${placeholder}</option>
      </select>`;
 
   // Row helpers — use .form-row so the existing auto-fit grid CSS applies
@@ -1416,7 +1439,7 @@ function cv2CardBody(type) {
     case "textdisplay":
       return (
         `${ta("content", "Content (required)")}` +
-        rowMt(dynSel("containerOrSection", "Container or Section (optional)"))
+        rowMt(dynSel("containerOrSection", "Select container or section"))
       );
 
     case "separator":
@@ -1426,14 +1449,14 @@ function cv2CardBody(type) {
             "spacing",
             `<option value="">Spacing: Default</option><option value="small">Spacing: Small</option><option value="large">Spacing: Large</option>`,
           ),
-          dynSel("container", "Container (optional)"),
+          dynSel("container", "Select the container"),
         ) + cbBar(cb("divider", "Show Divider Line"))
       );
 
     case "section":
       return row(
         fi("name", "Section Name (required)"),
-        dynSel("container", "Container (optional)"),
+        dynSel("container", "Select the container"),
       );
 
     case "thumbnail":
@@ -1442,14 +1465,14 @@ function cv2CardBody(type) {
           fi("url", "URL (required)"),
           fi("description", "Description (optional)"),
         ) +
-        rowMt(dynSelReq("sectionName")) +
+        rowMt(dynSelReq("sectionName", "Select the section")) +
         cbBar(cb("spoiler", "Spoiler"))
       );
 
     case "mediagallery":
       return row(
         fi("id", "Gallery ID (required)"),
-        dynSel("container", "Container (optional)"),
+        dynSel("container", "Select the container"),
       );
 
     case "mediaitem":
@@ -1458,14 +1481,14 @@ function cv2CardBody(type) {
           fi("url", "URL (required)"),
           fi("description", "Description (optional)"),
         ) +
-        rowMt(dynSelReq("galleryId")) +
+        rowMt(dynSelReq("galleryId", "Select the gallery")) +
         cbBar(cb("spoiler", "Spoiler"))
       );
 
     case "actionrow":
       return row(
         fi("id", "Action Row ID (required)"),
-        dynSel("container", "Container (optional)"),
+        dynSel("container", "Select the container"),
       );
 
     case "buttoncv2":
@@ -1480,7 +1503,7 @@ function cv2CardBody(type) {
         ) +
         rowMt(
           fi("emoji", "Emoji (optional)"),
-          dynSelReq("actionRowOrSection"),
+          dynSelReq("actionRowOrSection", "Select action row or section"),
         ) +
         cbBar(cb("disabled", "Disabled"))
       );
@@ -1496,7 +1519,7 @@ function cv2CardBody(type) {
         rowMt(
           fi("min", "Min (optional)", "type='number' min='0'"),
           fi("max", "Max (optional)", "type='number' min='0'"),
-          dynSelReq("actionRowId"),
+          dynSelReq("actionRowId", "Select the action row"),
         ) +
         cbBar(cb("disabled", "Disabled"))
       );
