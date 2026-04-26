@@ -594,6 +594,8 @@ select.form-input option {
 }
 .cv2-ref-table tr:last-child td { border-bottom: none; }
 .cv2-ref-table td:first-child { color: hsl(200deg 80% 70%); font-weight: 600; }
+.cv2-ref-table td:first-child a { color: inherit; text-decoration: none; border-bottom: 1px dashed hsl(200deg 80% 70% / 50%); }
+.cv2-ref-table td:first-child a:hover { border-bottom-style: solid; }
 /* CompV2 component card */
 .cv2-comp-card {
 	background: hsl(0deg 0% 100% / 5%);
@@ -602,20 +604,6 @@ select.form-input option {
 	margin-bottom: 1rem;
 	margin-top: 1rem;
 	border: 1px solid rgba(255,255,255,0.08);
-}
-.cv2-comp-header {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	margin-bottom: 0.75rem;
-}
-.cv2-comp-title {
-	display: flex;
-	align-items: center;
-	gap: 0.4rem;
-	font-size: 1.3rem;
-	font-weight: 600;
-	color: rgba(255,255,255,0.9);
 }
 .cv2-grid2 {
 	display: grid;
@@ -840,18 +828,18 @@ select.form-input option {
       <tr><th>Function</th><th>Parameters</th></tr>
     </thead>
     <tbody>
-      <tr><td>$addContainer</td><td>name;color?;spoiler?</td></tr>
-      <tr><td>$addTextDisplay</td><td>content;containerOrSectionName?</td></tr>
-      <tr><td>$addSeparator</td><td>divider?;spacing?;containerName?</td></tr>
-      <tr><td>$addSection</td><td>name;containerName?</td></tr>
-      <tr><td>$addThumbnail</td><td>url;description?;spoiler?;sectionName</td></tr>
-      <tr><td>$addMediaGallery</td><td>galleryID;containerName?</td></tr>
-      <tr><td>$addMediaGalleryItem</td><td>url;description?;spoiler?;galleryID</td></tr>
-      <tr><td>$addActionRow</td><td>rowID;containerName?</td></tr>
-      <tr><td>$addButtonCV2</td><td>id;label?;style?;disabled?;emoji?;actionRowOrSectionID</td></tr>
-      <tr><td>$addUserSelect</td><td>id;placeholder?;min?;max?;disabled?;actionRowID</td></tr>
-      <tr><td>$addRoleSelect</td><td>id;placeholder?;min?;max?;disabled?;actionRowID</td></tr>
-      <tr><td>$addMentionableSelect</td><td>id;placeholder?;min?;max?;disabled?;actionRowID</td></tr>
+      <tr><td><a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/addContainer.md">$addContainer</a></td><td>name;color?;spoiler?</td></tr>
+      <tr><td><a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/addTextDisplay.md">$addTextDisplay</a></td><td>content;containerOrSectionName?</td></tr>
+      <tr><td><a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/addSeparator.md">$addSeparator</a></td><td>divider?;spacing?;containerName?</td></tr>
+      <tr><td><a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/addSection.md">$addSection</a></td><td>name;containerName?</td></tr>
+      <tr><td><a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/addThumbnail.md">$addThumbnail</a></td><td>url;description?;spoiler?;sectionName</td></tr>
+      <tr><td><a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/addMediaGallery.md">$addMediaGallery</a></td><td>galleryID;containerName?</td></tr>
+      <tr><td><a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/addMediaGalleryItem.md">$addMediaGalleryItem</a></td><td>url;description?;spoiler?;galleryID</td></tr>
+      <tr><td><a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/addActionRow.md">$addActionRow</a></td><td>rowID;containerName?</td></tr>
+      <tr><td><a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/addButtonCV2.md">$addButtonCV2</a></td><td>id;label?;style?;disabled?;emoji?;actionRowOrSectionID</td></tr>
+      <tr><td><a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/addUserSelect.md">$addUserSelect</a></td><td>id;placeholder?;min?;max?;disabled?;actionRowID</td></tr>
+      <tr><td><a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/addRoleSelect.md">$addRoleSelect</a></td><td>id;placeholder?;min?;max?;disabled?;actionRowID</td></tr>
+      <tr><td><a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/addMentionableSelect.md">$addMentionableSelect</a></td><td>id;placeholder?;min?;max?;disabled?;actionRowID</td></tr>
     </tbody>
   </table>
 </div>
@@ -886,12 +874,12 @@ $description[Welcome to embed builder.]
 $color[#673ab7]
 </code></pre>
 <discord-messages>
-    <discord-message author="Zubariel" role-color="#ffffff">
+    <discord-message role-color="#ffffff" author="Zubariel">
         !example
     </discord-message>
-    <discord-message author="BDFD Support" bot role-color="#378afa" verified>
+    <discord-message bot role-color="#378afa" verified author="BDFD Support">
         <none>
-        <discord-embed embed-title="Hello" color="#673ab7" slot="embeds">
+        <discord-embed embed-title="Hello" slot="embeds" color="#673ab7">
             <discord-embed-description slot="description">
                 Welcome to embed builder.
             </discord-embed-description>
