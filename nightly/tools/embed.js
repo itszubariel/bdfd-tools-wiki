@@ -1309,15 +1309,35 @@ function cv2AddCard(type, doRefresh = true) {
   card.className = "cv2-comp-card";
   card.dataset.type = type;
 
-  // Header
+  // Body (created first so collapse-btn can reference it)
+  const body = document.createElement("div");
+  body.className = "cv2-comp-body";
+  body.innerHTML = cv2CardBody(type);
+
+  // Header — same pattern as Normal Embed Builder's makeHeader()
   const hdr = document.createElement("div");
-  hdr.className = "cv2-comp-header";
-  const titleWrap = document.createElement("div");
-  titleWrap.className = "cv2-comp-title";
+  hdr.className = "component-header";
+
+  const titleWrap = document.createElement("span");
+  titleWrap.className = "component-title";
   const badge = document.createElement("span");
   badge.className = `cv2-badge ${info[1]}`;
   badge.textContent = info[0];
   titleWrap.appendChild(badge);
+
+  // Button group: collapse + remove
+  const btnGroup = document.createElement("div");
+  btnGroup.style.cssText = "display:flex;gap:0.5rem;align-items:center;";
+
+  const collapseBtn = document.createElement("button");
+  collapseBtn.className = "collapse-btn";
+  collapseBtn.textContent = "▲";
+  collapseBtn.onclick = () => {
+    const collapsed = body.style.display === "none";
+    body.style.display = collapsed ? "" : "none";
+    collapseBtn.textContent = collapsed ? "▲" : "▼";
+  };
+
   const removeBtn = document.createElement("button");
   removeBtn.className = "remove-btn-red remove-btn-small";
   removeBtn.textContent = "Remove";
@@ -1326,13 +1346,13 @@ function cv2AddCard(type, doRefresh = true) {
     cv2RefreshAllDropdowns();
     saveCV2State();
   };
-  hdr.appendChild(titleWrap);
-  hdr.appendChild(removeBtn);
-  card.appendChild(hdr);
 
-  // Body
-  const body = document.createElement("div");
-  body.innerHTML = cv2CardBody(type);
+  btnGroup.appendChild(collapseBtn);
+  btnGroup.appendChild(removeBtn);
+  hdr.appendChild(titleWrap);
+  hdr.appendChild(btnGroup);
+
+  card.appendChild(hdr);
   card.appendChild(body);
 
   document.getElementById("cv2Components").appendChild(card);
