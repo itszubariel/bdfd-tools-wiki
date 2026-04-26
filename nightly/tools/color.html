@@ -334,9 +334,9 @@
 	opacity: 0;
 	transition: opacity 0.3s;
 	white-space: nowrap;
-	position: absolute;
-	margin-top: 0.5rem;
+	display: inline-block;
 	margin-left: 0.5rem;
+	vertical-align: middle;
 }
 .copy-success.show {
 	opacity: 1;
@@ -376,7 +376,7 @@
 	<div class="random-result" style="position: relative;">
   		<button id="randomColorButton" onclick="generateRandomColor()">Generate</button>
   		<div id="randomColorResult" class="random-color-result clickable-color" onclick="copyRandomColor()"></div>
-		<span class="copy-success" id="randomCopySuccess" style="position: absolute; top: 100%; left: 50%; transform: translateX(-50%); margin-top: 0.5rem;">Copied!</span>
+		<span class="copy-success" id="randomCopySuccess">Copied!</span>
 	</div>
 </div>
 <h2 id="functions"><a class="header" href="#functions">Functions</a></h2>
@@ -425,9 +425,9 @@ $color[#673ab7]
     <discord-message role-color="#E67E22" author="RainbowKey">
         !example
     </discord-message>
-    <discord-message author="BDFD Support" bot role-color="#378afa" verified>
+    <discord-message author="BDFD Support" verified bot role-color="#378afa">
         <none>
-        <discord-embed slot="embeds" color="#673ab7">
+        <discord-embed color="#673ab7" slot="embeds">
             <discord-embed-description slot="description">
                 ⬅️ Border color hex
             </discord-embed-description>
