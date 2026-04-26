@@ -1060,73 +1060,12 @@ const colorNames = {
   fuzzy: "#cc6666"
 };
 
-function colorPickerChange() {
-  const colorPicker = document.getElementById('colorPicker');
-  const hexInput = document.getElementById('hexInput');
-  const errorText = document.getElementById('errorText');
-  const validColorDisplay = document.getElementById('validColorDisplay');
-  
-  const color = colorPicker.value;
-  hexInput.value = color;
-  errorText.textContent = '';
-  validColorDisplay.innerHTML = `<div class="valid-color" style="background:${color}">${color}</div>`;
-}
-
-function hexInputChange() {
-  const hexInput = document.getElementById('hexInput');
-  const colorPicker = document.getElementById('colorPicker');
-  const errorText = document.getElementById('errorText');
-  const validColorDisplay = document.getElementById('validColorDisplay');
-  
-  let val = hexInput.value.trim().toLowerCase();
-  
-  if (val === '') {
-    errorText.textContent = '';
-    validColorDisplay.innerHTML = '';
-    return;
-  }
-  
-  let hexColor = '';
-  
-  if (colorNames[val]) {
-    hexColor = colorNames[val];
-  } else if (val[0] !== '#') {
-    val = '#' + val;
-  }
-  
-  if (hexColor) {
-    colorPicker.value = hexColor;
-    errorText.textContent = '';
-    validColorDisplay.innerHTML = `<div class="valid-color" style="background:${hexColor}">${hexColor}</div>`;
-    return;
-  }
-  
-  const isValid = /^#[0-9A-Fa-f]{6}$/.test(val) || /^#[0-9A-Fa-f]{3}$/.test(val);
-  
-  if (isValid) {
-    const finalColor = val.length === 4 ? expandHex(val) : val;
-    colorPicker.value = finalColor;
-    errorText.textContent = '';
-    validColorDisplay.innerHTML = `<div class="valid-color" style="background:${finalColor}">${finalColor}</div>`;
-  } else {
-    errorText.textContent = 'Invalid color HEX or name.';
-    validColorDisplay.innerHTML = '';
-  }
-}
-
 function expandHex(short) {
   if (short.length === 4 && short[0] === '#') {
     return '#' + short[1] + short[1] + short[2] + short[2] + short[3] + short[3];
   }
   return short;
 }
-
-function generateRandomColor() {
-    const randomColor = '#' + Math.floor(Math.random()*16777215).toString(16);
-    const randomColorResult = document.getElementById('randomColorResult');
-    randomColorResult.style.background = randomColor;
-    randomColorResult.textContent = randomColor;
-  }
 
 
 
@@ -1627,3 +1566,143 @@ document.addEventListener('DOMContentLoaded', function() {
 
   input.oninput = updateCharCount;
 });
+
+// Copy to clipboard function
+async function copyToClipboard(text, successElementId) {
+    try {
+        await navigator.clipboard.writeText(text);
+        showCopySuccess(successElementId);
+    } catch (err) {
+        // Fallback for older browsers
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        showCopySuccess(successElementId);
+    }
+}
+
+// Show copy success message
+function showCopySuccess(elementId) {
+    const successElement = document.getElementById(elementId);
+    if (successElement) {
+        successElement.classList.add('show');
+        setTimeout(() => {
+            successElement.classList.remove('show');
+        }, 2000);
+    }
+}
+
+// Copy random color to clipboard
+function copyRandomColor() {
+    const randomColorElement = document.getElementById('randomColorResult');
+    if (randomColorElement && randomColorElement.textContent.trim()) {
+        copyToClipboard(randomColorElement.textContent.trim(), 'randomCopySuccess');
+    }
+}
+
+// Copy timestamp value to clipboard
+function copyTimestamp(elementId, successElementId) {
+    const element = document.getElementById(elementId);
+    if (element && element.textContent.trim()) {
+        copyToClipboard(element.textContent.trim(), successElementId);
+    }
+}
+
+// Copy permission value to clipboard
+function copyPermissionValue() {
+    const totalValueElement = document.getElementById('totalValue');
+    if (totalValueElement && totalValueElement.textContent.trim()) {
+        copyToClipboard(totalValueElement.textContent.trim(), 'permissionCopySuccess');
+    }
+}
+
+// Update existing color functions to work with copy functionality
+function hexInputChange() {
+    const hexInput = document.getElementById('hexInput');
+    const colorPicker = document.getElementById('colorPicker');
+    const errorText = document.getElementById('errorText');
+    const validColorDisplay = document.getElementById('validColorDisplay');
+    
+    let val = hexInput.value.trim().toLowerCase();
+    
+    // Clear previous error
+    errorText.textContent = '';
+    
+    if (val === '') {
+        validColorDisplay.innerHTML = '<div class="valid-color" style="background:#000000" onclick="copyToClipboard(\'#000000\', \'colorCopySuccess\')">#000000</div><span class="copy-success" id="colorCopySuccess">Copied!</span>';
+        validColorDisplay.style.display = 'flex';
+        validColorDisplay.style.alignItems = 'center';
+        validColorDisplay.style.gap = '0.5rem';
+        colorPicker.value = '#000000';
+        return;
+    }
+    
+    let hexColor = '';
+    
+    // Check if it's a color name
+    if (colorNames[val]) {
+        hexColor = colorNames[val];
+    } else if (val[0] !== '#') {
+        val = '#' + val;
+    }
+    
+    if (hexColor) {
+        colorPicker.value = hexColor;
+        errorText.textContent = '';
+        validColorDisplay.innerHTML = `<div class="valid-color" style="background:${hexColor}" onclick="copyToClipboard('${hexColor}', 'colorCopySuccess')">${hexColor}</div><span class="copy-success" id="colorCopySuccess">Copied!</span>`;
+        validColorDisplay.style.display = 'flex';
+        validColorDisplay.style.alignItems = 'center';
+        validColorDisplay.style.gap = '0.5rem';
+        return;
+    }
+    
+    // Validate hex
+    const isValid = /^#[0-9A-Fa-f]{6}$/.test(val) || /^#[0-9A-Fa-f]{3}$/.test(val);
+    
+    if (isValid) {
+        const finalColor = val.length === 4 ? expandHex(val) : val;
+        colorPicker.value = finalColor;
+        errorText.textContent = '';
+        validColorDisplay.innerHTML = `<div class="valid-color" style="background:${finalColor}" onclick="copyToClipboard('${finalColor}', 'colorCopySuccess')">${finalColor}</div><span class="copy-success" id="colorCopySuccess">Copied!</span>`;
+        validColorDisplay.style.display = 'flex';
+        validColorDisplay.style.alignItems = 'center';
+        validColorDisplay.style.gap = '0.5rem';
+    } else {
+        errorText.textContent = 'Invalid color HEX or name.';
+        validColorDisplay.innerHTML = '';
+    }
+}
+
+function colorPickerChange() {
+    const hexInput = document.getElementById('hexInput');
+    const colorPicker = document.getElementById('colorPicker');
+    const validColorDisplay = document.getElementById('validColorDisplay');
+    const errorText = document.getElementById('errorText');
+    
+    const hex = colorPicker.value;
+    hexInput.value = hex;
+    errorText.textContent = '';
+    validColorDisplay.innerHTML = `<div class="valid-color" style="background:${hex}" onclick="copyToClipboard('${hex}', 'colorCopySuccess')">${hex}</div><span class="copy-success" id="colorCopySuccess">Copied!</span>`;
+    validColorDisplay.style.display = 'flex';
+    validColorDisplay.style.alignItems = 'center';
+    validColorDisplay.style.gap = '0.5rem';
+}
+
+function generateRandomColor() {
+    const randomColor = '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
+    const randomColorResult = document.getElementById('randomColorResult');
+    
+    randomColorResult.textContent = randomColor;
+    randomColorResult.style.backgroundColor = randomColor;
+    
+    // Determine text color based on background brightness
+    const r = parseInt(randomColor.substr(1, 2), 16);
+    const g = parseInt(randomColor.substr(3, 2), 16);
+    const b = parseInt(randomColor.substr(5, 2), 16);
+    const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+    
+    randomColorResult.style.color = brightness > 128 ? '#000' : '#fff';
+}
