@@ -1350,20 +1350,6 @@ function cv2AddCard(type, doRefresh = true) {
   }));
   card.appendChild(body);
 
-  // Remove button lives at the bottom of the body, right-aligned — same as Normal mode
-  const removeBar = document.createElement("div");
-  removeBar.style.cssText = "display:flex;justify-content:flex-end;margin-top:0.75rem;";
-  const removeBtn = document.createElement("button");
-  removeBtn.className = "remove-btn-red remove-btn-small";
-  removeBtn.textContent = "Remove";
-  removeBtn.onclick = () => {
-    card.remove();
-    cv2RefreshAllDropdowns();
-    saveCV2State();
-  };
-  removeBar.appendChild(removeBtn);
-  body.appendChild(removeBar);
-
   document.getElementById("cv2Components").appendChild(card);
 
   // Wire name/id inputs to refresh dropdowns on change
