@@ -317,6 +317,8 @@
 	opacity: 0;
 	transition: opacity 0.3s;
 	white-space: nowrap;
+	margin-left: 0.5rem;
+	display: inline;
 }
 .copy-success.show {
 	opacity: 1;
@@ -324,9 +326,12 @@
 .clickable-timestamp {
 	cursor: pointer;
 	transition: all 0.2s;
+	padding: 0.2rem 0.4rem;
+	border-radius: var(--border-radius);
+	display: inline-block;
 }
 .clickable-timestamp:hover {
-	opacity: 0.8;
+	background-color: rgba(255, 255, 255, 0.1);
 	transform: scale(1.02);
 }
 #date-info {
@@ -368,7 +373,7 @@
     <h2 id="date-to-unix-timestamp"><a class="header" href="#date-to-unix-timestamp">Date to Unix Timestamp</a></h2>
     <p>Select a date and time:</p>
     <input type="datetime-local" id="datetimepicker" oninput="updateUnixTime()">
-    <div class="result" style="display: flex; align-items: center; gap: 0.5rem;">
+    <div class="result">
 		<p>Unix timestamp:</p>
         <span id="unixtime-display" class="clickable-timestamp" onclick="copyTimestamp('unixtime-display', 'unixCopySuccess')">0</span>
         <span class="copy-success" id="unixCopySuccess">Copied!</span>
@@ -379,7 +384,7 @@
     <h2 id="unix-timestamp-to-date"><a class="header" href="#unix-timestamp-to-date">Unix Timestamp to Date</a></h2>
     <p>Enter Unix timestamp:</p>
     <input type="number" id="unix-input" placeholder="e.g., 1704067200" oninput="updateDateFromUnix()" onkeypress="if(event.key === 'Enter') updateDateFromUnix()" min="0">
-    <div class="result" style="display: flex; align-items: center; gap: 0.5rem;">
+    <div class="result">
 		<p>Date and time:</p>
         <span id="date-display" class="clickable-timestamp" onclick="copyTimestamp('date-display', 'dateCopySuccess')">Not set</span>
         <span class="copy-success" id="dateCopySuccess">Copied!</span>
@@ -417,7 +422,7 @@ Unix date: &lt;t:1917043200:D&gt;
     <discord-message role-color="#E67E22" author="RainbowKey">
         !example
     </discord-message>
-    <discord-message bot role-color="#378afa" author="BDFD Support" verified>
+    <discord-message author="BDFD Support" bot verified role-color="#378afa">
         Unix date: <div class="discord-time-mark">January 10, 2030</div>
     </discord-message>
 </discord-messages>
