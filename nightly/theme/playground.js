@@ -1875,7 +1875,7 @@ function updateCurrentTime() {
 
 function copyCurrentTimestamp(timestamp) {
   copyToClipboard(timestamp.toString(), 'currentTimeCopySuccess');
-  currentTimeCopiedCounter = 5; // Show for 5 updates (5 seconds)
+  currentTimeCopiedCounter = 3; // Show for 5 updates (5 seconds)
 }
 
 function updateUnixTime() {
