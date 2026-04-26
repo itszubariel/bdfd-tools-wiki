@@ -1856,12 +1856,26 @@ function updateTimerDisplay() {
   }
 }
 
+let currentTimeCopiedCounter = 0;
+
 function updateCurrentTime() {
   if (!currentTimeEl) return;
 
   const timeInfo = getCurrentTimeInTimezone();
-  currentTimeEl.innerHTML = `${timeInfo.dateString}<br><span class="clickable-timestamp" onclick="copyToClipboard('${timeInfo.unixTime}', 'currentTimeCopySuccess')" style="cursor:pointer;">${timeInfo.unixTime}</span><span class="copy-success" id="currentTimeCopySuccess" style="position:absolute; bottom:0.3rem; right:0.75rem; max-width:none; overflow:visible;">Copied!</span><br><span style="font-size: 0.9em;">${timeInfo.timezone}</span>`;
+  const showCopied = currentTimeCopiedCounter > 0;
+  
+  currentTimeEl.innerHTML = `${timeInfo.dateString}<br><span class="clickable-timestamp" onclick="copyCurrentTimestamp(${timeInfo.unixTime})" style="cursor:pointer;">${timeInfo.unixTime}</span><span class="copy-success ${showCopied ? 'show' : ''}" id="currentTimeCopySuccess" style="position:absolute; bottom:0.3rem; right:0.75rem; max-width:none; overflow:visible;">Copied!</span><br><span style="font-size: 0.9em;">${timeInfo.timezone}</span>`;
+  
+  if (currentTimeCopiedCounter > 0) {
+    currentTimeCopiedCounter--;
+  }
+  
   updateTimerDisplay();
+}
+
+function copyCurrentTimestamp(timestamp) {
+  copyToClipboard(timestamp.toString(), 'currentTimeCopySuccess');
+  currentTimeCopiedCounter = 5; // Show for 5 updates (5 seconds)
 }
 
 function updateUnixTime() {
