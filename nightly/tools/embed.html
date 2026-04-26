@@ -190,1677 +190,608 @@
                     <i class='fa fa-edit' id="editPageIcon"></i>
                 </a>
 
-                <p>const MODE_KEY = “bdtools_embed_mode”;
-const NORMAL_KEY = “bdtools_normal_embed_state”;
-const SEND_KEY = “bdtools_send_embed_state”;
-const CV2_KEY = “bdtools_compv2_state”;</p>
-<p>let currentMode = localStorage.getItem(MODE_KEY) || “normal”;
-let fieldCount = 0,
-buttonCount = 0,
-selectCount = 0,
-modalCount = 0;</p>
-<p>function sanitizeInput(str) {
-if (!str) return “”;
-return str
-.replace(/\/g, “\\”)
-.replace(/$/g, “%{DOL}%”)
-.replace(/;/g, “\;”)
-.replace(/]/g, “\]”);
-}</p>
-<p>function isValidHex(val) {
-return /^#[0-9A-Fa-f]{6}$/.test(val);
-}</p>
-<p>function isValidUrl(val) {
-return /^https?://.+/.test(val);
-}</p>
-<p>function clearInlineErrors() {
-document.querySelectorAll(“.inline-error”).forEach((el) =&gt; el.remove());
-}</p>
-<p>function rowError(container, msg) {
-const span = document.createElement(“div”);
-span.className = “inline-error”;
-span.textContent = msg;
-container.insertAdjacentElement(“afterend”, span);
-}</p>
-<p>function formRowError(inputEl, msg) {
-if (!inputEl) return;
-const formRow = inputEl.closest(“.form-row”) || inputEl.parentElement;
-rowError(formRow, msg);
-}</p>
-<p>function bodyRowError(formRowEl, msg) {
-if (!formRowEl) return;
-rowError(formRowEl, msg);
-}</p>
-<p>function showToast(msg, isError) {
-let toast = document.getElementById(“embedToast”);
-if (!toast) {
-toast = document.createElement(“div”);
-toast.id = “embedToast”;
-toast.style.cssText = [
-“position:fixed”,
-“bottom:2rem”,
-“left:50%”,
-“transform:translateX(-50%)”,
-“padding:0.8rem 1.6rem”,
-“border-radius:var(–border-radius)”,
-“font-size:1.3rem”,
-“font-weight:500”,
-“color:#fff”,
-“box-shadow:0 5px 15px rgba(0,0,0,0.4)”,
-“z-index:9999”,
-“transition:opacity 0.3s”,
-“pointer-events:none”,
-].join(“;”);
-document.body.appendChild(toast);
+                <h1 id="embed-builder"><a class="header" href="#embed-builder">Embed Builder</a></h1>
+<style>
+.editPage {
+	visibility: hidden;
 }
-toast.textContent = msg;
-toast.style.background = isError
-? “hsl(0deg 70% 40%)”
-: “hsl(220deg 80% 45%)”;
-toast.style.opacity = “1”;
-clearTimeout(toast._t);
-toast._t = setTimeout(() =&gt; {
-toast.style.opacity = “0”;
-}, 2800);
-}</p>
-<p>function saveNormalState() {
-const state = {};
-[
-“authorName”,
-“authorIcon”,
-“authorUrl”,
-“title”,
-“titleUrl”,
-“description”,
-“thumbnail”,
-“image”,
-“color”,
-“footer”,
-“footerIcon”,
-].forEach((id) =&gt; {
-const el = document.getElementById(id);
-if (el) state[id] = el.value;
-});
-const ts = document.getElementById(“timestamp”);
-if (ts) state.timestamp = ts.checked;
-// dynamic fields snapshot
-const dynamics = [];
-document
-.querySelectorAll(‘#dynamicFields &gt; [class$=“-row”]’)
-.forEach((row) =&gt; {
-const type = Array.from(row.classList).find(
-(c) =&gt; c.endsWith(“-row”) &amp;&amp; c !== “form-row”,
-);
-dynamics.push({ type, html: row.outerHTML });
-});
-state.dynamics = dynamics;
-localStorage.setItem(NORMAL_KEY, JSON.stringify(state));
-}</p>
-<p>function loadNormalState() {
-const raw = localStorage.getItem(NORMAL_KEY);
-if (!raw) return;
-try {
-const state = JSON.parse(raw);
-[
-“authorName”,
-“authorIcon”,
-“authorUrl”,
-“title”,
-“titleUrl”,
-“description”,
-“thumbnail”,
-“image”,
-“color”,
-“footer”,
-“footerIcon”,
-].forEach((id) =&gt; {
-const el = document.getElementById(id);
-if (el &amp;&amp; state[id] !== undefined) el.value = state[id];
-});
-const ts = document.getElementById(“timestamp”);
-if (ts &amp;&amp; state.timestamp !== undefined) ts.checked = state.timestamp;
-} catch (e) {}
-}</p>
-<p>const SEND_FIELDS = [
-“s_channelId”,
-“s_content”,
-“s_authorName”,
-“s_authorIcon”,
-“s_title”,
-“s_titleUrl”,
-“s_description”,
-“s_thumbnail”,
-“s_image”,
-“s_color”,
-“s_footer”,
-“s_footerIcon”,
-];
-const SEND_CHECKS = [“s_timestamp”, “s_returnMsgId”];</p>
-<p>function saveSendState() {
-const state = {};
-SEND_FIELDS.forEach((id) =&gt; {
-const el = document.getElementById(id);
-if (el) state[id] = el.value;
-});
-SEND_CHECKS.forEach((id) =&gt; {
-const el = document.getElementById(id);
-if (el) state[id] = el.checked;
-});
-localStorage.setItem(SEND_KEY, JSON.stringify(state));
-}</p>
-<p>function loadSendState() {
-const raw = localStorage.getItem(SEND_KEY);
-if (!raw) return;
-try {
-const state = JSON.parse(raw);
-SEND_FIELDS.forEach((id) =&gt; {
-const el = document.getElementById(id);
-if (el &amp;&amp; state[id] !== undefined) el.value = state[id];
-});
-SEND_CHECKS.forEach((id) =&gt; {
-const el = document.getElementById(id);
-if (el &amp;&amp; state[id] !== undefined) el.checked = state[id];
-});
-} catch (e) {}
-}</p>
-<p>function switchMode(mode) {
-if (mode === currentMode) return;
-// save current mode state before switching
-if (currentMode === “normal”) saveNormalState();
-else if (currentMode === “send”) saveSendState();
-else if (currentMode === “compv2”) saveCV2State();</p>
-<p>currentMode = mode;
-localStorage.setItem(MODE_KEY, mode);</p>
-<p>const normalBuilder = document.getElementById(“normalBuilder”);
-const sendBuilder = document.getElementById(“sendBuilder”);
-const compV2Builder = document.getElementById(“compV2Builder”);
-const btnNormal = document.getElementById(“modeNormal”);
-const btnSend = document.getElementById(“modeSend”);
-const btnCV2 = document.getElementById(“modeCompV2”);</p>
-<p>normalBuilder.style.display = “none”;
-sendBuilder.style.display = “none”;
-compV2Builder.style.display = “none”;
-btnNormal.classList.remove(“active”);
-btnSend.classList.remove(“active”);
-btnCV2.classList.remove(“active”);</p>
-<p>if (mode === “normal”) {
-normalBuilder.style.display = “”;
-btnNormal.classList.add(“active”);
-loadNormalState();
-} else if (mode === “send”) {
-sendBuilder.style.display = “”;
-btnSend.classList.add(“active”);
-loadSendState();
-} else if (mode === “compv2”) {
-compV2Builder.style.display = “”;
-btnCV2.classList.add(“active”);
-// DO NOT call loadCV2State() here — cards are already in the DOM
-// Just refresh dropdowns in case names changed while in another mode
-cv2RefreshAllDropdowns();
+.picker-container {
+    background: var(--card-bg);
+	border-radius: var(--border-radius);
+	border: 1px solid rgba(255, 255, 255, 0.05);
+	margin-top: 1.5rem;
+	padding-bottom: 0rem;
+	padding-left: 1.5rem;
+	padding-right: 1.5rem;
+	box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
 }
-}</p>
-<p>function makeHeader(title, body, onRemove) {
-const header = document.createElement(“div”);
-header.className = “component-header”;
-const titleEl = document.createElement(“span”);
-titleEl.className = “component-title”;
-titleEl.textContent = title;</p>
-<p>const btnGroup = document.createElement(“div”);
-btnGroup.style.cssText = “display:flex;gap:0.5rem;align-items:center;”;</p>
-<p>const collapseBtn = document.createElement(“button”);
-collapseBtn.className = “collapse-btn”;
-collapseBtn.textContent = “▲”;
-collapseBtn.onclick = () =&gt; {
-const collapsed = body.style.display === “none”;
-body.style.display = collapsed ? “” : “none”;
-collapseBtn.textContent = collapsed ? “▲” : “▼”;
-};
-btnGroup.appendChild(collapseBtn);</p>
-<p>if (onRemove) {
-const removeBtn = document.createElement(“button”);
-removeBtn.className = “remove-btn-red remove-btn-small”;
-removeBtn.textContent = “✕”;
-removeBtn.onclick = onRemove;
-btnGroup.appendChild(removeBtn);
-}</p>
-<p>header.appendChild(titleEl);
-header.appendChild(btnGroup);
-return header;
-}</p>
-<p>function addFieldRow() {
-fieldCount++;
-const row = document.createElement(“div”);
-row.className = “field-row”;
-const body = document.createElement(“div”);
-body.className = “component-body”;
-body.innerHTML = <code>&lt;div class="form-row"&gt; &lt;input class="form-input field-name" placeholder="Field Name"&gt; &lt;input class="form-input field-value" placeholder="Field Value"&gt; &lt;/div&gt; &lt;div style="display:flex;align-items:center;margin-top:0.75rem;"&gt; &lt;label class="checkbox-label" style="margin:0;"&gt; &lt;input type="checkbox" class="form-checkbox field-inline"&gt; &lt;span&gt;Inline&lt;/span&gt; &lt;/label&gt; &lt;/div&gt;</code>;
-row.appendChild(makeHeader(<code>Field #${fieldCount}</code>, body, () =&gt; row.remove()));
-row.appendChild(body);
-document.getElementById(“dynamicFields”).appendChild(row);
-}</p>
-<p>function addButtonRow() {
-buttonCount++;
-const row = document.createElement(“div”);
-row.className = “button-row”;
-const body = document.createElement(“div”);
-body.className = “component-body”;
-body.innerHTML = <code>&lt;div class="form-row"&gt; &lt;input class="form-input button-label" placeholder="Button Label"&gt; &lt;input class="form-input button-id" placeholder="Custom ID"&gt; &lt;select class="form-input button-style"&gt; &lt;option value="primary"&gt;Primary&lt;/option&gt; &lt;option value="secondary"&gt;Secondary&lt;/option&gt; &lt;option value="success"&gt;Success&lt;/option&gt; &lt;option value="danger"&gt;Danger&lt;/option&gt; &lt;option value="link"&gt;Link&lt;/option&gt; &lt;/select&gt; &lt;/div&gt; &lt;div class="form-row" style="margin-top:0.75rem;"&gt; &lt;input class="form-input button-emoji" placeholder="Emoji"&gt; &lt;input class="form-input button-url" placeholder="URL (for Link style)"&gt; &lt;/div&gt; &lt;div style="display:flex;gap:1.5rem;align-items:center;margin-top:0.75rem;"&gt; &lt;label class="checkbox-label" style="margin:0;"&gt; &lt;input type="checkbox" class="form-checkbox button-disabled"&gt; &lt;span&gt;Disabled&lt;/span&gt; &lt;/label&gt; &lt;label class="checkbox-label" style="margin:0;"&gt; &lt;input type="checkbox" class="form-checkbox button-newrow"&gt; &lt;span&gt;New Row&lt;/span&gt; &lt;/label&gt; &lt;/div&gt;</code>;
-row.appendChild(
-makeHeader(<code>Button #${buttonCount}</code>, body, () =&gt; row.remove()),
-);
-row.appendChild(body);
-document.getElementById(“dynamicFields”).appendChild(row);
-}</p>
-<p>function addSelectRow() {
-selectCount++;
-const row = document.createElement(“div”);
-row.className = “select-row”;
-const body = document.createElement(“div”);
-body.className = “component-body”;
-body.innerHTML = <code>&lt;div class="form-row"&gt; &lt;input class="form-input select-placeholder" placeholder="Placeholder"&gt; &lt;input class="form-input select-id" placeholder="Custom ID"&gt; &lt;input class="form-input select-min" type="number" placeholder="Min Values" value="1" min="1"&gt; &lt;input class="form-input select-max" type="number" placeholder="Max Values" value="1" min="1"&gt; &lt;/div&gt; &lt;div class="options-container" style="margin-top:1rem;"&gt;&lt;/div&gt; &lt;div style="display:flex;gap:0.75rem;margin-top:0.75rem;"&gt; &lt;button class="add-field-btn add-option-btn"&gt;+ Option&lt;/button&gt; &lt;/div&gt;</code>;
-row.appendChild(
-makeHeader(<code>Select Menu #${selectCount}</code>, body, () =&gt; row.remove()),
-);
-row.appendChild(body);
-document.getElementById(“dynamicFields”).appendChild(row);</p>
-<p>let optionCount = 0;
-const optionsContainer = body.querySelector(“.options-container”);
-body.querySelector(“.add-option-btn”).onclick = () =&gt; {
-optionCount++;
-const option = document.createElement(“div”);
-option.className = “select-option”;
-const optBody = document.createElement(“div”);
-optBody.className = “form-row”;
-optBody.style.marginTop = “0.5rem”;
-optBody.innerHTML = <code>&lt;input class="form-input option-label" placeholder="Label"&gt; &lt;input class="form-input option-value" placeholder="Value"&gt; &lt;input class="form-input option-desc" placeholder="Description"&gt; &lt;input class="form-input option-emoji" placeholder="Emoji"&gt;</code>;
-const optHeader = document.createElement(“div”);
-optHeader.className = “option-header”;
-const titleSpan = document.createElement(“span”);
-titleSpan.className = “option-title”;
-titleSpan.textContent = <code>Option #${optionCount}</code>;
-const btnGroup = document.createElement(“div”);
-btnGroup.style.cssText = “display:flex;gap:0.75rem;align-items:center;”;
-const collapseBtn = document.createElement(“button”);
-collapseBtn.className = “collapse-btn”;
-collapseBtn.textContent = “▲”;
-collapseBtn.onclick = () =&gt; {
-const hidden = optBody.style.display === “none”;
-optBody.style.display = hidden ? “” : “none”;
-collapseBtn.textContent = hidden ? “▲” : “▼”;
-};
-const removeBtn = document.createElement(“button”);
-removeBtn.className = “remove-btn-red remove-btn-small”;
-removeBtn.textContent = “✕”;
-removeBtn.onclick = () =&gt; option.remove();
-btnGroup.appendChild(collapseBtn);
-btnGroup.appendChild(removeBtn);
-optHeader.appendChild(titleSpan);
-optHeader.appendChild(btnGroup);
-option.appendChild(optHeader);
-option.appendChild(optBody);
-optionsContainer.appendChild(option);
-};
-}</p>
-<p>function addModalRow() {
-modalCount++;
-const row = document.createElement(“div”);
-row.className = “modal-row”;
-const body = document.createElement(“div”);
-body.className = “component-body”;
-body.innerHTML = <code>&lt;div class="form-row"&gt; &lt;input class="form-input modal-title" placeholder="Modal Title"&gt; &lt;input class="form-input modal-id" placeholder="Custom ID"&gt; &lt;/div&gt; &lt;div class="modal-inputs-container" style="margin-top:1rem;"&gt;&lt;/div&gt; &lt;div style="display:flex;gap:0.75rem;margin-top:0.75rem;"&gt; &lt;button class="add-field-btn add-modal-input-btn"&gt;+ Text Input&lt;/button&gt; &lt;/div&gt;</code>;
-row.appendChild(makeHeader(<code>Modal #${modalCount}</code>, body, () =&gt; row.remove()));
-row.appendChild(body);
-document.getElementById(“dynamicFields”).appendChild(row);</p>
-<p>let inputCount = 0;
-const inputsContainer = body.querySelector(“.modal-inputs-container”);
-body.querySelector(“.add-modal-input-btn”).onclick = () =&gt; {
-inputCount++;
-const input = document.createElement(“div”);
-input.className = “modal-input”;
-const inpBody = document.createElement(“div”);
-inpBody.className = “modal-input-body”;
-inpBody.innerHTML = <code>&lt;div class="form-row" style="margin-top:0.5rem;"&gt; &lt;input class="form-input input-label" placeholder="Label"&gt; &lt;input class="form-input input-id" placeholder="Input ID"&gt; &lt;select class="form-input input-style"&gt; &lt;option value="short"&gt;Short&lt;/option&gt; &lt;option value="paragraph"&gt;Paragraph&lt;/option&gt; &lt;/select&gt; &lt;input class="form-input input-placeholder" placeholder="Placeholder"&gt; &lt;/div&gt; &lt;div class="form-row" style="margin-top:0.5rem;"&gt; &lt;input class="form-input input-minlen" type="number" placeholder="Min Length" min="0" max="4000"&gt; &lt;input class="form-input input-maxlen" type="number" placeholder="Max Length" min="0" max="4000"&gt; &lt;/div&gt; &lt;label class="checkbox-label"&gt; &lt;input type="checkbox" class="form-checkbox input-required" checked&gt; &lt;span&gt;Required&lt;/span&gt; &lt;/label&gt;</code>;
-const inpHeader = document.createElement(“div”);
-inpHeader.className = “option-header”;
-const titleSpan = document.createElement(“span”);
-titleSpan.className = “option-title”;
-titleSpan.textContent = <code>Text Input #${inputCount}</code>;
-const btnGroup = document.createElement(“div”);
-btnGroup.style.cssText = “display:flex;gap:0.75rem;align-items:center;”;
-const collapseBtn = document.createElement(“button”);
-collapseBtn.className = “collapse-btn”;
-collapseBtn.textContent = “▲”;
-collapseBtn.onclick = () =&gt; {
-const hidden = inpBody.style.display === “none”;
-inpBody.style.display = hidden ? “” : “none”;
-collapseBtn.textContent = hidden ? “▲” : “▼”;
-};
-const removeBtn = document.createElement(“button”);
-removeBtn.className = “remove-btn-red remove-btn-small”;
-removeBtn.textContent = “✕”;
-removeBtn.onclick = () =&gt; input.remove();
-btnGroup.appendChild(collapseBtn);
-btnGroup.appendChild(removeBtn);
-inpHeader.appendChild(titleSpan);
-inpHeader.appendChild(btnGroup);
-input.appendChild(inpHeader);
-input.appendChild(inpBody);
-inputsContainer.appendChild(input);
-};
-}</p>
-<p>function generateNormalEmbed() {
-const error = document.getElementById(“error”);
-error.textContent = “”;
-clearInlineErrors();
-let hasErrors = false;
-let code = “$nomention\n”;</p>
-<p>const authorName = document.getElementById(“authorName”).value.trim();
-const authorIcon = document.getElementById(“authorIcon”).value.trim();
-const authorUrl = document.getElementById(“authorUrl”).value.trim();
-if ((authorIcon || authorUrl) &amp;&amp; !authorName) {
-formRowError(
-document.getElementById(“authorName”),
-“Author Name required when Icon/URL is set”,
-);
-hasErrors = true;
+.picker-container h2 {
+    margin-top: -.5rem;
+    padding-top: 1.5rem;
 }
-if (authorIcon &amp;&amp; !isValidUrl(authorIcon)) {
-formRowError(
-document.getElementById(“authorIcon”),
-“Author Icon: invalid URL”,
-);
-hasErrors = true;
+.picker-container p {
+	margin-top: -1.5rem;
 }
-if (authorUrl &amp;&amp; !isValidUrl(authorUrl)) {
-formRowError(
-document.getElementById(“authorUrl”),
-“Author URL: invalid URL”,
-);
-hasErrors = true;
-}</p>
-<p>const titleVal = document.getElementById(“title”).value.trim();
-const titleUrl = document.getElementById(“titleUrl”).value.trim();
-if (titleUrl &amp;&amp; !titleVal) {
-formRowError(
-document.getElementById(“title”),
-“Title required when Title URL is set”,
-);
-hasErrors = true;
+.form-group {
+	margin-bottom: 1.5rem;
+} 
+.form-group label {
+	display: block;
+	font-size: 1.3rem ;
+	font-weight: 500;
+	margin-bottom: 0.75rem;
+	color: rgba(255, 255, 255, 0.9);
+	letter-spacing: 0.01em;
 }
-if (titleUrl &amp;&amp; !isValidUrl(titleUrl)) {
-formRowError(document.getElementById(“titleUrl”), “Title URL: invalid URL”);
-hasErrors = true;
-}</p>
-<p>const colorVal = document.getElementById(“color”).value.trim();
-if (colorVal &amp;&amp; !isValidHex(colorVal)) {
-formRowError(
-document.getElementById(“color”),
-“Color: must be a valid hex code (e.g. #7289da)”,
-);
-hasErrors = true;
-}</p>
-<p>const thumbnailVal = document.getElementById(“thumbnail”).value.trim();
-if (thumbnailVal &amp;&amp; !isValidUrl(thumbnailVal)) {
-formRowError(
-document.getElementById(“thumbnail”),
-“Thumbnail: invalid URL”,
-);
-hasErrors = true;
+.form-row {
+	display: grid;
+	gap: 1rem;
+	grid-template-columns: 1fr;
 }
-const imageVal = document.getElementById(“image”).value.trim();
-if (imageVal &amp;&amp; !isValidUrl(imageVal)) {
-formRowError(document.getElementById(“image”), “Image: invalid URL”);
-hasErrors = true;
-}</p>
-<p>const footerVal = document.getElementById(“footer”).value.trim();
-const footerIcon = document.getElementById(“footerIcon”).value.trim();
-if (footerIcon &amp;&amp; !footerVal) {
-formRowError(
-document.getElementById(“footer”),
-“Footer Text required when Footer Icon is set”,
-);
-hasErrors = true;
+@media (min-width: 640px) {
+	.form-row {
+		grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+	}
 }
-if (footerIcon &amp;&amp; !isValidUrl(footerIcon)) {
-formRowError(
-document.getElementById(“footerIcon”),
-“Footer Icon: invalid URL”,
-);
-hasErrors = true;
-}</p>
-<p>document.querySelectorAll(“.field-row”).forEach((row, i) =&gt; {
-const n = i + 1;
-const nameEl = row.querySelector(“.field-name”);
-const valueEl = row.querySelector(“.field-value”);
-const name = nameEl?.value.trim();
-const value = valueEl?.value.trim();
-const formRow = row.querySelector(“.form-row”);
-if (!name || !value) {
-bodyRowError(formRow, <code>Field ${n}: Name and Value required</code>);
-hasErrors = true;
-} else if (name === value) {
-bodyRowError(formRow, <code>Field ${n}: Name and Value can't be the same</code>);
-hasErrors = true;
+.form-input {
+    color: #fff;
+    padding: 1rem;
+    background: hsl(0deg 0% 100% / 7%);
+    border-radius: var(--border-radius);
+	border-width: 0;
+    font-family: monospace;
+    font-size: 1.5rem ;
+    line-height: 1.5;
+    width: 100%;
+    outline: none;
+	transition: all 0.3s;
+	box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
 }
-});</p>
-<p>document.querySelectorAll(“.button-row”).forEach((row, i) =&gt; {
-const n = i + 1;
-const label = row.querySelector(“.button-label”)?.value.trim();
-const id = row.querySelector(“.button-id”)?.value.trim();
-const url = row.querySelector(“.button-url”)?.value.trim();
-const style = row.querySelector(“.button-style”)?.value;
-const formRow = row.querySelector(“.form-row”);
-if (!label) {
-bodyRowError(formRow, <code>Button ${n}: Label required</code>);
-hasErrors = true;
+.form-input:focus {
+	box-shadow: 0 0 0 3px rgba(255,255,255,0.3), 0 8px 15px rgba(0, 0, 0, 0.4);
 }
-if (style === “link” &amp;&amp; !url) {
-bodyRowError(formRow, <code>Button ${n}: URL required for Link style</code>);
-hasErrors = true;
-} else if (style === “link” &amp;&amp; url &amp;&amp; !isValidUrl(url)) {
-bodyRowError(formRow, <code>Button ${n}: invalid URL</code>);
-hasErrors = true;
-} else if (style !== “link” &amp;&amp; !id) {
-bodyRowError(formRow, <code>Button ${n}: Custom ID required</code>);
-hasErrors = true;
+.form-textarea {
+    min-height: 10rem;
+    resize: vertical;
 }
-});</p>
-<p>document.querySelectorAll(“.select-row”).forEach((row, i) =&gt; {
-const n = i + 1;
-const menuId = row.querySelector(“.select-id”)?.value.trim();
-const formRow = row.querySelector(“.form-row”);
-if (!menuId) {
-bodyRowError(formRow, <code>Select Menu ${n}: Menu ID required</code>);
-hasErrors = true;
-return;
+.form-checkbox {
+	width: 1.2rem;
+	height: 1.2rem;
+	border-radius: 0.25rem;
+	background: hsl(0deg 0% 100% / 10%);
+	border: 1px solid rgba(255,255,255,0.2);
+	cursor: pointer;
+	margin: 0;
 }
-const options = row.querySelectorAll(“.select-option”);
-if (options.length === 0) {
-bodyRowError(formRow, <code>Select Menu ${n}: Add at least one option</code>);
-hasErrors = true;
-return;
+.form-checkbox:checked {
+	background: hsl(120deg 70% 50%);
+	border-color: hsl(120deg 70% 60%);
 }
-options.forEach((opt, j) =&gt; {
-const m = j + 1;
-const optFormRow = opt.querySelector(“.form-row”);
-const label = opt.querySelector(“.option-label”)?.value.trim();
-const value = opt.querySelector(“.option-value”)?.value.trim();
-const desc = opt.querySelector(“.option-desc”)?.value.trim();
-if (!label || !value || !desc) {
-bodyRowError(
-optFormRow,
-<code>Menu ${n} Option ${m}: Label, Value and Description required</code>,
-);
-hasErrors = true;
-} else if (value !== menuId) {
-bodyRowError(
-optFormRow,
-<code>Menu ${n} Option ${m}: Value must match Menu ID</code>,
-);
-hasErrors = true;
+.checkbox-label {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	margin-top: 0.75rem;
+	cursor: pointer;
+	user-select: none;
 }
-});
-});</p>
-<p>const modalIdMap = {};
-document.querySelectorAll(“.modal-row”).forEach((row, i) =&gt; {
-const id = row.querySelector(“.modal-id”)?.value.trim();
-if (id) {
-if (!modalIdMap[id]) modalIdMap[id] = [];
-modalIdMap[id].push(i);
+.checkbox-label span {
+	font-size: 1.3rem ;
+	color: rgba(255, 255, 255, 0.9);
+	font-weight: 400;
 }
-});
-document.querySelectorAll(“.modal-row”).forEach((row, i) =&gt; {
-const n = i + 1;
-const title = row.querySelector(“.modal-title”)?.value.trim();
-const customId = row.querySelector(“.modal-id”)?.value.trim();
-const formRow = row.querySelector(“.form-row”);
-if (!title || !customId) {
-bodyRowError(formRow, <code>Modal ${n}: ID and Title required</code>);
-hasErrors = true;
+.btn-row {
+	display: flex;
+	gap: 1rem;
+	margin-top: 1.5rem;
+	margin-bottom: 1.5rem;
+	flex-wrap: wrap;
+	justify-content: center;
 }
-if (customId &amp;&amp; modalIdMap[customId]?.length &gt; 1) {
-bodyRowError(formRow, <code>Modal ${n}: Duplicate ID "${customId}"</code>);
-hasErrors = true;
+.generate-btn, .copy-btn, .clear-btn {
+	outline: none;
+	touch-action: manipulation;
+	-webkit-user-select: none;
+	user-select: none;
+	padding-left: 1rem;
+	padding-right: 1rem;
+	height: 4rem;
+	border: none;
+	border-radius: var(--border-radius);
+	cursor: pointer;
+	font-weight: 500;
+	transition: all 0.3s;
+	color: #fff;
+	background: hsl(0deg 0% 100% / 7%);
+	box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+	font-size: 1.5rem ;
 }
-if (!title || !customId) return;
-const inputs = row.querySelectorAll(“.modal-input”);
-if (inputs.length === 0) {
-bodyRowError(formRow, <code>Modal ${n}: Add at least one text input</code>);
-hasErrors = true;
-return;
+.generate-btn {
+	background: hsl(0deg 0% 100% / 7%);
+	font-weight: 500;
+	font-size: 1.5rem ;
+	padding-left: 1.5rem;
+	padding-right: 1.5rem;
+	height: 4rem ;
 }
-let validInputCount = 0;
-inputs.forEach((inp, j) =&gt; {
-const m = j + 1;
-const inpFormRow = inp.querySelector(“.form-row”);
-const label = inp.querySelector(“.input-label”)?.value.trim();
-const id = inp.querySelector(“.input-id”)?.value.trim();
-const placeholder =
-inp.querySelector(“.input-placeholder”)?.value.trim() || “”;
-const minLen = parseInt(
-inp.querySelector(“.input-minlen”)?.value || “0”,
-10,
-);
-const maxLen = parseInt(
-inp.querySelector(“.input-maxlen”)?.value || “0”,
-10,
-);
-const lenRow = inp.querySelectorAll(“.form-row”)[1];
-if (!label) {
-bodyRowError(inpFormRow, <code>Modal ${n} Input ${m}: Label required</code>);
-hasErrors = true;
-} else if (label.length &gt; 45) {
-bodyRowError(inpFormRow, <code>Modal ${n} Input ${m}: Label max 45 chars</code>);
-hasErrors = true;
+.generate-btn:hover, .copy-btn:hover, .clear-btn:hover {
+	transform: translateY(-1px);
+	box-shadow: 0 8px 15px rgba(0, 0, 0, 0.4);
 }
-if (placeholder.length &gt; 100) {
-bodyRowError(
-inpFormRow,
-<code>Modal ${n} Input ${m}: Placeholder max 100 chars</code>,
-);
-hasErrors = true;
+.output {
+    background: hsl(0deg 0% 100% / 7%);
+    border-width: 0;
+    min-height: 16rem;
+    white-space: pre-wrap;
+    word-break: break-all;
+    color: #fff;
+    font-family: monospace ;
+    font-size: 1.5rem ;
+    line-height: 1.5;
+    padding: 1rem;
+    border-radius: var(--border-radius);
+    margin-top: 0;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
 }
-if (lenRow) {
-if (minLen &gt; 4000 || maxLen &gt; 4000) {
-bodyRowError(
-lenRow,
-<code>Modal ${n} Input ${m}: Length can't exceed 4000</code>,
-);
-hasErrors = true;
-} else if (maxLen &gt; 0 &amp;&amp; maxLen &lt; minLen) {
-bodyRowError(lenRow, <code>Modal ${n} Input ${m}: Max &lt; Min</code>);
-hasErrors = true;
+.error {
+	color: var(--error);
+	font-size: 1rem ;
+	min-height: 1rem;
+	margin-top: 0.5rem;
 }
+.char-count {
+    color: #aaa;
+    font-size: 1.2rem ;
+    margin-top: 0.75rem;
+    margin-bottom: 1.5rem;
 }
-if (id) validInputCount++;
-});
-if (validInputCount === 0) {
-bodyRowError(
-row.querySelector(“.form-row”),
-<code>Modal ${n}: All inputs need an Input ID</code>,
-);
-hasErrors = true;
+.add-field-btn {
+	outline: none;
+	touch-action: manipulation;
+	-webkit-user-select: none;
+	user-select: none;
+	background: hsl(0deg 0% 100% / 7%);
+	padding-left: 1rem;
+	padding-right: 1rem;
+	height: 4rem;
+	font-size: 1.5rem ;
+	font-weight: 500;
+	border-radius: var(--border-radius);
+	color: #fff;
+	border: none;
+	cursor: pointer;
+	margin-right: 0.5rem;
+	margin-bottom: 0.5rem;
+	transition: all 0.3s;
+	box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
 }
-});</p>
-<p>if (hasErrors) {
-const first = document.querySelector(“.inline-error”);
-if (first) first.scrollIntoView({ behavior: “smooth”, block: “center” });
-return;
-}</p>
-<p>// Build code
-const authorNameS = sanitizeInput(authorName);
-const authorIconS = sanitizeInput(authorIcon);
-const authorUrlS = sanitizeInput(authorUrl);
-if (authorNameS) {
-code += <code>$author[${authorNameS}</code>;
-if (authorIconS) code += <code>;${authorIconS}</code>;
-if (authorUrlS) code += <code>;${authorUrlS}</code>;
-code += “]\n”;
-}</p>
-<p>const titleS = sanitizeInput(titleVal);
-const titleUrlS = sanitizeInput(titleUrl);
-if (titleS) {
-code += <code>$title[${titleS}</code>;
-if (titleUrlS) code += <code>;${titleUrlS}</code>;
-code += “]\n”;
-}</p>
-<p>const desc = sanitizeInput(document.getElementById(“description”).value);
-if (desc) code += <code>$description[${desc}]\n</code>;</p>
-<p>const thumbnail = sanitizeInput(document.getElementById(“thumbnail”).value);
-if (thumbnail) code += <code>$thumbnail[${thumbnail}]\n</code>;</p>
-<p>const image = sanitizeInput(document.getElementById(“image”).value);
-if (image) code += <code>$image[${image}]\n</code>;</p>
-<p>const color = document.getElementById(“color”).value || “#7289da”;
-code += <code>$color[${color}]\n</code>;</p>
-<p>const footerS = sanitizeInput(footerVal);
-const footerIconS = sanitizeInput(footerIcon);
-if (footerS) {
-code += <code>$footer[${footerS}</code>;
-if (footerIconS) code += <code>;${footerIconS}</code>;
-code += “]\n”;
-}</p>
-<p>if (document.getElementById(“timestamp”).checked) code += “$addTimestamp\n”;</p>
-<p>document.querySelectorAll(“.field-row”).forEach((row) =&gt; {
-const name = sanitizeInput(row.querySelector(“.field-name”)?.value);
-const value = sanitizeInput(row.querySelector(“.field-value”)?.value);
-const inline = row.querySelector(“.field-inline”)?.checked ? “yes” : “no”;
-if (name &amp;&amp; value) code += <code>$addField[${name};${value};${inline}]\n</code>;
-});</p>
-<p>document.querySelectorAll(“.button-row”).forEach((row) =&gt; {
-const label = sanitizeInput(row.querySelector(“.button-label”)?.value);
-const customId = sanitizeInput(row.querySelector(“.button-id”)?.value);
-const style = row.querySelector(“.button-style”)?.value || “primary”;
-const disabled = row.querySelector(“.button-disabled”)?.checked
-? “yes”
-: “no”;
-const newRow = row.querySelector(“.button-newrow”)?.checked ? “yes” : “no”;
-const emoji = sanitizeInput(row.querySelector(“.button-emoji”)?.value);
-const url = sanitizeInput(row.querySelector(“.button-url”)?.value);
-if (label || emoji) {
-if (style === “link” &amp;&amp; url) {
-code += <code>$addButton[1;${label || "Link"};${url};${disabled};${emoji}]\n</code>;
-} else if (customId) {
-const styleNum =
-{ primary: 1, secondary: 2, success: 3, danger: 4 }[style] || 1;
-code += <code>$addButton[${newRow};${label};${styleNum};${customId};${disabled};${emoji}]\n</code>;
+.add-field-btn:hover {
+	transform: translateY(-1px);
+	box-shadow: 0 8px 15px rgba(0, 0, 0, 0.4);
 }
+.field-row, .button-row, .select-row, .modal-row {
+	background: hsl(0deg 0% 100% / 5%);
+	border-radius: var(--border-radius);
+	padding: 1rem;
+	margin-bottom: 1rem;
+	margin-top: 1rem;
+	border: 1px solid rgba(255,255,255,0.08);
 }
-});</p>
-<p>document.querySelectorAll(“.select-row”).forEach((row) =&gt; {
-const placeholder = sanitizeInput(
-row.querySelector(“.select-placeholder”)?.value,
-);
-const customId = sanitizeInput(row.querySelector(“.select-id”)?.value);
-const minValues = row.querySelector(“.select-min”)?.value || “1”;
-const maxValues = row.querySelector(“.select-max”)?.value || “1”;
-if (customId) {
-code += <code>$addSelectMenu[${customId};${placeholder || "Select an option"};${minValues};${maxValues}]\n</code>;
-row.querySelectorAll(“.select-option”).forEach((opt) =&gt; {
-const label = sanitizeInput(opt.querySelector(“.option-label”)?.value);
-const value = sanitizeInput(opt.querySelector(“.option-value”)?.value);
-const desc = sanitizeInput(opt.querySelector(“.option-desc”)?.value);
-const emoji = sanitizeInput(opt.querySelector(“.option-emoji”)?.value);
-if (label &amp;&amp; value)
-code += <code>$addSelectMenuOption[${customId};${label};${value};${desc};${emoji}]\n</code>;
-});
+.remove-btn {
+	background: hsl(0deg 0% 50% / 30%);
+	color: #fff;
+	border: none;
+	padding: 0.625rem 1rem;
+	border-radius: var(--border-radius);
+	cursor: pointer;
+	font-size: 1rem ;
+	font-weight: 500;
+	transition: all 0.2s;
 }
-});</p>
-<p>document.querySelectorAll(“.modal-row”).forEach((row) =&gt; {
-const title = sanitizeInput(row.querySelector(“.modal-title”)?.value);
-const customId = sanitizeInput(row.querySelector(“.modal-id”)?.value);
-if (title &amp;&amp; customId) {
-code += <code>$newModal[${customId};${title}]\n</code>;
-row.querySelectorAll(“.modal-input”).forEach((input) =&gt; {
-const label = sanitizeInput(input.querySelector(“.input-label”)?.value);
-const id = sanitizeInput(input.querySelector(“.input-id”)?.value);
-const style = input.querySelector(“.input-style”)?.value || “short”;
-const required = input.querySelector(“.input-required”)?.checked
-? “yes”
-: “no”;
-const placeholder = sanitizeInput(
-input.querySelector(“.input-placeholder”)?.value,
-);
-if (label &amp;&amp; id)
-code += <code>$addTextInput[${id};${style};${label};${required};${placeholder}]\n</code>;
-});
+.remove-btn:hover {
+	background: hsl(0deg 0% 60% / 40%);
 }
-});</p>
-<p>const output = document.getElementById(“output”);
-const charCount = document.getElementById(“charCount”);
-output.textContent = code.trim();
-charCount.textContent = output.textContent.length + “ characters“;
-saveNormalState();
-}</p>
-<p>function generateSendEmbed() {
-const s_error = document.getElementById(“s_error”);
-const s_output = document.getElementById(“s_output”);
-const s_charCount = document.getElementById(“s_charCount”);
-s_error.textContent = “”;
-clearInlineErrors();
-let hasErrors = false;</p>
-<p>const channelId = document.getElementById(“s_channelId”).value.trim();
-const content = document.getElementById(“s_content”).value.trim();
-const authorName = document.getElementById(“s_authorName”).value.trim();
-const authorIcon = document.getElementById(“s_authorIcon”).value.trim();
-const titleVal = document.getElementById(“s_title”).value.trim();
-const titleUrl = document.getElementById(“s_titleUrl”).value.trim();
-const desc = document.getElementById(“s_description”).value.trim();
-const thumbnail = document.getElementById(“s_thumbnail”).value.trim();
-const image = document.getElementById(“s_image”).value.trim();
-const colorVal = document.getElementById(“s_color”).value.trim();
-const footerVal = document.getElementById(“s_footer”).value.trim();
-const footerIcon = document.getElementById(“s_footerIcon”).value.trim();
-const timestamp = document.getElementById(“s_timestamp”).checked
-? “yes”
-: “no”;
-const returnId = document.getElementById(“s_returnMsgId”).checked
-? “yes”
-: “no”;</p>
-<p>// Validation
-if (!channelId) {
-formRowError(
-document.getElementById(“s_channelId”),
-“Channel ID is required”,
-);
-hasErrors = true;
+select.form-input {
+	appearance: none;
+	-webkit-appearance: none;
+	background-color: hsl(0deg 0% 100% / 7%);
+	color: #fff;
+	cursor: pointer;
 }
-if (authorIcon &amp;&amp; !authorName) {
-formRowError(
-document.getElementById(“s_authorName”),
-“Author Name required when Author Icon is set”,
-);
-hasErrors = true;
+select.form-input option {
+	background-color: hsl(220deg 15% 18%);
+	color: #fff;
 }
-if (authorIcon &amp;&amp; !isValidUrl(authorIcon)) {
-formRowError(
-document.getElementById(“s_authorIcon”),
-“Author Icon: invalid URL”,
-);
-hasErrors = true;
+.flex-buttons {
+	display: flex;
+	gap: 0;
+	flex-wrap: wrap;
+	margin-top: 1rem;
 }
-if (titleUrl &amp;&amp; !titleVal) {
-formRowError(
-document.getElementById(“s_title”),
-“Title required when Title URL is set”,
-);
-hasErrors = true;
+.component-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	min-height: 2.5rem;
+	margin-bottom: 0.75rem;
 }
-if (titleUrl &amp;&amp; !isValidUrl(titleUrl)) {
-formRowError(
-document.getElementById(“s_titleUrl”),
-“Title URL: invalid URL”,
-);
-hasErrors = true;
+.component-title {
+	font-size: 1.3rem;
+	font-weight: 600;
+	color: rgba(255, 255, 255, 0.9);
+	line-height: 1;
 }
-if (thumbnail &amp;&amp; !isValidUrl(thumbnail)) {
-formRowError(
-document.getElementById(“s_thumbnail”),
-“Thumbnail: invalid URL”,
-);
-hasErrors = true;
+.collapse-btn {
+	background: hsl(220deg 80% 50% / 70%);
+	color: #fff;
+	border: none;
+	padding: 0.4rem 0.9rem;
+	border-radius: var(--border-radius);
+	cursor: pointer;
+	font-size: 1.3rem;
+	font-weight: 600;
+	transition: all 0.2s;
+	flex-shrink: 0;
+	min-width: 2.5rem;
+	min-height: 2.5rem;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	touch-action: manipulation;
+	-webkit-user-select: none;
+	user-select: none;
 }
-if (image &amp;&amp; !isValidUrl(image)) {
-formRowError(document.getElementById(“s_image”), “Image: invalid URL”);
-hasErrors = true;
+.collapse-btn:hover {
+	background: hsl(220deg 80% 60% / 90%);
 }
-if (colorVal &amp;&amp; !isValidHex(colorVal)) {
-formRowError(
-document.getElementById(“s_color”),
-“Color: must be a valid hex code (e.g. #5865F2)”,
-);
-hasErrors = true;
+.option-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 0.25rem;
 }
-if (footerIcon &amp;&amp; !footerVal) {
-formRowError(
-document.getElementById(“s_footer”),
-“Footer Text required when Footer Icon is set”,
-);
-hasErrors = true;
+.option-header > div {
+	gap: 0.75rem !important;
 }
-if (footerIcon &amp;&amp; !isValidUrl(footerIcon)) {
-formRowError(
-document.getElementById(“s_footerIcon”),
-“Footer Icon: invalid URL”,
-);
-hasErrors = true;
-}</p>
-<p>if (hasErrors) {
-const first = document.querySelector(“.inline-error”);
-if (first) first.scrollIntoView({ behavior: “smooth”, block: “center” });
-return;
-}</p>
-<p>// Build $sendEmbedMessage[channelID;content;title;titleURL;description;color;author;authorIcon;footer;footerIcon;thumbnail;image;timestamp;returnMessageID]
-const parts = [
-channelId,
-sanitizeInput(content),
-sanitizeInput(titleVal),
-sanitizeInput(titleUrl),
-sanitizeInput(desc),
-colorVal || “#7289da”,
-sanitizeInput(authorName),
-sanitizeInput(authorIcon),
-sanitizeInput(footerVal),
-sanitizeInput(footerIcon),
-sanitizeInput(thumbnail),
-sanitizeInput(image),
-timestamp,
-returnId,
-];</p>
-<p>const code = <code>$sendEmbedMessage[${parts.join(";")}]</code>;
-s_output.textContent = code;
-s_charCount.textContent = code.length + “ characters“;
-saveSendState();
-}</p>
-<p>function copyOutput(outputId, btnEl) {
-const output = document.getElementById(outputId);
-if (
-!output ||
-!output.textContent ||
-output.textContent.includes(“Generated code appears here”)
-) {
-showToast(“Nothing to copy”, true);
-return;
+.option-title {
+	font-size: 1.1rem;
+	font-weight: 500;
+	color: rgba(255, 255, 255, 0.75);
 }
-navigator.clipboard
-.writeText(output.textContent)
-.then(() =&gt; {
-const original = btnEl.textContent;
-btnEl.textContent = “Copied!”;
-btnEl.style.background = “hsl(120deg 100% 30%)”;
-setTimeout(() =&gt; {
-btnEl.textContent = original;
-btnEl.style.background = “”;
-}, 2000);
-})
-.catch(() =&gt; showToast(“Copy failed”, true));
-}</p>
-<p>document.addEventListener(“DOMContentLoaded”, () =&gt; {
-// Apply saved mode on load
-const normalBuilder = document.getElementById(“normalBuilder”);
-const sendBuilder = document.getElementById(“sendBuilder”);
-const compV2Builder = document.getElementById(“compV2Builder”);
-const btnNormal = document.getElementById(“modeNormal”);
-const btnSend = document.getElementById(“modeSend”);
-const btnCV2 = document.getElementById(“modeCompV2”);</p>
-<p>// Hide all, show active
-normalBuilder.style.display = “none”;
-sendBuilder.style.display = “none”;
-compV2Builder.style.display = “none”;
-btnNormal.classList.remove(“active”);
-btnSend.classList.remove(“active”);
-btnCV2.classList.remove(“active”);</p>
-<p>// Always load CV2 state once on startup — cards live in the DOM even when hidden
-loadCV2State();</p>
-<p>if (currentMode === “send”) {
-sendBuilder.style.display = “”;
-btnSend.classList.add(“active”);
-loadSendState();
-} else if (currentMode === “compv2”) {
-compV2Builder.style.display = “”;
-btnCV2.classList.add(“active”);
-// loadCV2State() already called above
-} else {
-normalBuilder.style.display = “”;
-btnNormal.classList.add(“active”);
-loadNormalState();
-}</p>
-<p>// Toggle buttons
-btnNormal.addEventListener(“click”, () =&gt; switchMode(“normal”));
-btnSend.addEventListener(“click”, () =&gt; switchMode(“send”));
-btnCV2.addEventListener(“click”, () =&gt; switchMode(“compv2”));</p>
-<p>// ── Normal mode wiring ──────────────────────────────────────────────────────
-document
-.getElementById(“generateBtn”)
-.addEventListener(“click”, generateNormalEmbed);
-document.getElementById(“copyBtn”).addEventListener(“click”, function () {
-copyOutput(“output”, this);
-});
-document.getElementById(“clearBtn”).addEventListener(“click”, () =&gt; {
-clearInlineErrors();
-document.getElementById(“error”).textContent = “”;
-document
-.querySelectorAll(
-“#normalBuilder .form-input, #normalBuilder .form-textarea”,
-)
-.forEach((input) =&gt; {
-input.value = input.id === “color” ? “#7289da” : “”;
-});
-document
-.querySelectorAll(“#normalBuilder .form-checkbox”)
-.forEach((cb) =&gt; (cb.checked = false));
-document.getElementById(“dynamicFields”).innerHTML = “”;
-fieldCount = 0;
-buttonCount = 0;
-selectCount = 0;
-modalCount = 0;
-document.getElementById(“output”).textContent =
-“Generated code appears here…”;
-document.getElementById(“charCount”).textContent = “0 characters”;
-localStorage.removeItem(NORMAL_KEY);
-});
-document.getElementById(“addField”).addEventListener(“click”, addFieldRow);
-document.getElementById(“addButton”).addEventListener(“click”, addButtonRow);
-document.getElementById(“addSelect”).addEventListener(“click”, addSelectRow);
-document.getElementById(“addModal”).addEventListener(“click”, addModalRow);
-document
-.getElementById(“normalBuilder”)
-.addEventListener(“input”, saveNormalState);
-document
-.getElementById(“normalBuilder”)
-.addEventListener(“change”, saveNormalState);</p>
-<p>// ── Send mode wiring ────────────────────────────────────────────────────────
-document
-.getElementById(“s_generateBtn”)
-.addEventListener(“click”, generateSendEmbed);
-document.getElementById(“s_copyBtn”).addEventListener(“click”, function () {
-copyOutput(“s_output”, this);
-});
-document.getElementById(“s_clearBtn”).addEventListener(“click”, () =&gt; {
-clearInlineErrors();
-document.getElementById(“s_error”).textContent = “”;
-SEND_FIELDS.forEach((id) =&gt; {
-const el = document.getElementById(id);
-if (el) el.value = id === “s_color” ? “#7289da” : “”;
-});
-SEND_CHECKS.forEach((id) =&gt; {
-const el = document.getElementById(id);
-if (el) el.checked = false;
-});
-document.getElementById(“s_output”).textContent =
-“Generated code appears here…”;
-document.getElementById(“s_charCount”).textContent = “0 characters”;
-localStorage.removeItem(SEND_KEY);
-});
-document
-.getElementById(“sendBuilder”)
-.addEventListener(“input”, saveSendState);
-document
-.getElementById(“sendBuilder”)
-.addEventListener(“change”, saveSendState);</p>
-<p>// ── CompV2 mode wiring ──────────────────────────────────────────────────────
-document
-.getElementById(“cv2AddContainer”)
-.addEventListener(“click”, () =&gt; cv2AddCard(“container”));
-document
-.getElementById(“cv2AddTextDisplay”)
-.addEventListener(“click”, () =&gt; cv2AddCard(“textdisplay”));
-document
-.getElementById(“cv2AddSeparator”)
-.addEventListener(“click”, () =&gt; cv2AddCard(“separator”));
-document
-.getElementById(“cv2AddSection”)
-.addEventListener(“click”, () =&gt; cv2AddCard(“section”));
-document
-.getElementById(“cv2AddThumbnail”)
-.addEventListener(“click”, () =&gt; cv2AddCard(“thumbnail”));
-document
-.getElementById(“cv2AddMediaGallery”)
-.addEventListener(“click”, () =&gt; cv2AddCard(“mediagallery”));
-document
-.getElementById(“cv2AddMediaItem”)
-.addEventListener(“click”, () =&gt; cv2AddCard(“mediaitem”));
-document
-.getElementById(“cv2AddActionRow”)
-.addEventListener(“click”, () =&gt; cv2AddCard(“actionrow”));
-document
-.getElementById(“cv2AddButtonCV2”)
-.addEventListener(“click”, () =&gt; cv2AddCard(“buttoncv2”));
-document
-.getElementById(“cv2AddUserSelect”)
-.addEventListener(“click”, () =&gt; cv2AddCard(“userselect”));
-document
-.getElementById(“cv2AddRoleSelect”)
-.addEventListener(“click”, () =&gt; cv2AddCard(“roleselect”));
-document
-.getElementById(“cv2AddMentionable”)
-.addEventListener(“click”, () =&gt; cv2AddCard(“mentionable”));
-document
-.getElementById(“cv2GenerateBtn”)
-.addEventListener(“click”, generateCV2);
-document.getElementById(“cv2CopyBtn”).addEventListener(“click”, function () {
-copyOutput(“cv2Output”, this);
-});
-document.getElementById(“cv2ClearBtn”).addEventListener(“click”, () =&gt; {
-document.getElementById(“cv2Components”).innerHTML = “”;
-// Reset per-type counters
-Object.keys(cv2Counters).forEach((k) =&gt; {
-cv2Counters[k] = 0;
-});
-document.getElementById(“cv2Output”).textContent =
-“Generated code appears here…”;
-document.getElementById(“cv2CharCount”).textContent = “0 characters”;
-document.getElementById(“cv2Error”).textContent = “”;
-localStorage.removeItem(CV2_KEY);
-});
-});</p>
-<p>// ═══════════════════════════════════════════════════════════════════════════════
-// COMPV2 BUILDER
-// ═══════════════════════════════════════════════════════════════════════════════</p>
-<p>// ─── CV2 state persistence ────────────────────────────────────────────────────</p>
-<p>// Track per-type counters for numbering (persists across mode switches)
-const cv2Counters = {};</p>
-<p>function saveCV2State() {
-const cards = [];
-document.querySelectorAll(“#cv2Components [data-type]”).forEach((card) =&gt; {
-const type = card.dataset.type;
-const fields = {};
-card.querySelectorAll(“[data-cv2field]”).forEach((el) =&gt; {
-fields[el.dataset.cv2field] =
-el.type === “checkbox” ? el.checked : el.value;
-});
-cards.push({ type, fields });
-});
-localStorage.setItem(CV2_KEY, JSON.stringify({ components: cards }));
-}</p>
-<p>// Only called once on initial page load — never on mode switch
-function loadCV2State() {
-const raw = localStorage.getItem(CV2_KEY);
-if (!raw) return;
-try {
-const state = JSON.parse(raw);
-if (!state.components) return;
-// Restore each card and populate its fields BEFORE refreshing dropdowns
-state.components.forEach((comp) =&gt; {
-const card = cv2AddCard(comp.type, false); // doRefresh=false, no dropdown refresh yet
-if (!card) return;
-Object.entries(comp.fields).forEach(([key, val]) =&gt; {
-const el = card.querySelector(<code>[data-cv2field="${key}"]</code>);
-if (!el) return;
-if (el.type === “checkbox”) el.checked = val;
-else el.value = val;
-});
-});
-// Now that all name/id fields are populated, refresh dropdowns once
-cv2RefreshAllDropdowns();
-} catch (e) {}
-}</p>
-<p>// ─── CV2 dropdown helpers ─────────────────────────────────────────────────────</p>
-<p>// Collect names of a given component type from existing cards
-function cv2GetNames(type) {
-const names = [];
-document
-.querySelectorAll(<code>#cv2Components [data-type="${type}"]</code>)
-.forEach((card) =&gt; {
-const nameEl =
-card.querySelector(“[data-cv2field=‘name’]”) ||
-card.querySelector(“[data-cv2field=‘id’]”);
-const val = nameEl ? nameEl.value.trim() : “”;
-if (val) names.push(val);
-});
-return names;
-}</p>
-<p>// Build <optgroup> HTML
-function cv2Optgroup(label, names, required) {
-if (names.length === 0) return “”;
-const opts = names
-.map((n) =&gt; <code>&lt;option value="${n.replace(/"/g, "&amp;quot;")}"&gt;${n}&lt;/option&gt;</code>)
-.join(“”);
-return <code>&lt;optgroup label="${label}"&gt;${opts}&lt;/optgroup&gt;</code>;
-}</p>
-<p>// Populate a <select> element with current names, preserving current value
-function cv2PopulateSelect(sel, groups, required) {
-if (!sel) return;
-const prev = sel.value;
-// Required fields get a “— select —” placeholder; optional get “— none —”
-sel.innerHTML = required
-? ‘<option value="">— select —</option>’
-: ‘<option value="">— none —</option>’;
-groups.forEach(([label, names]) =&gt; {
-sel.innerHTML += cv2Optgroup(label, names, required);
-});
-// restore previous selection if still valid
-if (prev) {
-const opt = sel.querySelector(<code>option[value="${CSS.escape(prev)}"]</code>);
-if (opt) sel.value = prev;
+.select-option, .modal-input {
+	background: hsl(0deg 0% 100% / 8%);
+	border-radius: var(--border-radius);
+	padding: 0.75rem;
+	margin-top: 0.5rem;
+	border: 1px solid rgba(255,255,255,0.1);
 }
-}</p>
-<p>// Refresh ALL dropdowns in all CV2 cards
-function cv2RefreshAllDropdowns() {
-const containers = cv2GetNames(“container”);
-const sections = cv2GetNames(“section”);
-const galleries = cv2GetNames(“mediagallery”);
-const actionRows = cv2GetNames(“actionrow”);</p>
-<p>document.querySelectorAll(“#cv2Components [data-type]”).forEach((card) =&gt; {
-const type = card.dataset.type;</p>
-<pre><code>// Container/Section dropdown (Text Display)
-if (type === "textdisplay") {
-  cv2PopulateSelect(
-    card.querySelector("[data-cv2field='containerOrSection']"),
-    [
-      ["Containers", containers],
-      ["Sections", sections],
-    ],
-    false,
-  );
+.remove-btn-red {
+	outline: none;
+	touch-action: manipulation;
+	-webkit-user-select: none;
+	user-select: none;
+	background: hsl(0deg 70% 40% / 80%);
+	padding-left: 1rem;
+	padding-right: 1rem;
+	height: 4rem;
+	font-size: 1.5rem;
+	font-weight: 500;
+	border-radius: var(--border-radius);
+	color: #fff;
+	border: none;
+	cursor: pointer;
+	transition: all 0.3s;
+	box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
 }
-// Container dropdown (Separator, Media Gallery, Action Row, Section)
-if (["separator", "mediagallery", "actionrow", "section"].includes(type)) {
-  cv2PopulateSelect(
-    card.querySelector("[data-cv2field='container']"),
-    [["Containers", containers]],
-    false,
-  );
+.remove-btn-red:hover {
+	background: hsl(0deg 70% 50% / 90%);
+	transform: translateY(-1px);
+	box-shadow: 0 8px 15px rgba(0, 0, 0, 0.4);
 }
-// Section dropdown (Thumbnail)
-if (type === "thumbnail") {
-  cv2PopulateSelect(
-    card.querySelector("[data-cv2field='sectionName']"),
-    [["Sections", sections]],
-    true,
-  );
+.remove-btn-small {
+	height: auto;
+	padding: 0.4rem 0.9rem;
+	font-size: 1.3rem;
+	box-shadow: none;
 }
-// Gallery dropdown (Media Item)
-if (type === "mediaitem") {
-  cv2PopulateSelect(
-    card.querySelector("[data-cv2field='galleryId']"),
-    [["Galleries", galleries]],
-    true,
-  );
+.inline-error {
+	display: block;
+	color: var(--error);
+	font-size: 1rem;
+	margin-top: 0.3rem;
+	margin-bottom: 0.25rem;
 }
-// Action Row / Section dropdown (Button CV2)
-if (type === "buttoncv2") {
-  cv2PopulateSelect(
-    card.querySelector("[data-cv2field='actionRowOrSection']"),
-    [
-      ["Action Rows", actionRows],
-      ["Sections", sections],
-    ],
-    true,
-  );
+/* Mode toggle */
+.mode-toggle-wrapper {
+	display: flex;
+	justify-content: center;
+	margin: 1.5rem 0 0.5rem 0;
 }
-// Action Row dropdown (Selects)
-if (["userselect", "roleselect", "mentionable"].includes(type)) {
-  cv2PopulateSelect(
-    card.querySelector("[data-cv2field='actionRowId']"),
-    [["Action Rows", actionRows]],
-    true,
-  );
+.mode-toggle {
+	display: flex;
+	background: hsl(0deg 0% 100% / 7%);
+	border-radius: var(--border-radius);
+	padding: 0.3rem;
+	gap: 0.3rem;
+	box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+	flex-wrap: wrap;
+	justify-content: center;
 }
+.mode-btn {
+	outline: none;
+	touch-action: manipulation;
+	-webkit-user-select: none;
+	user-select: none;
+	padding: 0.6rem 1.4rem;
+	border: none;
+	border-radius: calc(var(--border-radius) - 2px);
+	cursor: pointer;
+	font-weight: 500;
+	font-size: 1.4rem;
+	transition: all 0.25s;
+	color: rgba(255, 255, 255, 0.55);
+	background: transparent;
+}
+.mode-btn.active {
+	background: hsl(220deg 80% 50% / 80%);
+	color: #fff;
+	box-shadow: 0 3px 8px rgba(0, 0, 0, 0.35);
+}
+.mode-btn:not(.active):hover {
+	color: rgba(255, 255, 255, 0.85);
+	background: hsl(0deg 0% 100% / 10%);
+}
+.required-star {
+	color: hsl(0deg 80% 60%);
+	margin-left: 0.2rem;
+	font-weight: 700;
+}
+
+</style>
+<p>Here you can make embeds using the respective text inputs. (supports normal components and components v2.)</p>
+<div id="admonition-note" class="admonition admonish-note" role="note" aria-labelledby="admonition-note-title">
+<div class="admonition-title">
+<div id="admonition-note-title">
+<p>Note</p>
+</div>
+<a class="admonition-anchor-link" href="#admonition-note"></a>
+</div>
+<div>
+<p>Embed Builder creates Discord embeds/containers with titles, descriptions, fields, buttons, select menus,  modals, and more.</p>
+</div>
+</div>
+<div class="mode-toggle-wrapper">
+  <div class="mode-toggle">
+    <button class="mode-btn active" id="modeNormal">Normal Embed Builder</button>
+    <button class="mode-btn" id="modeSend">Send Embed Builder</button>
+    <button class="mode-btn" id="modeCompV2">CompV2 Builder</button>
+  </div>
+</div>
+<div id="normalBuilder">
+<div class="picker-container">
+	<h2 id="normal-embed-builder"><a class="header" href="#normal-embed-builder">Normal Embed Builder</a></h2>
+  	<p>Fill text input fields below to generate embed code.</p>
+<div class="form-group">
+     <label>Author</label>
+     <div class="form-row">
+       <input id="authorName" class="form-input" placeholder="Author Name">
+       <input id="authorIcon" class="form-input" placeholder="Author Icon URL">
+       <input id="authorUrl" class="form-input" placeholder="Author URL">
+     </div>
+   </div>
+<div class="form-group">
+     <label>Title</label>
+     <div class="form-row">
+       <input id="title" class="form-input" placeholder="Title">
+       <input id="titleUrl" class="form-input" placeholder="Title URL">
+     </div>
+   </div>
+<div class="form-group">
+     <label>Description</label>
+     <textarea id="description" class="form-input form-textarea" placeholder="Description..."></textarea>
+   </div>
+<div class="form-group">
+     <label>Media &amp; Style</label>
+     <div class="form-row">
+       <input id="thumbnail" class="form-input" placeholder="Thumbnail URL">
+       <input id="image" class="form-input" placeholder="Image URL">
+       <input id="color" class="form-input" placeholder="#ffffff" value="#7289da">
+     </div>
+   </div>
+<div class="form-group">
+     <label>Footer</label>
+     <div class="form-row">
+       <input id="footer" class="form-input" placeholder="Footer Text">
+       <input id="footerIcon" class="form-input" placeholder="Footer Icon URL">
+     </div>
+     <label class="checkbox-label">
+       <input type="checkbox" id="timestamp" class="form-checkbox">
+       <span>Add Timestamp</span>
+     </label>
+   </div>
+<div class="flex-buttons">
+     <button id="addField" class="add-field-btn">+ Field</button>
+     <button id="addButton" class="add-field-btn">+ Button</button>
+     <button id="addSelect" class="add-field-btn">+ Select Menu</button>
+     <button id="addModal" class="add-field-btn">+ Modal</button>
+   </div>
+<div id="dynamicFields"></div>
+<div class="btn-row">
+     <button id="generateBtn" class="generate-btn">Generate Embed</button>
+     <button id="copyBtn" class="copy-btn">Copy Output</button>
+     <button id="clearBtn" class="clear-btn">Clear All</button>
+   </div>
+<div id="output" class="output">Generated code appears here...</div>
+   <div class="char-count" id="charCount">0 characters</div>
+   <div class="error" id="error"></div>
+</div>
+</div>
+<div id="sendBuilder" style="display:none;">
+<div class="picker-container">
+  <h2 id="send-embed-builder"><a class="header" href="#send-embed-builder">Send Embed Builder</a></h2>
+  <p>Fill text input fields below to generate a <code>$sendEmbedMessage</code> call.</p>
+<!-- Destination -->
+<div class="form-group">
+    <label>Destination</label>
+    <div class="form-row">
+      <div style="display:flex;flex-direction:column;gap:0.4rem;">
+        <input id="s_channelId" class="form-input" placeholder="Channel ID">
+        <span style="font-size:1.1rem;color:rgba(255,255,255,0.45);">Channel ID <span class="required-star">*</span> required</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:0.4rem;">
+        <input id="s_content" class="form-input" placeholder="Content (text above embed)">
+        <span style="font-size:1.1rem;color:rgba(255,255,255,0.45);">Optional — text sent above the embed</span>
+      </div>
+    </div>
+  </div>
+<!-- Author -->
+<div class="form-group">
+    <label>Author</label>
+    <div class="form-row">
+      <input id="s_authorName" class="form-input" placeholder="Author Name">
+      <input id="s_authorIcon" class="form-input" placeholder="Author Icon URL">
+    </div>
+  </div>
+<!-- Title -->
+<div class="form-group">
+    <label>Title</label>
+    <div class="form-row">
+      <input id="s_title" class="form-input" placeholder="Title">
+      <input id="s_titleUrl" class="form-input" placeholder="Title URL">
+    </div>
+  </div>
+<!-- Description -->
+<div class="form-group">
+    <label>Description</label>
+    <textarea id="s_description" class="form-input form-textarea" placeholder="Description..."></textarea>
+  </div>
+<!-- Media & Style -->
+<div class="form-group">
+    <label>Media &amp; Style</label>
+    <div class="form-row">
+      <input id="s_thumbnail" class="form-input" placeholder="Thumbnail URL">
+      <input id="s_image" class="form-input" placeholder="Image URL">
+      <input id="s_color" class="form-input" placeholder="#ffffff" value="#7289da">
+    </div>
+  </div>
+<!-- Footer -->
+<div class="form-group">
+    <label>Footer</label>
+    <div class="form-row">
+      <input id="s_footer" class="form-input" placeholder="Footer Text">
+      <input id="s_footerIcon" class="form-input" placeholder="Footer Icon URL">
+    </div>
+    <label class="checkbox-label">
+      <input type="checkbox" id="s_timestamp" class="form-checkbox">
+      <span>Add Timestamp</span>
+    </label>
+    <label class="checkbox-label">
+      <input type="checkbox" id="s_returnMsgId" class="form-checkbox">
+      <span>Return Message ID</span>
+    </label>
+  </div>
+<div class="btn-row">
+    <button id="s_generateBtn" class="generate-btn">Generate</button>
+    <button id="s_copyBtn" class="copy-btn">Copy Output</button>
+    <button id="s_clearBtn" class="clear-btn">Clear All</button>
+  </div>
+<div id="s_output" class="output">Generated code appears here...</div>
+  <div class="char-count" id="s_charCount">0 characters</div>
+  <div class="error" id="s_error"></div>
+</div>
+</div>
+<!-- ═══════════════════════════════════════════════════════════
+     COMPV2 BUILDER
+     ═══════════════════════════════════════════════════════════ -->
+<div id="compV2Builder" style="display:none;">
+<div class="picker-container">
+  <h2 id="compv2-builder"><a class="header" href="#compv2-builder">CompV2 Builder</a></h2>
+  <p>Add components below to generate Components V2 code.</p>
+<!-- Add Components card -->
+<div class="form-group">
+    <label>Add Components</label>
+    <div class="flex-buttons" id="cv2AddButtons">
+      <button class="add-field-btn" id="cv2AddContainer">+ Container</button>
+      <button class="add-field-btn" id="cv2AddTextDisplay">+ Text Display</button>
+      <button class="add-field-btn" id="cv2AddSeparator">+ Separator</button>
+      <button class="add-field-btn" id="cv2AddSection">+ Section</button>
+      <button class="add-field-btn" id="cv2AddThumbnail">+ Thumbnail</button>
+      <button class="add-field-btn" id="cv2AddMediaGallery">+ Media Gallery</button>
+      <button class="add-field-btn" id="cv2AddMediaItem">+ Media Item</button>
+      <button class="add-field-btn" id="cv2AddActionRow">+ Action Row</button>
+      <button class="add-field-btn" id="cv2AddButtonCV2">+ Button CV2</button>
+      <button class="add-field-btn" id="cv2AddUserSelect">+ User Select</button>
+      <button class="add-field-btn" id="cv2AddRoleSelect">+ Role Select</button>
+      <button class="add-field-btn" id="cv2AddMentionable">+ Mentionable Select</button>
+    </div>
+  </div>
+<!-- Dynamic component cards go here -->
+<div id="cv2Components"></div>
+<!-- Output -->
+<div class="btn-row">
+    <button id="cv2GenerateBtn" class="generate-btn">Generate Code</button>
+    <button id="cv2CopyBtn" class="copy-btn">Copy Output</button>
+    <button id="cv2ClearBtn" class="clear-btn">Clear All</button>
+  </div>
+  <div id="cv2Output" class="output">Generated code appears here...</div>
+  <div class="char-count" id="cv2CharCount">0 characters</div>
+  <div class="error" id="cv2Error"></div>
+</div>
+</div>
+<h2 id="functions"><a class="header" href="#functions">Functions</a></h2>
+<div id="admonition-note-1" class="admonition admonish-note" role="note" aria-labelledby="admonition-note-1-title">
+<div class="admonition-title">
+<div id="admonition-note-1-title">
+<p>Note</p>
+</div>
+<a class="admonition-anchor-link" href="#admonition-note-1"></a>
+</div>
+<div>
+<p>Generated code uses standard BDFD embed functions.</p>
+</div>
+</div>
+<p><strong>Core</strong>:</p>
+<ul>
+<li><a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/title.md"><code>$title[]</code></a>, <a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/description.md"><code>$description[]</code></a>, <a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/color.md"><code>$color[]</code></a>, <a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/image.md"><code>$image[]</code></a>, <a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/thumbnail.md"><code>$thumbnail[]</code></a></li>
+<li><a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/author.md"><code>$author[]</code></a>, <a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/footer.md"><code>$footer[]</code></a>, <a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/addTimestamp.md"><code>$addTimestamp</code></a></li>
+<li><a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/addField.md"><code>$addField[]</code></a>, <a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/addButton.md"><code>$addButton[]</code></a>, <a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/addSelectMenuOption.md"><code>$addSelectMenuOption[]</code></a></li>
+<li><a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/newModal.md"><code>$newModal[]</code></a>, <a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/addTextInput.md"><code>$addTextInput[]</code></a></li>
+<li><a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/sendEmbedMessage.md"><code>$sendEmbedMessage[]</code></a></li>
+<li><a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/addContainer.md"><code>$addContainer[]</code></a>, <a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/addTextDisplay.md"><code>$addTextDisplay[]</code></a>, <a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/addSeparator.md"><code>$addSeparator[]</code></a>, <a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/addSection.md"><code>$addSection[]</code></a></li>
+<li><a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/addThumbnail.md"><code>$addThumbnail[]</code></a>, <a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/addMediaGallery.md"><code>$addMediaGallery[]</code></a>, <a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/addMediaGalleryItem.md"><code>$addMediaGalleryItem[]</code></a></li>
+<li><a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/addActionRow.md"><code>$addActionRow[]</code></a>, <a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/addButtonCV2.md"><code>$addButtonCV2[]</code></a>, <a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/addUserSelect.md"><code>$addUserSelect[]</code></a>, <a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/addRoleSelect.md"><code>$addRoleSelect[]</code></a>, <a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/addMentionableSelect.md"><code>$addMentionableSelect[]</code></a></li>
+</ul>
+<h2 id="example"><a class="header" href="#example">Example</a></h2>
+<pre><code>$nomention
+$title[Hello]
+$description[Welcome to embed builder.]
+$color[#673ab7]
 </code></pre>
-<p>});
-}</p>
-<p>// ─── CV2 card builder ─────────────────────────────────────────────────────────</p>
-<p>const CV2_BADGE_LABELS = {
-container: [“Container”, “cv2-badge-container”],
-textdisplay: [“Text Display”, “cv2-badge-textdisplay”],
-separator: [“Separator”, “cv2-badge-separator”],
-section: [“Section”, “cv2-badge-section”],
-thumbnail: [“Thumbnail”, “cv2-badge-thumbnail”],
-mediagallery: [“Media Gallery”, “cv2-badge-mediagallery”],
-mediaitem: [“Media Item”, “cv2-badge-mediaitem”],
-actionrow: [“Action Row”, “cv2-badge-actionrow”],
-buttoncv2: [“Button CV2”, “cv2-badge-buttoncv2”],
-userselect: [“User Select”, “cv2-badge-userselect”],
-roleselect: [“Role Select”, “cv2-badge-roleselect”],
-mentionable: [“Mentionable Select”, “cv2-badge-mentionable”],
-};</p>
-<p>// Returns the card element (or null)
-function cv2AddCard(type, doRefresh = true) {
-const info = CV2_BADGE_LABELS[type];
-if (!info) return null;</p>
-<p>// Increment per-type counter for numbering
-if (!cv2Counters[type]) cv2Counters[type] = 0;
-cv2Counters[type]++;
-const num = cv2Counters[type];
-const label = <code>${info[0]} #${num}</code>;</p>
-<p>// Outer wrapper — same class pattern as .field-row / .button-row in Normal mode
-const card = document.createElement(“div”);
-card.className = “field-row”; // reuse existing card CSS
-card.dataset.type = type;</p>
-<p>// Body created first so makeHeader’s collapse btn can reference it
-const body = document.createElement(“div”);
-body.className = “component-body”;
-body.innerHTML = cv2CardBody(type);</p>
-<p>// Header — collapse + ✕ remove, using the shared makeHeader pattern
-card.appendChild(
-makeHeader(label, body, () =&gt; {
-card.remove();
-cv2RefreshAllDropdowns();
-saveCV2State();
-}),
-);
-card.appendChild(body);</p>
-<p>document.getElementById(“cv2Components”).appendChild(card);</p>
-<p>// Wire name/id inputs to refresh dropdowns on change
-card
-.querySelectorAll(“[data-cv2field=‘name’],[data-cv2field=‘id’]”)
-.forEach((el) =&gt; {
-el.addEventListener(“input”, () =&gt; {
-cv2RefreshAllDropdowns();
-saveCV2State();
-});
-});
-card.addEventListener(“input”, saveCV2State);
-card.addEventListener(“change”, saveCV2State);</p>
-<p>if (doRefresh) cv2RefreshAllDropdowns();
-return card;
-}</p>
-<p>function cv2CardBody(type) {
-// Helpers that produce the same markup as Normal mode
-const fi = (field, placeholder, extra = “”) =&gt;
-<code>&lt;input class="form-input" data-cv2field="${field}" placeholder="${placeholder}" ${extra}&gt;</code>;
-const ta = (field, placeholder) =&gt;
-<code>&lt;textarea class="form-input form-textarea" data-cv2field="${field}" placeholder="${placeholder}"&gt;&lt;/textarea&gt;</code>;
-const cb = (field, lbl) =&gt;
-<code>&lt;label class="checkbox-label" style="margin:0;"&gt; &lt;input type="checkbox" class="form-checkbox" data-cv2field="${field}"&gt; &lt;span&gt;${lbl}&lt;/span&gt; &lt;/label&gt;</code>;
-const sel = (field, options) =&gt;
-<code>&lt;select class="form-input" data-cv2field="${field}"&gt;${options}&lt;/select&gt;</code>;
-const dynSel = (field, placeholder) =&gt;
-<code>&lt;select class="form-input" data-cv2field="${field}"&gt; &lt;option value=""&gt;— none —&lt;/option&gt; &lt;/select&gt;</code>;
-const dynSelReq = (field) =&gt;
-<code>&lt;select class="form-input" data-cv2field="${field}"&gt; &lt;option value=""&gt;— select —&lt;/option&gt; &lt;/select&gt;</code>;</p>
-<p>// Row helpers — use .form-row so the existing auto-fit grid CSS applies
-const row = (…cells) =&gt; <code>&lt;div class="form-row"&gt;${cells.join("")}&lt;/div&gt;</code>;
-const rowMt = (…cells) =&gt;
-<code>&lt;div class="form-row" style="margin-top:0.75rem;"&gt;${cells.join("")}&lt;/div&gt;</code>;
-// Inline flex bar for checkboxes (left) — mirrors the bottom bar in Normal mode
-const cbBar = (…items) =&gt;
-<code>&lt;div style="display:flex;gap:1.5rem;align-items:center;margin-top:0.75rem;"&gt;${items.join("")}&lt;/div&gt;</code>;</p>
-<p>switch (type) {
-case “container”:
-return (
-row(
-fi(“name”, “Container Name (required)”),
-fi(“color”, “Color (hex, optional)”),
-) + cbBar(cb(“spoiler”, “Spoiler”))
-);</p>
-<pre><code>case "textdisplay":
-  return (
-    `${ta("content", "Content (required)")}` +
-    rowMt(dynSel("containerOrSection", "Container or Section (optional)"))
-  );
-
-case "separator":
-  return (
-    row(
-      sel(
-        "spacing",
-        `&lt;option value=""&gt;Spacing: Default&lt;/option&gt;&lt;option value="small"&gt;Spacing: Small&lt;/option&gt;&lt;option value="large"&gt;Spacing: Large&lt;/option&gt;`,
-      ),
-      dynSel("container", "Container (optional)"),
-    ) + cbBar(cb("divider", "Show Divider Line"))
-  );
-
-case "section":
-  return row(
-    fi("name", "Section Name (required)"),
-    dynSel("container", "Container (optional)"),
-  );
-
-case "thumbnail":
-  return (
-    row(
-      fi("url", "URL (required)"),
-      fi("description", "Description (optional)"),
-    ) +
-    rowMt(dynSelReq("sectionName")) +
-    cbBar(cb("spoiler", "Spoiler"))
-  );
-
-case "mediagallery":
-  return row(
-    fi("id", "Gallery ID (required)"),
-    dynSel("container", "Container (optional)"),
-  );
-
-case "mediaitem":
-  return (
-    row(
-      fi("url", "URL (required)"),
-      fi("description", "Description (optional)"),
-    ) +
-    rowMt(dynSelReq("galleryId")) +
-    cbBar(cb("spoiler", "Spoiler"))
-  );
-
-case "actionrow":
-  return row(
-    fi("id", "Action Row ID (required)"),
-    dynSel("container", "Container (optional)"),
-  );
-
-case "buttoncv2":
-  return (
-    row(
-      fi("id", "ID or URL (required)"),
-      fi("label", "Label (optional)"),
-      sel(
-        "style",
-        `&lt;option value=""&gt;Style: Default&lt;/option&gt;&lt;option value="primary"&gt;Primary&lt;/option&gt;&lt;option value="secondary"&gt;Secondary&lt;/option&gt;&lt;option value="success"&gt;Success&lt;/option&gt;&lt;option value="danger"&gt;Danger&lt;/option&gt;&lt;option value="link"&gt;Link&lt;/option&gt;`,
-      ),
-    ) +
-    rowMt(
-      fi("emoji", "Emoji (optional)"),
-      dynSelReq("actionRowOrSection"),
-    ) +
-    cbBar(cb("disabled", "Disabled"))
-  );
-
-case "userselect":
-case "roleselect":
-case "mentionable":
-  return (
-    row(
-      fi("id", "ID (required)"),
-      fi("placeholder", "Placeholder (optional)"),
-    ) +
-    rowMt(
-      fi("min", "Min (optional)", "type='number' min='0'"),
-      fi("max", "Max (optional)", "type='number' min='0'"),
-      dynSelReq("actionRowId"),
-    ) +
-    cbBar(cb("disabled", "Disabled"))
-  );
-
-default:
-  return "";
-</code></pre>
-<p>}
-}</p>
-<p>// ─── CV2 generate ─────────────────────────────────────────────────────────────</p>
-<p>function cv2f(field, card) {
-const el = card.querySelector(<code>[data-cv2field="${field}"]</code>);
-if (!el) return “”;
-if (el.type === “checkbox”) return el.checked ? “true” : “false”;
-return el.value.trim();
-}</p>
-<p>// Trim trailing empty params from an array
-function cv2Trim(parts) {
-let last = parts.length - 1;
-while (last &gt; 0 &amp;&amp; parts[last] === “”) last–;
-return parts.slice(0, last + 1);
-}</p>
-<p>function generateCV2() {
-clearInlineErrors();
-document.getElementById(“cv2Error”).textContent = “”;
-let hasErrors = false;</p>
-<p>// Helper: show inline error after the first .form-row inside a card
-function cv2FieldError(card, msg) {
-const formRow = card.querySelector(“.form-row”);
-if (formRow) bodyRowError(formRow, msg);
-else {
-const body = card.querySelector(“.component-body”);
-if (body) {
-const span = document.createElement(“div”);
-span.className = “inline-error”;
-span.textContent = msg;
-body.prepend(span);
-}
-}
-hasErrors = true;
-}</p>
-<p>// Helper: show inline error after the .form-row containing a specific field
-function cv2InputError(card, field, msg) {
-const el = card.querySelector(<code>[data-cv2field="${field}"]</code>);
-if (el) {
-const formRow = el.closest(“.form-row”);
-if (formRow) {
-bodyRowError(formRow, msg);
-hasErrors = true;
-return;
-}
-}
-cv2FieldError(card, msg);
-}</p>
-<p>const cards = Array.from(
-document.querySelectorAll(“#cv2Components [data-type]”),
-);
-if (cards.length === 0) {
-document.getElementById(“cv2Error”).textContent =
-“Add at least one component first.”;
-return;
-}</p>
-<p>// Collect names for uniqueness / cross-reference checks
-const containerNames = new Set();
-const sectionNames = new Set();
-const allNames = new Set();</p>
-<p>// First pass: uniqueness
-cards.forEach((card) =&gt; {
-const type = card.dataset.type;
-if (type === “container”) {
-const name = cv2f(“name”, card);
-if (!name) {
-cv2InputError(card, “name”, “Container Name is required”);
-return;
-}
-if (containerNames.has(name))
-cv2InputError(card, “name”, <code>Duplicate container name "${name}"</code>);
-if (allNames.has(name))
-cv2InputError(card, “name”, <code>Name "${name}" clashes with a Section</code>);
-containerNames.add(name);
-allNames.add(name);
-}
-if (type === “section”) {
-const name = cv2f(“name”, card);
-if (!name) {
-cv2InputError(card, “name”, “Section Name is required”);
-return;
-}
-if (sectionNames.has(name))
-cv2InputError(card, “name”, <code>Duplicate section name "${name}"</code>);
-if (allNames.has(name))
-cv2InputError(card, “name”, <code>Name "${name}" clashes with a Container</code>);
-sectionNames.add(name);
-allNames.add(name);
-}
-});</p>
-<p>// Second pass: per-component validation
-cards.forEach((card) =&gt; {
-const type = card.dataset.type;</p>
-<pre><code>if (type === "container") {
-  const color = cv2f("color", card);
-  if (color &amp;&amp; !isValidHex(color))
-    cv2InputError(
-      card,
-      "color",
-      "Color must be a valid hex (e.g. #5865F2)",
-    );
-}
-
-if (type === "textdisplay") {
-  if (!cv2f("content", card))
-    cv2InputError(card, "content", "Content is required");
-}
-
-if (type === "section") {
-  const name = cv2f("name", card);
-  if (name) {
-    const hasText = cards.some(
-      (c) =&gt;
-        c.dataset.type === "textdisplay" &amp;&amp;
-        cv2f("containerOrSection", c) === name,
-    );
-    if (!hasText)
-      cv2FieldError(
-        card,
-        `Section "${name}": must have at least one Text Display attached`,
-      );
-    const hasAccessory = cards.some(
-      (c) =&gt;
-        (c.dataset.type === "thumbnail" &amp;&amp;
-          cv2f("sectionName", c) === name) ||
-        (c.dataset.type === "buttoncv2" &amp;&amp;
-          cv2f("actionRowOrSection", c) === name),
-    );
-    if (!hasAccessory)
-      cv2FieldError(
-        card,
-        `Section "${name}": must have at least one Thumbnail or Button CV2 accessory`,
-      );
-    const textCount = cards.filter(
-      (c) =&gt;
-        c.dataset.type === "textdisplay" &amp;&amp;
-        cv2f("containerOrSection", c) === name,
-    ).length;
-    const thumbCount = cards.filter(
-      (c) =&gt;
-        c.dataset.type === "thumbnail" &amp;&amp; cv2f("sectionName", c) === name,
-    ).length;
-    if (textCount + thumbCount &gt; 3)
-      cv2FieldError(
-        card,
-        `Section "${name}": max 3 components (Text Displays + Thumbnails)`,
-      );
-  }
-}
-
-if (type === "thumbnail") {
-  const url = cv2f("url", card);
-  if (!url) cv2InputError(card, "url", "URL is required");
-  else if (!isValidUrl(url))
-    cv2InputError(card, "url", "URL must start with http:// or https://");
-  if (!cv2f("sectionName", card))
-    cv2InputError(card, "sectionName", "Section Name is required");
-}
-
-if (type === "mediagallery") {
-  if (!cv2f("id", card))
-    cv2InputError(card, "id", "Gallery ID is required");
-}
-
-if (type === "mediaitem") {
-  const url = cv2f("url", card);
-  if (!url) cv2InputError(card, "url", "URL is required");
-  else if (!isValidUrl(url))
-    cv2InputError(card, "url", "URL must start with http:// or https://");
-  const gid = cv2f("galleryId", card);
-  if (!gid) cv2InputError(card, "galleryId", "Gallery ID is required");
-  else {
-    const galleryExists = cards.some(
-      (c) =&gt; c.dataset.type === "mediagallery" &amp;&amp; cv2f("id", c) === gid,
-    );
-    if (!galleryExists)
-      cv2InputError(
-        card,
-        "galleryId",
-        `Gallery ID "${gid}" does not match any Media Gallery`,
-      );
-  }
-}
-
-if (type === "actionrow") {
-  const rowId = cv2f("id", card);
-  if (!rowId) {
-    cv2InputError(card, "id", "Action Row ID is required");
-    return;
-  }
-  const children = cards.filter(
-    (c) =&gt;
-      ["buttoncv2", "userselect", "roleselect", "mentionable"].includes(
-        c.dataset.type,
-      ) &amp;&amp;
-      (cv2f("actionRowOrSection", c) === rowId ||
-        cv2f("actionRowId", c) === rowId),
-  );
-  if (children.length === 0)
-    cv2FieldError(
-      card,
-      `Action Row "${rowId}": must contain at least one Button or Select`,
-    );
-  const buttons = children.filter((c) =&gt; c.dataset.type === "buttoncv2");
-  const selects = children.filter((c) =&gt;
-    ["userselect", "roleselect", "mentionable"].includes(c.dataset.type),
-  );
-  if (buttons.length &gt; 0 &amp;&amp; selects.length &gt; 0)
-    cv2FieldError(
-      card,
-      `Action Row "${rowId}": cannot mix Buttons and Selects`,
-    );
-  if (selects.length &gt; 1)
-    cv2FieldError(card, `Action Row "${rowId}": max 1 Select per row`);
-  if (buttons.length &gt; 5)
-    cv2FieldError(card, `Action Row "${rowId}": max 5 Buttons per row`);
-}
-
-if (type === "buttoncv2") {
-  if (!cv2f("id", card)) cv2InputError(card, "id", "ID/URL is required");
-  if (!cv2f("label", card) &amp;&amp; !cv2f("emoji", card))
-    cv2InputError(card, "label", "Must have a Label or Emoji");
-  if (!cv2f("actionRowOrSection", card))
-    cv2InputError(
-      card,
-      "actionRowOrSection",
-      "Action Row or Section is required",
-    );
-}
-
-if (["userselect", "roleselect", "mentionable"].includes(type)) {
-  if (!cv2f("id", card)) cv2InputError(card, "id", "ID is required");
-  if (!cv2f("actionRowId", card))
-    cv2InputError(card, "actionRowId", "Action Row ID is required");
-}
-</code></pre>
-<p>});</p>
-<p>if (hasErrors) {
-const first = document.querySelector(“#cv2Components .inline-error”);
-if (first) first.scrollIntoView({ behavior: “smooth”, block: “center” });
-return;
-}</p>
-<p>// Code generation — containers first, then rest in order
-const containerCards = cards.filter((c) =&gt; c.dataset.type === “container”);
-const otherCards = cards.filter((c) =&gt; c.dataset.type !== “container”);
-const ordered = […containerCards, …otherCards];</p>
-<p>const lines = [];
-ordered.forEach((card) =&gt; {
-const type = card.dataset.type;
-let parts;</p>
-<pre><code>if (type === "container") {
-  parts = cv2Trim([
-    cv2f("name", card),
-    cv2f("color", card),
-    cv2f("spoiler", card) === "true" ? "true" : "",
-  ]);
-  lines.push(`$addContainer[${parts.join(";")}]`);
-} else if (type === "textdisplay") {
-  parts = cv2Trim([
-    sanitizeInput(cv2f("content", card)),
-    cv2f("containerOrSection", card),
-  ]);
-  lines.push(`$addTextDisplay[${parts.join(";")}]`);
-} else if (type === "separator") {
-  const divider = cv2f("divider", card) === "true" ? "true" : "";
-  const spacing = cv2f("spacing", card);
-  const container = cv2f("container", card);
-  parts = cv2Trim([divider, spacing, container]);
-  lines.push(
-    parts.length === 0 || (parts.length === 1 &amp;&amp; parts[0] === "")
-      ? `$addSeparator[]`
-      : `$addSeparator[${parts.join(";")}]`,
-  );
-} else if (type === "section") {
-  parts = cv2Trim([cv2f("name", card), cv2f("container", card)]);
-  lines.push(`$addSection[${parts.join(";")}]`);
-} else if (type === "thumbnail") {
-  parts = cv2Trim([
-    cv2f("url", card),
-    sanitizeInput(cv2f("description", card)),
-    cv2f("spoiler", card) === "true" ? "true" : "",
-    cv2f("sectionName", card),
-  ]);
-  lines.push(`$addThumbnail[${parts.join(";")}]`);
-} else if (type === "mediagallery") {
-  parts = cv2Trim([cv2f("id", card), cv2f("container", card)]);
-  lines.push(`$addMediaGallery[${parts.join(";")}]`);
-} else if (type === "mediaitem") {
-  parts = cv2Trim([
-    cv2f("url", card),
-    sanitizeInput(cv2f("description", card)),
-    cv2f("spoiler", card) === "true" ? "true" : "",
-    cv2f("galleryId", card),
-  ]);
-  lines.push(`$addMediaGalleryItem[${parts.join(";")}]`);
-} else if (type === "actionrow") {
-  parts = cv2Trim([cv2f("id", card), cv2f("container", card)]);
-  lines.push(`$addActionRow[${parts.join(";")}]`);
-} else if (type === "buttoncv2") {
-  parts = cv2Trim([
-    cv2f("id", card),
-    sanitizeInput(cv2f("label", card)),
-    cv2f("style", card),
-    cv2f("disabled", card) === "true" ? "true" : "",
-    sanitizeInput(cv2f("emoji", card)),
-    cv2f("actionRowOrSection", card),
-  ]);
-  lines.push(`$addButtonCV2[${parts.join(";")}]`);
-} else if (type === "userselect") {
-  parts = cv2Trim([
-    cv2f("id", card),
-    sanitizeInput(cv2f("placeholder", card)),
-    cv2f("min", card),
-    cv2f("max", card),
-    cv2f("disabled", card) === "true" ? "true" : "",
-    cv2f("actionRowId", card),
-  ]);
-  lines.push(`$addUserSelect[${parts.join(";")}]`);
-} else if (type === "roleselect") {
-  parts = cv2Trim([
-    cv2f("id", card),
-    sanitizeInput(cv2f("placeholder", card)),
-    cv2f("min", card),
-    cv2f("max", card),
-    cv2f("disabled", card) === "true" ? "true" : "",
-    cv2f("actionRowId", card),
-  ]);
-  lines.push(`$addRoleSelect[${parts.join(";")}]`);
-} else if (type === "mentionable") {
-  parts = cv2Trim([
-    cv2f("id", card),
-    sanitizeInput(cv2f("placeholder", card)),
-    cv2f("min", card),
-    cv2f("max", card),
-    cv2f("disabled", card) === "true" ? "true" : "",
-    cv2f("actionRowId", card),
-  ]);
-  lines.push(`$addMentionableSelect[${parts.join(";")}]`);
-}
-</code></pre>
-<p>});</p>
-<p>const code = lines.join(“\n”);
-document.getElementById(“cv2Output”).textContent = code;
-document.getElementById(“cv2CharCount”).textContent =
-code.length + “ characters“;
-saveCV2State();
-}</p>
+<discord-messages>
+    <discord-message author="Zubariel" role-color="#ffffff">
+        !example
+    </discord-message>
+    <discord-message role-color="#378afa" bot author="BDFD Support" verified>
+        <none>
+        <discord-embed color="#673ab7" embed-title="Hello" slot="embeds">
+            <discord-embed-description slot="description">
+                Welcome to embed builder.
+            </discord-embed-description>
+        </discord-embed>
+    </discord-message>
+</discord-messages>
+<div id="admonition-how-it-works" class="admonition admonish-question" role="note" aria-labelledby="admonition-how-it-works-title">
+<div class="admonition-title">
+<div id="admonition-how-it-works-title">
+<p>How it works?</p>
+</div>
+<a class="admonition-anchor-link" href="#admonition-how-it-works"></a>
+</div>
+<div>
+<p>Fill form → Generate → Copy code → Paste in BDFD commands.</p>
+</div>
+</div>
+<script src="embed.js"></script>
 
             </main>
 
