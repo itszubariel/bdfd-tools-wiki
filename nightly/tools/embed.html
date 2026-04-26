@@ -762,6 +762,7 @@ select.form-input option {
 <li><a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/addActionRow.md"><code>$addActionRow[]</code></a>, <a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/addButtonCV2.md"><code>$addButtonCV2[]</code></a>, <a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/addUserSelect.md"><code>$addUserSelect[]</code></a>, <a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/addRoleSelect.md"><code>$addRoleSelect[]</code></a>, <a href="https://wiki.botdesignerdiscord.com/nightly/bdscript/addMentionableSelect.md"><code>$addMentionableSelect[]</code></a></li>
 </ul>
 <h2 id="example"><a class="header" href="#example">Example</a></h2>
+<div id="exampleNormalSend">
 <pre><code>$nomention
 $title[Hello]
 $description[Welcome to embed builder.]
@@ -771,15 +772,29 @@ $color[#673ab7]
     <discord-message role-color="#ffffff" author="Zubariel">
         !example
     </discord-message>
-    <discord-message bot role-color="#378afa" author="BDFD Support" verified>
+    <discord-message author="BDFD Support" bot role-color="#378afa" verified>
         <none>
-        <discord-embed embed-title="Hello" color="#673ab7" slot="embeds">
+        <discord-embed color="#673ab7" slot="embeds" embed-title="Hello">
             <discord-embed-description slot="description">
                 Welcome to embed builder.
             </discord-embed-description>
         </discord-embed>
     </discord-message>
 </discord-messages>
+</div>
+<div id="exampleCompV2" style="display:none;">
+<pre><code>$nomention
+$addContainer[myContainer;#5865F2]
+$addSection[intro;myContainer]
+$addTextDisplay[Welcome to the server!;intro]
+$addThumbnail[https://example.com/logo.png;;false;intro]
+$addSeparator[true;small;myContainer]
+$addTextDisplay[Use the buttons below to get started.;myContainer]
+$addActionRow[row1;myContainer]
+$addButtonCV2[btn_roles;Get Roles;primary;false;;row1]
+$addButtonCV2[btn_info;Server Info;secondary;false;;row1]
+</code></pre>
+</div>
 <div id="admonition-how-it-works" class="admonition admonish-question" role="note" aria-labelledby="admonition-how-it-works-title">
 <div class="admonition-title">
 <div id="admonition-how-it-works-title">
@@ -791,6 +806,31 @@ $color[#673ab7]
 <p>Fill form → Generate → Copy code → Paste in BDFD commands.</p>
 </div>
 </div>
+<script>
+(function() {
+  function syncExample() {
+    var mode = localStorage.getItem('bdtools_embed_mode') || 'normal';
+    var isCV2 = mode === 'compv2';
+    var ns = document.getElementById('exampleNormalSend');
+    var cv = document.getElementById('exampleCompV2');
+    if (ns) ns.style.display = isCV2 ? 'none' : '';
+    if (cv) cv.style.display = isCV2 ? '' : 'none';
+  }
+  document.addEventListener('DOMContentLoaded', syncExample);
+  window.addEventListener('storage', function(e) {
+    if (e.key === 'bdtools_embed_mode') syncExample();
+  });
+  // Also hook into the mode buttons after DOM is ready
+  document.addEventListener('DOMContentLoaded', function() {
+    ['modeNormal','modeSend','modeCompV2'].forEach(function(id) {
+      var btn = document.getElementById(id);
+      if (btn) btn.addEventListener('click', function() {
+        setTimeout(syncExample, 0);
+      });
+    });
+  });
+})();
+</script>
 <script src="embed.js"></script>
 
             </main>
