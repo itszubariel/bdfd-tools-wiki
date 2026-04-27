@@ -1978,8 +1978,8 @@ function generateCV2() {
     }
   });
 
-  // Check for duplicate IDs across all component types
-  // Note: Action Rows and String Selects can share the same ID
+  // Check for duplicate IDs/Names across all component types
+  // Note: Action Rows and String Selects can share the same ID (String Select references Action Row)
   const allComponentIds = {};
 
   cards.forEach((card) => {
@@ -1988,8 +1988,16 @@ function generateCV2() {
     let componentLabel = "";
     let componentCategory = "";
 
-    // Collect IDs from different component types
-    if (type === "buttoncv2") {
+    // Collect IDs/Names from different component types
+    if (type === "container") {
+      id = cv2f("name", card);
+      componentLabel = "Container";
+      componentCategory = "container";
+    } else if (type === "section") {
+      id = cv2f("name", card);
+      componentLabel = "Section";
+      componentCategory = "section";
+    } else if (type === "buttoncv2") {
       id = cv2f("id", card);
       componentLabel = "Button CV2";
       componentCategory = "button";
@@ -2034,10 +2042,11 @@ function generateCV2() {
       // Only report error if they're not all actionrow/stringselect
       if (!allActionRowOrStringSelect) {
         components.forEach((comp) => {
+          const fieldName = comp.category === "container" || comp.category === "section" ? "name" : "id";
           cv2InputError(
             comp.card,
-            "id",
-            `ID "${id}" is already used by another component`,
+            fieldName,
+            `${comp.type === "Container" || comp.type === "Section" ? "Name" : "ID"} "${id}" is already used by ${comp.type === components[0].type ? "another " + comp.type : components.find(c => c.type !== comp.type)?.type || "another component"}`,
           );
         });
       }
