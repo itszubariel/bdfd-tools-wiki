@@ -2059,14 +2059,32 @@ function generateCV2() {
       const parentComponents = components.filter(c => c.isParent);
       const hasTwoParents = parentComponents.length > 1;
       
-      // Report errors
-      if (hasDuplicateTypes || hasTwoParents) {
-        components.forEach((comp) => {
+      // Report errors only on the violating components
+      if (hasDuplicateTypes) {
+        // Show error on components that have duplicate types
+        Object.keys(typeCount).forEach(type => {
+          if (typeCount[type] > 1) {
+            // This type has duplicates - show error on all of them
+            const duplicates = components.filter(c => c.type === type);
+            duplicates.forEach(comp => {
+              const fieldName = comp.type === "Container" || comp.type === "Section" ? "name" : "id";
+              const otherDuplicates = duplicates.filter(c => c !== comp);
+              cv2InputError(
+                comp.card,
+                fieldName,
+                `${comp.type === "Container" || comp.type === "Section" ? "Name" : "ID"} "${id}" is already used by another ${comp.type}`,
+              );
+            });
+          }
+        });
+      }
+      
+      if (hasTwoParents && !hasDuplicateTypes) {
+        // Show error only on parent components (not children)
+        parentComponents.forEach((comp) => {
           const fieldName = comp.type === "Container" || comp.type === "Section" ? "name" : "id";
-          
-          // Find the other component(s) that conflict with this one
-          const otherComponents = components.filter(c => c !== comp);
-          const otherTypes = otherComponents.map(c => c.type).join(", ");
+          const otherParents = parentComponents.filter(c => c !== comp);
+          const otherTypes = otherParents.map(c => c.type).join(", ");
           
           cv2InputError(
             comp.card,
