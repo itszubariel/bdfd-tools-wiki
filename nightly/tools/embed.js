@@ -1241,7 +1241,7 @@ function saveCV2State() {
       fields[el.dataset.cv2field] =
         el.type === "checkbox" ? el.checked : el.value;
     });
-    
+
     // Save stringselect options
     let options = null;
     if (type === "stringselect") {
@@ -1249,12 +1249,13 @@ function saveCV2State() {
       card.querySelectorAll(".stringselect-option").forEach((opt) => {
         const optData = {};
         opt.querySelectorAll("[data-optfield]").forEach((el) => {
-          optData[el.dataset.optfield] = el.type === "checkbox" ? el.checked : el.value;
+          optData[el.dataset.optfield] =
+            el.type === "checkbox" ? el.checked : el.value;
         });
         options.push(optData);
       });
     }
-    
+
     cards.push({ type, fields, options });
   });
   localStorage.setItem(CV2_KEY, JSON.stringify({ components: cards }));
@@ -1277,7 +1278,7 @@ function loadCV2State() {
         if (el.type === "checkbox") el.checked = val;
         else el.value = val;
       });
-      
+
       // Restore stringselect options
       if (comp.type === "stringselect" && comp.options) {
         const optionsContainer = card.querySelector(".stringselect-options");
@@ -1426,7 +1427,9 @@ function cv2RefreshAllDropdowns() {
       );
     }
     // Action Row dropdown (Selects)
-    if (["stringselect", "userselect", "roleselect", "mentionable"].includes(type)) {
+    if (
+      ["stringselect", "userselect", "roleselect", "mentionable"].includes(type)
+    ) {
       cv2PopulateSelect(
         card.querySelector("[data-cv2field='actionRowId']"),
         [["Action Rows", actionRows]],
@@ -1504,15 +1507,15 @@ function cv2AddCard(type, doRefresh = true) {
     if (addOptionBtn && optionsContainer) {
       // Store counter on the card element
       card.dataset.optionCounter = "0";
-      
+
       addOptionBtn.addEventListener("click", () => {
         const optionCounter = parseInt(card.dataset.optionCounter || "0") + 1;
         card.dataset.optionCounter = optionCounter.toString();
-        
+
         const optionDiv = document.createElement("div");
         optionDiv.className = "stringselect-option field-row";
         optionDiv.style.cssText = "margin-top:0.5rem;";
-        
+
         // Create option body
         const optionBody = document.createElement("div");
         optionBody.className = "component-body";
@@ -1532,22 +1535,26 @@ function cv2AddCard(type, doRefresh = true) {
             </label>
           </div>
         `;
-        
+
         // Add header with collapse and remove buttons
         optionDiv.appendChild(
-          makeHeader(`String Select Option #${optionCounter}`, optionBody, () => {
-            optionDiv.remove();
-            saveCV2State();
-          })
+          makeHeader(
+            `String Select Option #${optionCounter}`,
+            optionBody,
+            () => {
+              optionDiv.remove();
+              saveCV2State();
+            },
+          ),
         );
         optionDiv.appendChild(optionBody);
-        
+
         optionsContainer.appendChild(optionDiv);
-        
+
         // Save on input
         optionDiv.addEventListener("input", saveCV2State);
         optionDiv.addEventListener("change", saveCV2State);
-        
+
         saveCV2State();
       });
     }
@@ -1903,9 +1910,13 @@ function generateCV2() {
       }
       const children = cards.filter(
         (c) =>
-          ["buttoncv2", "stringselect", "userselect", "roleselect", "mentionable"].includes(
-            c.dataset.type,
-          ) &&
+          [
+            "buttoncv2",
+            "stringselect",
+            "userselect",
+            "roleselect",
+            "mentionable",
+          ].includes(c.dataset.type) &&
           (cv2f("actionRowOrSection", c) === rowId ||
             cv2f("actionRowId", c) === rowId),
       );
@@ -1916,7 +1927,9 @@ function generateCV2() {
         );
       const buttons = children.filter((c) => c.dataset.type === "buttoncv2");
       const selects = children.filter((c) =>
-        ["stringselect", "userselect", "roleselect", "mentionable"].includes(c.dataset.type),
+        ["stringselect", "userselect", "roleselect", "mentionable"].includes(
+          c.dataset.type,
+        ),
       );
       if (buttons.length > 0 && selects.length > 0)
         cv2FieldError(
@@ -1942,27 +1955,38 @@ function generateCV2() {
     }
 
     if (type === "stringselect") {
-      if (!cv2f("id", card)) cv2InputError(card, "id", "Select Menu ID is required");
+      if (!cv2f("id", card))
+        cv2InputError(card, "id", "Select Menu ID is required");
       if (!cv2f("actionRowId", card))
         cv2InputError(card, "actionRowId", "Action Row ID is required");
-      
+
       // Check for at least one option
       const options = card.querySelectorAll(".stringselect-option");
       if (options.length === 0) {
         cv2FieldError(card, "String Select: Add at least one option");
       } else {
         const optionValues = new Map(); // Track values and their indices
-        
+
         // Validate each option
         options.forEach((opt, i) => {
-          const label = opt.querySelector("[data-optfield='label']")?.value.trim();
-          const value = opt.querySelector("[data-optfield='value']")?.value.trim();
+          const label = opt
+            .querySelector("[data-optfield='label']")
+            ?.value.trim();
+          const value = opt
+            .querySelector("[data-optfield='value']")
+            ?.value.trim();
           if (!label || !value) {
-            cv2FieldError(card, `String Select Option ${i + 1}: Label and Value are required`);
+            cv2FieldError(
+              card,
+              `String Select Option ${i + 1}: Label and Value are required`,
+            );
           } else if (value) {
             // Check for duplicate values
             if (optionValues.has(value)) {
-              cv2FieldError(card, `String Select Option ${i + 1}: Value "${value}" is already used by Option ${optionValues.get(value) + 1}`);
+              cv2FieldError(
+                card,
+                `String Select Option ${i + 1}: Value "${value}" is already used by Option ${optionValues.get(value) + 1}`,
+              );
             } else {
               optionValues.set(value, i);
             }
@@ -2038,7 +2062,12 @@ function generateCV2() {
 
     if (id) {
       if (!allComponentIds[id]) allComponentIds[id] = [];
-      allComponentIds[id].push({ type: componentLabel, card, isParent, componentType: type });
+      allComponentIds[id].push({
+        type: componentLabel,
+        card,
+        isParent,
+        componentType: type,
+      });
     }
   });
 
@@ -2049,26 +2078,31 @@ function generateCV2() {
       // Check for violations:
       // 1. Two of the same type (always invalid)
       const typeCount = {};
-      components.forEach(comp => {
+      components.forEach((comp) => {
         typeCount[comp.type] = (typeCount[comp.type] || 0) + 1;
       });
-      
-      const hasDuplicateTypes = Object.values(typeCount).some(count => count > 1);
-      
+
+      const hasDuplicateTypes = Object.values(typeCount).some(
+        (count) => count > 1,
+      );
+
       // 2. Two parent types (always invalid)
-      const parentComponents = components.filter(c => c.isParent);
+      const parentComponents = components.filter((c) => c.isParent);
       const hasTwoParents = parentComponents.length > 1;
-      
+
       // Report errors only on the violating components
       if (hasDuplicateTypes) {
         // Show error on components that have duplicate types
-        Object.keys(typeCount).forEach(type => {
+        Object.keys(typeCount).forEach((type) => {
           if (typeCount[type] > 1) {
             // This type has duplicates - show error on all of them
-            const duplicates = components.filter(c => c.type === type);
-            duplicates.forEach(comp => {
-              const fieldName = comp.type === "Container" || comp.type === "Section" ? "name" : "id";
-              const otherDuplicates = duplicates.filter(c => c !== comp);
+            const duplicates = components.filter((c) => c.type === type);
+            duplicates.forEach((comp) => {
+              const fieldName =
+                comp.type === "Container" || comp.type === "Section"
+                  ? "name"
+                  : "id";
+              const otherDuplicates = duplicates.filter((c) => c !== comp);
               cv2InputError(
                 comp.card,
                 fieldName,
@@ -2078,14 +2112,17 @@ function generateCV2() {
           }
         });
       }
-      
+
       if (hasTwoParents && !hasDuplicateTypes) {
         // Show error only on parent components (not children)
         parentComponents.forEach((comp) => {
-          const fieldName = comp.type === "Container" || comp.type === "Section" ? "name" : "id";
-          const otherParents = parentComponents.filter(c => c !== comp);
-          const otherTypes = otherParents.map(c => c.type).join(", ");
-          
+          const fieldName =
+            comp.type === "Container" || comp.type === "Section"
+              ? "name"
+              : "id";
+          const otherParents = parentComponents.filter((c) => c !== comp);
+          const otherTypes = otherParents.map((c) => c.type).join(", ");
+
           cv2InputError(
             comp.card,
             fieldName,
@@ -2119,61 +2156,93 @@ function generateCV2() {
         cv2f("spoiler", card) === "true" ? "true" : "",
       ]);
       lines.push(`$addContainer[${parts.join(";")}]`);
-      
+
       // Generate all children that use this container
       const containerName = cv2f("name", card);
       cards.forEach((c) => {
         const cType = c.dataset.type;
-        if (cType === "textdisplay" && cv2f("containerOrSection", c) === containerName) {
+        if (
+          cType === "textdisplay" &&
+          cv2f("containerOrSection", c) === containerName
+        ) {
           generateCard(c);
-        } else if (cType === "separator" && cv2f("container", c) === containerName) {
+        } else if (
+          cType === "separator" &&
+          cv2f("container", c) === containerName
+        ) {
           generateCard(c);
-        } else if (cType === "section" && cv2f("container", c) === containerName) {
+        } else if (
+          cType === "section" &&
+          cv2f("container", c) === containerName
+        ) {
           generateCard(c);
-        } else if (cType === "mediagallery" && cv2f("container", c) === containerName) {
+        } else if (
+          cType === "mediagallery" &&
+          cv2f("container", c) === containerName
+        ) {
           generateCard(c);
-        } else if (cType === "actionrow" && cv2f("container", c) === containerName) {
+        } else if (
+          cType === "actionrow" &&
+          cv2f("container", c) === containerName
+        ) {
           generateCard(c);
         }
       });
     } else if (type === "section") {
       const parts = cv2Trim([cv2f("name", card), cv2f("container", card)]);
       lines.push(`$addSection[${parts.join(";")}]`);
-      
+
       // Generate all children that use this section
       const sectionName = cv2f("name", card);
       cards.forEach((c) => {
         const cType = c.dataset.type;
-        if (cType === "textdisplay" && cv2f("containerOrSection", c) === sectionName) {
+        if (
+          cType === "textdisplay" &&
+          cv2f("containerOrSection", c) === sectionName
+        ) {
           generateCard(c);
-        } else if (cType === "thumbnail" && cv2f("sectionName", c) === sectionName) {
+        } else if (
+          cType === "thumbnail" &&
+          cv2f("sectionName", c) === sectionName
+        ) {
           generateCard(c);
-        } else if (cType === "buttoncv2" && cv2f("actionRowOrSection", c) === sectionName) {
+        } else if (
+          cType === "buttoncv2" &&
+          cv2f("actionRowOrSection", c) === sectionName
+        ) {
           generateCard(c);
         }
       });
     } else if (type === "mediagallery") {
       const parts = cv2Trim([cv2f("id", card), cv2f("container", card)]);
       lines.push(`$addMediaGallery[${parts.join(";")}]`);
-      
+
       // Generate all media items that use this gallery
       const galleryId = cv2f("id", card);
       cards.forEach((c) => {
-        if (c.dataset.type === "mediaitem" && cv2f("galleryId", c) === galleryId) {
+        if (
+          c.dataset.type === "mediaitem" &&
+          cv2f("galleryId", c) === galleryId
+        ) {
           generateCard(c);
         }
       });
     } else if (type === "actionrow") {
       const parts = cv2Trim([cv2f("id", card), cv2f("container", card)]);
       lines.push(`$addActionRow[${parts.join(";")}]`);
-      
+
       // Generate all buttons and selects that use this action row
       const rowId = cv2f("id", card);
       cards.forEach((c) => {
         const cType = c.dataset.type;
         if (cType === "buttoncv2" && cv2f("actionRowOrSection", c) === rowId) {
           generateCard(c);
-        } else if (["stringselect", "userselect", "roleselect", "mentionable"].includes(cType) && cv2f("actionRowId", c) === rowId) {
+        } else if (
+          ["stringselect", "userselect", "roleselect", "mentionable"].includes(
+            cType,
+          ) &&
+          cv2f("actionRowId", c) === rowId
+        ) {
           generateCard(c);
         }
       });
@@ -2229,18 +2298,36 @@ function generateCV2() {
         cv2f("actionRowId", card),
       ]);
       lines.push(`$addStringSelect[${parts.join(";")}]`);
-      
+
       // Add options
       const options = card.querySelectorAll(".stringselect-option");
       options.forEach((opt) => {
-        const label = sanitizeInput(opt.querySelector("[data-optfield='label']")?.value.trim());
-        const value = sanitizeInput(opt.querySelector("[data-optfield='value']")?.value.trim());
-        const description = sanitizeInput(opt.querySelector("[data-optfield='description']")?.value.trim());
-        const emoji = sanitizeInput(opt.querySelector("[data-optfield='emoji']")?.value.trim());
-        const isDefault = opt.querySelector("[data-optfield='default']")?.checked ? "true" : "";
+        const label = sanitizeInput(
+          opt.querySelector("[data-optfield='label']")?.value.trim(),
+        );
+        const value = sanitizeInput(
+          opt.querySelector("[data-optfield='value']")?.value.trim(),
+        );
+        const description = sanitizeInput(
+          opt.querySelector("[data-optfield='description']")?.value.trim(),
+        );
+        const emoji = sanitizeInput(
+          opt.querySelector("[data-optfield='emoji']")?.value.trim(),
+        );
+        const isDefault = opt.querySelector("[data-optfield='default']")
+          ?.checked
+          ? "true"
+          : "";
         const selectId = cv2f("id", card);
-        
-        const optParts = cv2Trim([label, value, description, emoji, isDefault, selectId]);
+
+        const optParts = cv2Trim([
+          label,
+          value,
+          description,
+          emoji,
+          isDefault,
+          selectId,
+        ]);
         lines.push(`$addStringSelectOption[${optParts.join(";")}]`);
       });
     } else if (type === "userselect") {
@@ -2504,7 +2591,7 @@ function updateNormalPreview() {
         select.querySelector(".select-placeholder")?.value.trim() ||
         "Select an option";
       html += '<div class="preview-buttons">';
-      html += `<button class="preview-button secondary" style="max-width:400px;width:100%;justify-content:space-between;">`;
+      html += `<button class="preview-button secondary" style="max-width:400px;justify-content:space-between;display:flex;align-items:center;">`;
       html += `<span>${placeholder}</span>`;
       html += `<span>▼</span>`;
       html += "</button>";
@@ -2876,7 +2963,7 @@ function updateCV2Preview() {
         if (row.selects.length > 0) {
           row.selects.forEach((sel) => {
             html += '<div class="preview-buttons">';
-            html += `<button class="preview-button secondary" style="max-width:400px;width:100%;justify-content:space-between;">`;
+            html += `<button class="preview-button secondary" style="max-width:400px;justify-content:space-between;display:flex;align-items:center;">`;
             html += `<span>${sel.placeholder}</span>`;
             html += `<span>▼</span>`;
             html += "</button>";
@@ -2954,7 +3041,7 @@ function updateCV2Preview() {
       if (row.selects.length > 0) {
         row.selects.forEach((sel) => {
           html += '<div class="preview-buttons">';
-          html += `<button class="preview-button secondary" style="max-width:400px;width:100%;justify-content:space-between;">`;
+          html += `<button class="preview-button secondary" style="max-width:400px;justify-content:space-between;display:flex;align-items:center;">`;
           html += `<span>${sel.placeholder}</span>`;
           html += `<span>▼</span>`;
           html += "</button>";
