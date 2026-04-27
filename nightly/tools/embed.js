@@ -2034,19 +2034,27 @@ function generateCV2() {
   Object.keys(allComponentIds).forEach((id) => {
     const components = allComponentIds[id];
     if (components.length > 1) {
-      // Check if all components are actionrow-or-stringselect category
-      const allActionRowOrStringSelect = components.every(
-        (comp) => comp.category === "actionrow-or-stringselect"
-      );
+      // Check if it's exactly one Action Row and one or more String Selects (allowed)
+      const actionRows = components.filter(c => c.category === "actionrow-or-stringselect" && c.type === "Action Row");
+      const stringSelects = components.filter(c => c.category === "actionrow-or-stringselect" && c.type === "String Select");
+      const others = components.filter(c => c.category !== "actionrow-or-stringselect");
       
-      // Only report error if they're not all actionrow/stringselect
-      if (!allActionRowOrStringSelect) {
+      // Allowed: 1 Action Row + any number of String Selects (and nothing else)
+      const isAllowed = actionRows.length === 1 && stringSelects.length >= 1 && others.length === 0;
+      
+      // Report error if not allowed
+      if (!isAllowed) {
         components.forEach((comp) => {
           const fieldName = comp.category === "container" || comp.category === "section" ? "name" : "id";
+          
+          // Find the other component(s) that conflict with this one
+          const otherComponents = components.filter(c => c !== comp);
+          const otherTypes = otherComponents.map(c => c.type).join(", ");
+          
           cv2InputError(
             comp.card,
             fieldName,
-            `${comp.type === "Container" || comp.type === "Section" ? "Name" : "ID"} "${id}" is already used by ${comp.type === components[0].type ? "another " + comp.type : components.find(c => c.type !== comp.type)?.type || "another component"}`,
+            `${comp.category === "container" || comp.category === "section" ? "Name" : "ID"} "${id}" is already used by ${otherTypes}`,
           );
         });
       }
