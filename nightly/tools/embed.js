@@ -2051,58 +2051,87 @@ function generateCV2() {
   }
 
   const lines = [];
+  const generated = new Set(); // Track which cards have been generated
 
-  // 1. Containers first
-  cards
-    .filter((c) => c.dataset.type === "container")
-    .forEach((card) => {
+  // Helper function to generate code for a card and its dependencies
+  function generateCard(card) {
+    if (generated.has(card)) return;
+    generated.add(card);
+
+    const type = card.dataset.type;
+
+    if (type === "container") {
       const parts = cv2Trim([
         cv2f("name", card),
         cv2f("color", card),
         cv2f("spoiler", card) === "true" ? "true" : "",
       ]);
       lines.push(`$addContainer[${parts.join(";")}]`);
-    });
-
-  // 2. Sections (need container IDs)
-  cards
-    .filter((c) => c.dataset.type === "section")
-    .forEach((card) => {
+      
+      // Generate all children that use this container
+      const containerName = cv2f("name", card);
+      cards.forEach((c) => {
+        const cType = c.dataset.type;
+        if (cType === "textdisplay" && cv2f("containerOrSection", c) === containerName) {
+          generateCard(c);
+        } else if (cType === "separator" && cv2f("container", c) === containerName) {
+          generateCard(c);
+        } else if (cType === "section" && cv2f("container", c) === containerName) {
+          generateCard(c);
+        } else if (cType === "mediagallery" && cv2f("container", c) === containerName) {
+          generateCard(c);
+        } else if (cType === "actionrow" && cv2f("container", c) === containerName) {
+          generateCard(c);
+        }
+      });
+    } else if (type === "section") {
       const parts = cv2Trim([cv2f("name", card), cv2f("container", card)]);
       lines.push(`$addSection[${parts.join(";")}]`);
-    });
-
-  // 3. Media Galleries (need container IDs)
-  cards
-    .filter((c) => c.dataset.type === "mediagallery")
-    .forEach((card) => {
+      
+      // Generate all children that use this section
+      const sectionName = cv2f("name", card);
+      cards.forEach((c) => {
+        const cType = c.dataset.type;
+        if (cType === "textdisplay" && cv2f("containerOrSection", c) === sectionName) {
+          generateCard(c);
+        } else if (cType === "thumbnail" && cv2f("sectionName", c) === sectionName) {
+          generateCard(c);
+        } else if (cType === "buttoncv2" && cv2f("actionRowOrSection", c) === sectionName) {
+          generateCard(c);
+        }
+      });
+    } else if (type === "mediagallery") {
       const parts = cv2Trim([cv2f("id", card), cv2f("container", card)]);
       lines.push(`$addMediaGallery[${parts.join(";")}]`);
-    });
-
-  // 4. Action Rows (need container IDs)
-  cards
-    .filter((c) => c.dataset.type === "actionrow")
-    .forEach((card) => {
+      
+      // Generate all media items that use this gallery
+      const galleryId = cv2f("id", card);
+      cards.forEach((c) => {
+        if (c.dataset.type === "mediaitem" && cv2f("galleryId", c) === galleryId) {
+          generateCard(c);
+        }
+      });
+    } else if (type === "actionrow") {
       const parts = cv2Trim([cv2f("id", card), cv2f("container", card)]);
       lines.push(`$addActionRow[${parts.join(";")}]`);
-    });
-
-  // 5. Text Displays (need container/section IDs)
-  cards
-    .filter((c) => c.dataset.type === "textdisplay")
-    .forEach((card) => {
+      
+      // Generate all buttons and selects that use this action row
+      const rowId = cv2f("id", card);
+      cards.forEach((c) => {
+        const cType = c.dataset.type;
+        if (cType === "buttoncv2" && cv2f("actionRowOrSection", c) === rowId) {
+          generateCard(c);
+        } else if (["stringselect", "userselect", "roleselect", "mentionable"].includes(cType) && cv2f("actionRowId", c) === rowId) {
+          generateCard(c);
+        }
+      });
+    } else if (type === "textdisplay") {
       const parts = cv2Trim([
         sanitizeInput(cv2f("content", card)),
         cv2f("containerOrSection", card),
       ]);
       lines.push(`$addTextDisplay[${parts.join(";")}]`);
-    });
-
-  // 6. Separators (need container IDs)
-  cards
-    .filter((c) => c.dataset.type === "separator")
-    .forEach((card) => {
+    } else if (type === "separator") {
       const divider = cv2f("divider", card) === "true" ? "true" : "";
       const spacing = cv2f("spacing", card);
       const container = cv2f("container", card);
@@ -2112,12 +2141,7 @@ function generateCV2() {
           ? `$addSeparator[]`
           : `$addSeparator[${parts.join(";")}]`,
       );
-    });
-
-  // 7. Thumbnails (need section IDs)
-  cards
-    .filter((c) => c.dataset.type === "thumbnail")
-    .forEach((card) => {
+    } else if (type === "thumbnail") {
       const parts = cv2Trim([
         cv2f("url", card),
         sanitizeInput(cv2f("description", card)),
@@ -2125,12 +2149,7 @@ function generateCV2() {
         cv2f("sectionName", card),
       ]);
       lines.push(`$addThumbnail[${parts.join(";")}]`);
-    });
-
-  // 8. Media Items (need gallery IDs)
-  cards
-    .filter((c) => c.dataset.type === "mediaitem")
-    .forEach((card) => {
+    } else if (type === "mediaitem") {
       const parts = cv2Trim([
         cv2f("url", card),
         sanitizeInput(cv2f("description", card)),
@@ -2138,12 +2157,7 @@ function generateCV2() {
         cv2f("galleryId", card),
       ]);
       lines.push(`$addMediaGalleryItem[${parts.join(";")}]`);
-    });
-
-  // 9. Buttons (need action row/section IDs)
-  cards
-    .filter((c) => c.dataset.type === "buttoncv2")
-    .forEach((card) => {
+    } else if (type === "buttoncv2") {
       const parts = cv2Trim([
         cv2f("id", card),
         sanitizeInput(cv2f("label", card)),
@@ -2153,13 +2167,7 @@ function generateCV2() {
         cv2f("actionRowOrSection", card),
       ]);
       lines.push(`$addButtonCV2[${parts.join(";")}]`);
-    });
-
-  // 10. Selects (need action row IDs)
-  // String Select with options
-  cards
-    .filter((c) => c.dataset.type === "stringselect")
-    .forEach((card) => {
+    } else if (type === "stringselect") {
       const parts = cv2Trim([
         cv2f("id", card),
         sanitizeInput(cv2f("placeholder", card)),
@@ -2183,11 +2191,7 @@ function generateCV2() {
         const optParts = cv2Trim([label, value, description, emoji, isDefault, selectId]);
         lines.push(`$addStringSelectOption[${optParts.join(";")}]`);
       });
-    });
-
-  cards
-    .filter((c) => c.dataset.type === "userselect")
-    .forEach((card) => {
+    } else if (type === "userselect") {
       const parts = cv2Trim([
         cv2f("id", card),
         sanitizeInput(cv2f("placeholder", card)),
@@ -2197,11 +2201,7 @@ function generateCV2() {
         cv2f("actionRowId", card),
       ]);
       lines.push(`$addUserSelect[${parts.join(";")}]`);
-    });
-
-  cards
-    .filter((c) => c.dataset.type === "roleselect")
-    .forEach((card) => {
+    } else if (type === "roleselect") {
       const parts = cv2Trim([
         cv2f("id", card),
         sanitizeInput(cv2f("placeholder", card)),
@@ -2211,11 +2211,7 @@ function generateCV2() {
         cv2f("actionRowId", card),
       ]);
       lines.push(`$addRoleSelect[${parts.join(";")}]`);
-    });
-
-  cards
-    .filter((c) => c.dataset.type === "mentionable")
-    .forEach((card) => {
+    } else if (type === "mentionable") {
       const parts = cv2Trim([
         cv2f("id", card),
         sanitizeInput(cv2f("placeholder", card)),
@@ -2225,7 +2221,20 @@ function generateCV2() {
         cv2f("actionRowId", card),
       ]);
       lines.push(`$addMentionableSelect[${parts.join(";")}]`);
-    });
+    }
+  }
+
+  // Start with containers (top-level components)
+  cards.forEach((card) => {
+    if (card.dataset.type === "container") {
+      generateCard(card);
+    }
+  });
+
+  // Generate any orphaned components (not attached to containers)
+  cards.forEach((card) => {
+    generateCard(card);
+  });
 
   const code = lines.join("\n");
   document.getElementById("cv2Output").textContent = code;
