@@ -1052,6 +1052,8 @@ document.addEventListener("DOMContentLoaded", () => {
       "Generated code appears here...";
     document.getElementById("charCount").textContent = "0 characters";
     localStorage.removeItem(NORMAL_KEY);
+    // Clear preview
+    updateNormalPreview();
   });
   document.getElementById("addField").addEventListener("click", addFieldRow);
   document.getElementById("addButton").addEventListener("click", addButtonRow);
@@ -1086,6 +1088,8 @@ document.addEventListener("DOMContentLoaded", () => {
       "Generated code appears here...";
     document.getElementById("s_charCount").textContent = "0 characters";
     localStorage.removeItem(SEND_KEY);
+    // Clear preview
+    updateSendPreview();
   });
   document
     .getElementById("sendBuilder")
@@ -1148,8 +1152,16 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("cv2CharCount").textContent = "0 characters";
     document.getElementById("cv2Error").textContent = "";
     localStorage.removeItem(CV2_KEY);
+    // Clear preview
+    updateCV2Preview();
   });
 });
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// COMPV2 BUILDER
+// ═══════════════════════════════════════════════════════════════════════════════
+
+// ─── CV2 state persistence ────────────────────────────────────────────────────
 
 // Track per-type counters for numbering (persists across mode switches)
 const cv2Counters = {};
@@ -1324,6 +1336,8 @@ function cv2RefreshAllDropdowns() {
     }
   });
 }
+
+// ─── CV2 card builder ─────────────────────────────────────────────────────────
 
 const CV2_BADGE_LABELS = {
   container: ["Container", "cv2-badge-container"],
@@ -1879,6 +1893,10 @@ function generateCV2() {
   saveCV2State();
 }
 
+// ═══════════════════════════════════════════════════════════════════════════════
+// LIVE PREVIEW
+// ═══════════════════════════════════════════════════════════════════════════════
+
 // Update timestamps
 function updateTimestamps() {
   const now = new Date();
@@ -2178,6 +2196,8 @@ function updateSendPreview() {
   content.innerHTML = html;
 }
 
+// ─── CompV2 Mode Preview ──────────────────────────────────────────────────────
+
 function updateCV2Preview() {
   const content = document.getElementById("cv2PreviewContent");
   if (!content) return;
@@ -2244,17 +2264,17 @@ function updateCV2Preview() {
     const type = card.dataset.type;
 
     if (type === "textdisplay") {
-      const content = cv2f("content", card);
+      const contentText = cv2f("content", card);
       const target = cv2f("containerOrSection", card);
-      if (content) {
-        const item = { type: "text", content: renderMarkdown(content) };
+      if (contentText) {
+        const item = { type: "text", content: renderMarkdown(contentText) };
         if (sections[target]) {
           sections[target].texts.push(item);
         } else if (containers[target]) {
           containers[target].items.push(item);
         } else {
           // Orphan text display
-          html += `<div class="preview-text-display">${renderMarkdown(content)}</div>`;
+          html += `<div class="preview-text-display">${renderMarkdown(contentText)}</div>`;
         }
       }
     } else if (type === "separator") {
@@ -2459,7 +2479,10 @@ function updateCV2Preview() {
     html || '<p class="preview-empty">Add components to see a preview…</p>';
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+// ─── Initialize Preview Updates ───────────────────────────────────────────────
+
+// Wrap initialization in a function to call after DOM is ready
+function initializePreviews() {
   // Update timestamps every second
   updateTimestamps();
   setInterval(updateTimestamps, 1000);
@@ -2496,4 +2519,11 @@ document.addEventListener("DOMContentLoaded", () => {
     cv2Components.addEventListener("change", updateCV2Preview);
     setTimeout(updateCV2Preview, 100);
   }
-});
+}
+
+// Call initialization after existing DOMContentLoaded handler
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initializePreviews);
+} else {
+  initializePreviews();
+}
