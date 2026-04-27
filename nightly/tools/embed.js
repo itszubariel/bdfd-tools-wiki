@@ -592,6 +592,37 @@ function generateNormalEmbed() {
     }
   });
 
+  // Check for duplicate button IDs
+  const buttonIdMap = {};
+  document.querySelectorAll(".button-row").forEach((row, i) => {
+    const id = row.querySelector(".button-id")?.value.trim();
+    const style = row.querySelector(".button-style")?.value;
+    if (id && style !== "link") {
+      if (!buttonIdMap[id]) buttonIdMap[id] = [];
+      buttonIdMap[id].push(i);
+    }
+  });
+  document.querySelectorAll(".button-row").forEach((row, i) => {
+    const n = i + 1;
+    const id = row.querySelector(".button-id")?.value.trim();
+    const style = row.querySelector(".button-style")?.value;
+    const formRow = row.querySelector(".form-row");
+    if (id && style !== "link" && buttonIdMap[id]?.length > 1) {
+      bodyRowError(formRow, `Button ${n}: Duplicate ID "${id}"`);
+      hasErrors = true;
+    }
+  });
+
+  // Check for duplicate select menu IDs
+  const selectIdMap = {};
+  document.querySelectorAll(".select-row").forEach((row, i) => {
+    const id = row.querySelector(".select-id")?.value.trim();
+    if (id) {
+      if (!selectIdMap[id]) selectIdMap[id] = [];
+      selectIdMap[id].push(i);
+    }
+  });
+
   document.querySelectorAll(".select-row").forEach((row, i) => {
     const n = i + 1;
     const menuId = row.querySelector(".select-id")?.value.trim();
@@ -600,6 +631,10 @@ function generateNormalEmbed() {
       bodyRowError(formRow, `Select Menu ${n}: Menu ID required`);
       hasErrors = true;
       return;
+    }
+    if (selectIdMap[menuId]?.length > 1) {
+      bodyRowError(formRow, `Select Menu ${n}: Duplicate ID "${menuId}"`);
+      hasErrors = true;
     }
     const options = row.querySelectorAll(".select-option");
     if (options.length === 0) {
@@ -708,6 +743,52 @@ function generateNormalEmbed() {
         `Modal ${n}: All inputs need an Input ID`,
       );
       hasErrors = true;
+    }
+  });
+
+  // Check for duplicate IDs across all component types (buttons, select menus, modals)
+  const allComponentIds = {};
+
+  // Collect button IDs
+  document.querySelectorAll(".button-row").forEach((row, i) => {
+    const id = row.querySelector(".button-id")?.value.trim();
+    const style = row.querySelector(".button-style")?.value;
+    if (id && style !== "link") {
+      if (!allComponentIds[id]) allComponentIds[id] = [];
+      allComponentIds[id].push({ type: "Button", index: i + 1, row });
+    }
+  });
+
+  // Collect select menu IDs
+  document.querySelectorAll(".select-row").forEach((row, i) => {
+    const id = row.querySelector(".select-id")?.value.trim();
+    if (id) {
+      if (!allComponentIds[id]) allComponentIds[id] = [];
+      allComponentIds[id].push({ type: "Select Menu", index: i + 1, row });
+    }
+  });
+
+  // Collect modal IDs
+  document.querySelectorAll(".modal-row").forEach((row, i) => {
+    const id = row.querySelector(".modal-id")?.value.trim();
+    if (id) {
+      if (!allComponentIds[id]) allComponentIds[id] = [];
+      allComponentIds[id].push({ type: "Modal", index: i + 1, row });
+    }
+  });
+
+  // Report duplicates across all components
+  Object.keys(allComponentIds).forEach((id) => {
+    const components = allComponentIds[id];
+    if (components.length > 1) {
+      components.forEach((comp) => {
+        const formRow = comp.row.querySelector(".form-row");
+        bodyRowError(
+          formRow,
+          `${comp.type} ${comp.index}: ID "${id}" is already used by another component`,
+        );
+        hasErrors = true;
+      });
     }
   });
 
@@ -1001,7 +1082,6 @@ document.addEventListener("DOMContentLoaded", () => {
   btnSend.classList.remove("active");
   btnCV2.classList.remove("active");
 
-  // Always load CV2 state once on startup — cards live in the DOM even when hidden
   loadCV2State();
 
   if (currentMode === "send") {
@@ -1066,7 +1146,6 @@ document.addEventListener("DOMContentLoaded", () => {
     .getElementById("normalBuilder")
     .addEventListener("change", saveNormalState);
 
-  // ── Send mode wiring ────────────────────────────────────────────────────────
   document
     .getElementById("s_generateBtn")
     .addEventListener("click", generateSendEmbed);
@@ -1098,7 +1177,6 @@ document.addEventListener("DOMContentLoaded", () => {
     .getElementById("sendBuilder")
     .addEventListener("change", saveSendState);
 
-  // ── CompV2 mode wiring ──────────────────────────────────────────────────────
   document
     .getElementById("cv2AddContainer")
     .addEventListener("click", () => cv2AddCard("container"));
@@ -1157,12 +1235,6 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// COMPV2 BUILDER
-// ═══════════════════════════════════════════════════════════════════════════════
-
-// ─── CV2 state persistence ────────────────────────────────────────────────────
-
 // Track per-type counters for numbering (persists across mode switches)
 const cv2Counters = {};
 
@@ -1202,8 +1274,6 @@ function loadCV2State() {
     cv2RefreshAllDropdowns();
   } catch (e) {}
 }
-
-// ─── CV2 dropdown helpers ─────────────────────────────────────────────────────
 
 // Collect names of a given component type from existing cards
 function cv2GetNames(type) {
@@ -1336,8 +1406,6 @@ function cv2RefreshAllDropdowns() {
     }
   });
 }
-
-// ─── CV2 card builder ─────────────────────────────────────────────────────────
 
 const CV2_BADGE_LABELS = {
   container: ["Container", "cv2-badge-container"],
@@ -1534,9 +1602,6 @@ function cv2CardBody(type) {
       return "";
   }
 }
-
-// ─── CV2 generate ─────────────────────────────────────────────────────────────
-
 function cv2f(field, card) {
   const el = card.querySelector(`[data-cv2field="${field}"]`);
   if (!el) return "";
@@ -1779,14 +1844,60 @@ function generateCV2() {
     }
   });
 
+  // Check for duplicate IDs across all component types
+  const allComponentIds = {};
+
+  cards.forEach((card) => {
+    const type = card.dataset.type;
+    let id = null;
+    let componentLabel = "";
+
+    // Collect IDs from different component types
+    if (type === "buttoncv2") {
+      id = cv2f("id", card);
+      componentLabel = "Button CV2";
+    } else if (type === "actionrow") {
+      id = cv2f("id", card);
+      componentLabel = "Action Row";
+    } else if (type === "mediagallery") {
+      id = cv2f("id", card);
+      componentLabel = "Media Gallery";
+    } else if (["userselect", "roleselect", "mentionable"].includes(type)) {
+      id = cv2f("id", card);
+      componentLabel =
+        type === "userselect"
+          ? "User Select"
+          : type === "roleselect"
+            ? "Role Select"
+            : "Mentionable Select";
+    }
+
+    if (id) {
+      if (!allComponentIds[id]) allComponentIds[id] = [];
+      allComponentIds[id].push({ type: componentLabel, card });
+    }
+  });
+
+  // Report duplicates
+  Object.keys(allComponentIds).forEach((id) => {
+    const components = allComponentIds[id];
+    if (components.length > 1) {
+      components.forEach((comp) => {
+        cv2InputError(
+          comp.card,
+          "id",
+          `ID "${id}" is already used by another component`,
+        );
+      });
+    }
+  });
+
   if (hasErrors) {
     const first = document.querySelector("#cv2Components .inline-error");
     if (first) first.scrollIntoView({ behavior: "smooth", block: "center" });
     return;
   }
 
-  // Code generation — proper dependency order
-  // Order: Container → Section/Gallery/ActionRow → TextDisplay/Separator/MediaItem/Thumbnail/Buttons/Selects
   const lines = [];
 
   // 1. Containers first
@@ -1942,10 +2053,6 @@ function generateCV2() {
   saveCV2State();
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// LIVE PREVIEW
-// ═══════════════════════════════════════════════════════════════════════════════
-
 // Update timestamps
 function updateTimestamps() {
   const now = new Date();
@@ -1985,8 +2092,6 @@ function renderMarkdown(text) {
     )
     .replace(/\n/g, "<br>");
 }
-
-// ─── Normal & Send Mode Preview ───────────────────────────────────────────────
 
 function updateNormalPreview() {
   const content = document.getElementById("normalPreviewContent");
@@ -2290,8 +2395,6 @@ function updateSendPreview() {
 
   content.innerHTML = html;
 }
-
-// ─── CompV2 Mode Preview ──────────────────────────────────────────────────────
 
 function updateCV2Preview() {
   const content = document.getElementById("cv2PreviewContent");
@@ -2622,8 +2725,6 @@ function updateCV2Preview() {
     html ||
     '<div style="color:#dbdee1;font-size:1rem;line-height:1.375;white-space:pre-wrap;word-wrap:break-word;">Add components to see a preview…</div>';
 }
-
-// ─── Initialize Preview Updates ───────────────────────────────────────────────
 
 // Wrap initialization in a function to call after DOM is ready
 function initializePreviews() {
