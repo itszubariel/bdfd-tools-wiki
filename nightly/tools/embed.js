@@ -1979,40 +1979,43 @@ function generateCV2() {
   });
 
   // Check for duplicate IDs/Names across all component types
-  // Note: Action Rows and String Selects can share the same ID (String Select references Action Row)
+  // Rules:
+  // 1. Parent and child can share IDs (e.g., Action Row + its Buttons/Selects)
+  // 2. Two of the same type cannot share IDs
+  // 3. Two parent types cannot share IDs (e.g., Container + Action Row)
   const allComponentIds = {};
 
   cards.forEach((card) => {
     const type = card.dataset.type;
     let id = null;
     let componentLabel = "";
-    let componentCategory = "";
+    let isParent = false; // Parent components: Container, Section, Action Row, Media Gallery
 
     // Collect IDs/Names from different component types
     if (type === "container") {
       id = cv2f("name", card);
       componentLabel = "Container";
-      componentCategory = "container";
+      isParent = true;
     } else if (type === "section") {
       id = cv2f("name", card);
       componentLabel = "Section";
-      componentCategory = "section";
-    } else if (type === "buttoncv2") {
-      id = cv2f("id", card);
-      componentLabel = "Button CV2";
-      componentCategory = "button";
+      isParent = true;
     } else if (type === "actionrow") {
       id = cv2f("id", card);
       componentLabel = "Action Row";
-      componentCategory = "actionrow-or-stringselect"; // Can share with stringselect
+      isParent = true;
     } else if (type === "mediagallery") {
       id = cv2f("id", card);
       componentLabel = "Media Gallery";
-      componentCategory = "gallery";
+      isParent = true;
+    } else if (type === "buttoncv2") {
+      id = cv2f("id", card);
+      componentLabel = "Button CV2";
+      isParent = false;
     } else if (type === "stringselect") {
       id = cv2f("id", card);
       componentLabel = "String Select";
-      componentCategory = "actionrow-or-stringselect"; // Can share with actionrow
+      isParent = false;
     } else if (["userselect", "roleselect", "mentionable"].includes(type)) {
       id = cv2f("id", card);
       componentLabel =
@@ -2021,31 +2024,45 @@ function generateCV2() {
           : type === "roleselect"
             ? "Role Select"
             : "Mentionable Select";
-      componentCategory = "select";
+      isParent = false;
+    } else if (type === "textdisplay") {
+      // Text displays don't have IDs, they reference containers/sections
+      id = null;
+    } else if (type === "thumbnail") {
+      // Thumbnails don't have IDs, they reference sections
+      id = null;
+    } else if (type === "mediaitem") {
+      // Media items don't have IDs, they reference galleries
+      id = null;
     }
 
     if (id) {
       if (!allComponentIds[id]) allComponentIds[id] = [];
-      allComponentIds[id].push({ type: componentLabel, card, category: componentCategory });
+      allComponentIds[id].push({ type: componentLabel, card, isParent, componentType: type });
     }
   });
 
-  // Report duplicates (but allow actionrow and stringselect to share IDs)
+  // Report duplicates based on rules
   Object.keys(allComponentIds).forEach((id) => {
     const components = allComponentIds[id];
     if (components.length > 1) {
-      // Check if it's exactly one Action Row and one or more String Selects (allowed)
-      const actionRows = components.filter(c => c.category === "actionrow-or-stringselect" && c.type === "Action Row");
-      const stringSelects = components.filter(c => c.category === "actionrow-or-stringselect" && c.type === "String Select");
-      const others = components.filter(c => c.category !== "actionrow-or-stringselect");
+      // Check for violations:
+      // 1. Two of the same type (always invalid)
+      const typeCount = {};
+      components.forEach(comp => {
+        typeCount[comp.type] = (typeCount[comp.type] || 0) + 1;
+      });
       
-      // Allowed: 1 Action Row + any number of String Selects (and nothing else)
-      const isAllowed = actionRows.length === 1 && stringSelects.length >= 1 && others.length === 0;
+      const hasDuplicateTypes = Object.values(typeCount).some(count => count > 1);
       
-      // Report error if not allowed
-      if (!isAllowed) {
+      // 2. Two parent types (always invalid)
+      const parentComponents = components.filter(c => c.isParent);
+      const hasTwoParents = parentComponents.length > 1;
+      
+      // Report errors
+      if (hasDuplicateTypes || hasTwoParents) {
         components.forEach((comp) => {
-          const fieldName = comp.category === "container" || comp.category === "section" ? "name" : "id";
+          const fieldName = comp.type === "Container" || comp.type === "Section" ? "name" : "id";
           
           // Find the other component(s) that conflict with this one
           const otherComponents = components.filter(c => c !== comp);
@@ -2054,7 +2071,7 @@ function generateCV2() {
           cv2InputError(
             comp.card,
             fieldName,
-            `${comp.category === "container" || comp.category === "section" ? "Name" : "ID"} "${id}" is already used by ${otherTypes}`,
+            `${comp.type === "Container" || comp.type === "Section" ? "Name" : "ID"} "${id}" is already used by ${otherTypes}`,
           );
         });
       }
