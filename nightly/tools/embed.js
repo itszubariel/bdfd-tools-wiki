@@ -1951,12 +1951,21 @@ function generateCV2() {
       if (options.length === 0) {
         cv2FieldError(card, "String Select: Add at least one option");
       } else {
+        const optionValues = new Map(); // Track values and their indices
+        
         // Validate each option
         options.forEach((opt, i) => {
           const label = opt.querySelector("[data-optfield='label']")?.value.trim();
           const value = opt.querySelector("[data-optfield='value']")?.value.trim();
           if (!label || !value) {
             cv2FieldError(card, `String Select Option ${i + 1}: Label and Value are required`);
+          } else if (value) {
+            // Check for duplicate values
+            if (optionValues.has(value)) {
+              cv2FieldError(card, `String Select Option ${i + 1}: Value "${value}" is already used by Option ${optionValues.get(value) + 1}`);
+            } else {
+              optionValues.set(value, i);
+            }
           }
         });
       }
@@ -1970,52 +1979,68 @@ function generateCV2() {
   });
 
   // Check for duplicate IDs across all component types
+  // Note: Action Rows and String Selects can share the same ID
   const allComponentIds = {};
 
   cards.forEach((card) => {
     const type = card.dataset.type;
     let id = null;
     let componentLabel = "";
+    let componentCategory = "";
 
     // Collect IDs from different component types
     if (type === "buttoncv2") {
       id = cv2f("id", card);
       componentLabel = "Button CV2";
+      componentCategory = "button";
     } else if (type === "actionrow") {
       id = cv2f("id", card);
       componentLabel = "Action Row";
+      componentCategory = "actionrow-or-stringselect"; // Can share with stringselect
     } else if (type === "mediagallery") {
       id = cv2f("id", card);
       componentLabel = "Media Gallery";
-    } else if (["stringselect", "userselect", "roleselect", "mentionable"].includes(type)) {
+      componentCategory = "gallery";
+    } else if (type === "stringselect") {
+      id = cv2f("id", card);
+      componentLabel = "String Select";
+      componentCategory = "actionrow-or-stringselect"; // Can share with actionrow
+    } else if (["userselect", "roleselect", "mentionable"].includes(type)) {
       id = cv2f("id", card);
       componentLabel =
-        type === "stringselect"
-          ? "String Select"
-          : type === "userselect"
+        type === "userselect"
           ? "User Select"
           : type === "roleselect"
             ? "Role Select"
             : "Mentionable Select";
+      componentCategory = "select";
     }
 
     if (id) {
       if (!allComponentIds[id]) allComponentIds[id] = [];
-      allComponentIds[id].push({ type: componentLabel, card });
+      allComponentIds[id].push({ type: componentLabel, card, category: componentCategory });
     }
   });
 
-  // Report duplicates
+  // Report duplicates (but allow actionrow and stringselect to share IDs)
   Object.keys(allComponentIds).forEach((id) => {
     const components = allComponentIds[id];
     if (components.length > 1) {
-      components.forEach((comp) => {
-        cv2InputError(
-          comp.card,
-          "id",
-          `ID "${id}" is already used by another component`,
-        );
-      });
+      // Check if all components are actionrow-or-stringselect category
+      const allActionRowOrStringSelect = components.every(
+        (comp) => comp.category === "actionrow-or-stringselect"
+      );
+      
+      // Only report error if they're not all actionrow/stringselect
+      if (!allActionRowOrStringSelect) {
+        components.forEach((comp) => {
+          cv2InputError(
+            comp.card,
+            "id",
+            `ID "${id}" is already used by another component`,
+          );
+        });
+      }
     }
   });
 
