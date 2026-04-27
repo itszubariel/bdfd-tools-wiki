@@ -1905,7 +1905,7 @@ function updateTimestamps() {
   const ampm = hours >= 12 ? "PM" : "AM";
   const displayHours = hours % 12 || 12;
   const timeStr = `Today at ${displayHours}:${minutes} ${ampm}`;
-  
+
   const normalTs = document.getElementById("normalTimestamp");
   const sendTs = document.getElementById("sendTimestamp");
   const cv2Ts = document.getElementById("cv2Timestamp");
@@ -1962,15 +1962,22 @@ function updateNormalPreview() {
   const buttons = Array.from(document.querySelectorAll(".button-row"));
   const selects = Array.from(document.querySelectorAll(".select-row"));
   const modals = Array.from(document.querySelectorAll(".modal-row"));
-  
+
   // Count valid fields (both name AND value required for DISPLAY, but show name-only too)
-  const validFields = fields.filter(field => {
+  const validFields = fields.filter((field) => {
     const name = field.querySelector(".field-name")?.value.trim();
     return name; // Show if name exists, even without value
   });
 
-  if (!hasEmbedContent && validFields.length === 0 && buttons.length === 0 && selects.length === 0 && modals.length === 0) {
-    content.innerHTML = '<p class="preview-empty">Fill in the form to see a preview…</p>';
+  if (
+    !hasEmbedContent &&
+    validFields.length === 0 &&
+    buttons.length === 0 &&
+    selects.length === 0 &&
+    modals.length === 0
+  ) {
+    content.innerHTML =
+      '<div style="color:#dbdee1;font-size:1rem;line-height:1.375;white-space:pre-wrap;word-wrap:break-word;">Fill in the form to see a preview…</div>';
     return;
   }
 
@@ -1979,7 +1986,10 @@ function updateNormalPreview() {
   // Only show embed if there's actual embed content (not just thumbnail alone)
   if (hasEmbedContent || validFields.length > 0) {
     const embedColor = color;
-    html += '<div class="preview-embed"' + (embedColor ? ` style="border-left-color:${embedColor};"` : '') + '>';
+    html +=
+      '<div class="preview-embed"' +
+      (embedColor ? ` style="border-left-color:${embedColor};"` : "") +
+      ">";
 
     // Thumbnail (floats right) - only show if there's other content
     if (thumbnail && isValidUrl(thumbnail) && hasEmbedContent) {
@@ -2016,9 +2026,11 @@ function updateNormalPreview() {
 
     // Fields - show name even without value
     if (validFields.length > 0) {
-      const hasInline = validFields.some(f => f.querySelector(".field-inline")?.checked);
+      const hasInline = validFields.some(
+        (f) => f.querySelector(".field-inline")?.checked,
+      );
       html += `<div class="preview-embed-fields${hasInline ? " has-inline" : ""}">`;
-      validFields.forEach(field => {
+      validFields.forEach((field) => {
         const name = field.querySelector(".field-name")?.value.trim();
         const value = field.querySelector(".field-value")?.value.trim();
         html += '<div class="preview-embed-field">';
@@ -2074,12 +2086,12 @@ function updateNormalPreview() {
       const style = btn.querySelector(".button-style")?.value || "primary";
       const disabled = btn.querySelector(".button-disabled")?.checked;
       const emoji = btn.querySelector(".button-emoji")?.value.trim();
-      
+
       if (label || emoji) {
         let btnClass = "preview-button";
         if (style !== "primary") btnClass += " " + style;
         if (disabled) btnClass += " disabled";
-        
+
         html += `<button class="${btnClass}">`;
         if (emoji) html += `<span>${emoji}</span>`;
         if (label) html += `<span>${label}</span>`;
@@ -2091,8 +2103,10 @@ function updateNormalPreview() {
 
   // Select Menus
   if (selects.length > 0) {
-    selects.forEach(select => {
-      const placeholder = select.querySelector(".select-placeholder")?.value.trim() || "Select an option";
+    selects.forEach((select) => {
+      const placeholder =
+        select.querySelector(".select-placeholder")?.value.trim() ||
+        "Select an option";
       html += '<div class="preview-buttons">';
       html += `<button class="preview-button secondary" style="width:100%;justify-content:space-between;">`;
       html += `<span>${placeholder}</span>`;
@@ -2104,17 +2118,20 @@ function updateNormalPreview() {
 
   // Modals (show as button that would trigger them)
   if (modals.length > 0) {
-    modals.forEach(modal => {
+    modals.forEach((modal) => {
       const modalTitle = modal.querySelector(".modal-title")?.value.trim();
       if (modalTitle) {
-        html += '<div style="margin-top:0.5rem;padding:0.5rem;background:#2b2d31;border-radius:4px;font-size:0.875rem;color:#949ba4;">';
+        html +=
+          '<div style="margin-top:0.5rem;padding:0.5rem;background:#2b2d31;border-radius:4px;font-size:0.875rem;color:#949ba4;">';
         html += `📝 Modal: "${modalTitle}" (opens on interaction)`;
         html += "</div>";
       }
     });
   }
 
-  content.innerHTML = html || '<p class="preview-empty">Fill in the form to see a preview…</p>';
+  content.innerHTML =
+    html ||
+    '<div style="color:#dbdee1;font-size:1rem;line-height:1.375;white-space:pre-wrap;word-wrap:break-word;">Fill in the form to see a preview…</div>';
 }
 
 function updateSendPreview() {
@@ -2138,7 +2155,8 @@ function updateSendPreview() {
   const hasContent = messageContent || hasEmbedContent;
 
   if (!hasContent) {
-    content.innerHTML = '<p class="preview-empty">Fill in the form to see a preview…</p>';
+    content.innerHTML =
+      '<div style="color:#dbdee1;font-size:1rem;line-height:1.375;white-space:pre-wrap;word-wrap:break-word;">Fill in the form to see a preview…</div>';
     return;
   }
 
@@ -2152,7 +2170,10 @@ function updateSendPreview() {
   // Only show embed if there's embed content (not just thumbnail alone)
   if (hasEmbedContent) {
     const embedColor = color;
-    html += '<div class="preview-embed"' + (embedColor ? ` style="border-left-color:${embedColor};"` : '') + '>';
+    html +=
+      '<div class="preview-embed"' +
+      (embedColor ? ` style="border-left-color:${embedColor};"` : "") +
+      ">";
 
     // Thumbnail - only show if there's other content
     if (thumbnail && isValidUrl(thumbnail) && hasEmbedContent) {
@@ -2227,10 +2248,13 @@ function updateCV2Preview() {
   const content = document.getElementById("cv2PreviewContent");
   if (!content) return;
 
-  const cards = Array.from(document.querySelectorAll("#cv2Components [data-type]"));
-  
+  const cards = Array.from(
+    document.querySelectorAll("#cv2Components [data-type]"),
+  );
+
   if (cards.length === 0) {
-    content.innerHTML = '<p class="preview-empty">Add components to see a preview…</p>';
+    content.innerHTML =
+      '<div style="color:#dbdee1;font-size:1rem;line-height:1.375;white-space:pre-wrap;word-wrap:break-word;">Add components to see a preview…</div>';
     return;
   }
 
@@ -2241,16 +2265,16 @@ function updateCV2Preview() {
   const actionRows = {};
 
   // First pass: organize components by container/section/gallery/actionrow
-  cards.forEach(card => {
+  cards.forEach((card) => {
     const type = card.dataset.type;
-    
+
     if (type === "container") {
       const name = cv2f("name", card);
       if (name) {
         containers[name] = {
           color: cv2f("color", card),
           spoiler: cv2f("spoiler", card) === "true",
-          items: []
+          items: [],
         };
       }
     } else if (type === "section") {
@@ -2259,7 +2283,7 @@ function updateCV2Preview() {
         sections[name] = {
           container: cv2f("container", card),
           texts: [],
-          accessories: []
+          accessories: [],
         };
       }
     } else if (type === "mediagallery") {
@@ -2267,7 +2291,7 @@ function updateCV2Preview() {
       if (id) {
         galleries[id] = {
           container: cv2f("container", card),
-          items: []
+          items: [],
         };
       }
     } else if (type === "actionrow") {
@@ -2276,14 +2300,14 @@ function updateCV2Preview() {
         actionRows[id] = {
           container: cv2f("container", card),
           buttons: [],
-          selects: []
+          selects: [],
         };
       }
     }
   });
 
   // Second pass: populate containers/sections/galleries/actionrows
-  cards.forEach(card => {
+  cards.forEach((card) => {
     const type = card.dataset.type;
 
     if (type === "textdisplay") {
@@ -2320,7 +2344,11 @@ function updateCV2Preview() {
       const spoiler = cv2f("spoiler", card) === "true";
       if (url && sections[sectionName]) {
         // Thumbnail takes priority - add it first
-        sections[sectionName].accessories.unshift({ type: "thumbnail", url, spoiler });
+        sections[sectionName].accessories.unshift({
+          type: "thumbnail",
+          url,
+          spoiler,
+        });
       }
     } else if (type === "mediaitem") {
       const url = cv2f("url", card);
@@ -2336,7 +2364,7 @@ function updateCV2Preview() {
       const disabled = cv2f("disabled", card) === "true";
       const emoji = cv2f("emoji", card);
       const target = cv2f("actionRowOrSection", card);
-      
+
       if (id || label || emoji) {
         const btn = { label, style, disabled, emoji };
         if (actionRows[target]) {
@@ -2345,11 +2373,15 @@ function updateCV2Preview() {
           sections[target].accessories.push({ type: "button", ...btn });
         }
       }
-    } else if (type === "userselect" || type === "roleselect" || type === "mentionable") {
+    } else if (
+      type === "userselect" ||
+      type === "roleselect" ||
+      type === "mentionable"
+    ) {
       const id = cv2f("id", card);
       const placeholder = cv2f("placeholder", card) || "Select...";
       const target = cv2f("actionRowId", card);
-      
+
       if (id && actionRows[target]) {
         actionRows[target].selects.push({ placeholder });
       }
@@ -2371,7 +2403,7 @@ function updateCV2Preview() {
     html += `<div class="${containerClass}" style="${containerStyle}">`;
 
     // Render container items
-    container.items.forEach(item => {
+    container.items.forEach((item) => {
       if (item.type === "text") {
         html += `<div class="preview-text-display">${item.content}</div>`;
       } else if (item.type === "separator") {
@@ -2387,11 +2419,11 @@ function updateCV2Preview() {
       if (section.container === name) {
         html += '<div class="preview-section">';
         html += '<div class="preview-section-content">';
-        section.texts.forEach(text => {
+        section.texts.forEach((text) => {
           html += `<div class="preview-text-display">${text.content}</div>`;
         });
         html += "</div>";
-        
+
         // Only show thumbnail (first accessory if it's a thumbnail)
         if (section.accessories.length > 0) {
           const firstAccessory = section.accessories[0];
@@ -2403,11 +2435,14 @@ function updateCV2Preview() {
             // Show button only if no thumbnail
             html += '<div class="preview-section-accessory">';
             let btnClass = "preview-button";
-            if (firstAccessory.style !== "primary") btnClass += " " + firstAccessory.style;
+            if (firstAccessory.style !== "primary")
+              btnClass += " " + firstAccessory.style;
             if (firstAccessory.disabled) btnClass += " disabled";
             html += `<button class="${btnClass}">`;
-            if (firstAccessory.emoji) html += `<span>${firstAccessory.emoji}</span>`;
-            if (firstAccessory.label) html += `<span>${firstAccessory.label}</span>`;
+            if (firstAccessory.emoji)
+              html += `<span>${firstAccessory.emoji}</span>`;
+            if (firstAccessory.label)
+              html += `<span>${firstAccessory.label}</span>`;
             html += "</button>";
             html += "</div>";
           }
@@ -2420,7 +2455,7 @@ function updateCV2Preview() {
     Object.entries(galleries).forEach(([galleryId, gallery]) => {
       if (gallery.container === name && gallery.items.length > 0) {
         html += '<div class="preview-media-gallery">';
-        gallery.items.forEach(item => {
+        gallery.items.forEach((item) => {
           html += `<img src="${item.url}" alt="Media" class="preview-media-item" onerror="this.style.display='none'">`;
         });
         html += "</div>";
@@ -2432,7 +2467,7 @@ function updateCV2Preview() {
       if (row.container === name) {
         if (row.buttons.length > 0) {
           html += '<div class="preview-buttons">';
-          row.buttons.forEach(btn => {
+          row.buttons.forEach((btn) => {
             let btnClass = "preview-button";
             if (btn.style !== "primary") btnClass += " " + btn.style;
             if (btn.disabled) btnClass += " disabled";
@@ -2444,7 +2479,7 @@ function updateCV2Preview() {
           html += "</div>";
         }
         if (row.selects.length > 0) {
-          row.selects.forEach(sel => {
+          row.selects.forEach((sel) => {
             html += '<div class="preview-buttons">';
             html += `<button class="preview-button secondary" style="width:100%;justify-content:space-between;">`;
             html += `<span>${sel.placeholder}</span>`;
@@ -2464,11 +2499,11 @@ function updateCV2Preview() {
     if (!section.container) {
       html += '<div class="preview-section">';
       html += '<div class="preview-section-content">';
-      section.texts.forEach(text => {
+      section.texts.forEach((text) => {
         html += `<div class="preview-text-display">${text.content}</div>`;
       });
       html += "</div>";
-      
+
       if (section.accessories.length > 0) {
         const firstAccessory = section.accessories[0];
         if (firstAccessory.type === "thumbnail") {
@@ -2478,11 +2513,14 @@ function updateCV2Preview() {
         } else if (firstAccessory.type === "button") {
           html += '<div class="preview-section-accessory">';
           let btnClass = "preview-button";
-          if (firstAccessory.style !== "primary") btnClass += " " + firstAccessory.style;
+          if (firstAccessory.style !== "primary")
+            btnClass += " " + firstAccessory.style;
           if (firstAccessory.disabled) btnClass += " disabled";
           html += `<button class="${btnClass}">`;
-          if (firstAccessory.emoji) html += `<span>${firstAccessory.emoji}</span>`;
-          if (firstAccessory.label) html += `<span>${firstAccessory.label}</span>`;
+          if (firstAccessory.emoji)
+            html += `<span>${firstAccessory.emoji}</span>`;
+          if (firstAccessory.label)
+            html += `<span>${firstAccessory.label}</span>`;
           html += "</button>";
           html += "</div>";
         }
@@ -2495,7 +2533,7 @@ function updateCV2Preview() {
   Object.entries(galleries).forEach(([galleryId, gallery]) => {
     if (!gallery.container && gallery.items.length > 0) {
       html += '<div class="preview-media-gallery">';
-      gallery.items.forEach(item => {
+      gallery.items.forEach((item) => {
         html += `<img src="${item.url}" alt="Media" class="preview-media-item" onerror="this.style.display='none'">`;
       });
       html += "</div>";
@@ -2507,7 +2545,7 @@ function updateCV2Preview() {
     if (!row.container) {
       if (row.buttons.length > 0) {
         html += '<div class="preview-buttons">';
-        row.buttons.forEach(btn => {
+        row.buttons.forEach((btn) => {
           let btnClass = "preview-button";
           if (btn.style !== "primary") btnClass += " " + btn.style;
           if (btn.disabled) btnClass += " disabled";
@@ -2519,7 +2557,7 @@ function updateCV2Preview() {
         html += "</div>";
       }
       if (row.selects.length > 0) {
-        row.selects.forEach(sel => {
+        row.selects.forEach((sel) => {
           html += '<div class="preview-buttons">';
           html += `<button class="preview-button secondary" style="width:100%;justify-content:space-between;">`;
           html += `<span>${sel.placeholder}</span>`;
@@ -2531,7 +2569,9 @@ function updateCV2Preview() {
     }
   });
 
-  content.innerHTML = html || '<p class="preview-empty">Add components to see a preview…</p>';
+  content.innerHTML =
+    html ||
+    '<div style="color:#dbdee1;font-size:1rem;line-height:1.375;white-space:pre-wrap;word-wrap:break-word;">Add components to see a preview…</div>';
 }
 
 // ─── Initialize Preview Updates ───────────────────────────────────────────────
