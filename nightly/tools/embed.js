@@ -1502,12 +1502,21 @@ function cv2AddCard(type, doRefresh = true) {
     const addOptionBtn = card.querySelector(".btn-add-option");
     const optionsContainer = card.querySelector(".stringselect-options");
     if (addOptionBtn && optionsContainer) {
+      // Store counter on the card element
+      card.dataset.optionCounter = "0";
+      
       addOptionBtn.addEventListener("click", () => {
+        const optionCounter = parseInt(card.dataset.optionCounter || "0") + 1;
+        card.dataset.optionCounter = optionCounter.toString();
+        
         const optionDiv = document.createElement("div");
-        optionDiv.className = "stringselect-option";
-        optionDiv.style.cssText = "border:1px solid #4e5058;border-radius:4px;padding:0.5rem;margin-top:0.5rem;position:relative;";
-        optionDiv.innerHTML = `
-          <button type="button" class="btn-remove-option" style="position:absolute;top:0.25rem;right:0.25rem;background:#ed4245;color:#fff;border:none;border-radius:3px;width:20px;height:20px;cursor:pointer;font-size:0.75rem;line-height:1;">✕</button>
+        optionDiv.className = "stringselect-option field-row";
+        optionDiv.style.cssText = "margin-top:0.5rem;";
+        
+        // Create option body
+        const optionBody = document.createElement("div");
+        optionBody.className = "component-body";
+        optionBody.innerHTML = `
           <div class="form-row">
             <input class="form-input" data-optfield="label" placeholder="Label (required)" maxlength="100">
             <input class="form-input" data-optfield="value" placeholder="Value (required)" maxlength="100">
@@ -1523,13 +1532,17 @@ function cv2AddCard(type, doRefresh = true) {
             </label>
           </div>
         `;
-        optionsContainer.appendChild(optionDiv);
         
-        // Remove option button
-        optionDiv.querySelector(".btn-remove-option").addEventListener("click", () => {
-          optionDiv.remove();
-          saveCV2State();
-        });
+        // Add header with collapse and remove buttons
+        optionDiv.appendChild(
+          makeHeader(`String Select Option #${optionCounter}`, optionBody, () => {
+            optionDiv.remove();
+            saveCV2State();
+          })
+        );
+        optionDiv.appendChild(optionBody);
+        
+        optionsContainer.appendChild(optionDiv);
         
         // Save on input
         optionDiv.addEventListener("input", saveCV2State);
