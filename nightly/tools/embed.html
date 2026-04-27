@@ -571,7 +571,7 @@ select.form-input option {
 <div class="picker-container">
 	<h2 id="normal-embed-builder"><a class="header" href="#normal-embed-builder">Normal Embed Builder</a></h2>
   	<p>Fill text input fields below to generate embed code.</p>
-<div class="form-group">
+   <div class="form-group">
      <label>Author</label>
      <div class="form-row">
        <input id="authorName" class="form-input" placeholder="Author Name">
@@ -579,18 +579,18 @@ select.form-input option {
        <input id="authorUrl" class="form-input" placeholder="Author URL">
      </div>
    </div>
-<div class="form-group">
+   <div class="form-group">
      <label>Title</label>
      <div class="form-row">
        <input id="title" class="form-input" placeholder="Title">
        <input id="titleUrl" class="form-input" placeholder="Title URL">
      </div>
    </div>
-<div class="form-group">
+   <div class="form-group">
      <label>Description</label>
      <textarea id="description" class="form-input form-textarea" placeholder="Description..."></textarea>
    </div>
-<div class="form-group">
+   <div class="form-group">
      <label>Media &amp; Style</label>
      <div class="form-row">
        <input id="thumbnail" class="form-input" placeholder="Thumbnail URL">
@@ -598,7 +598,7 @@ select.form-input option {
        <input id="color" class="form-input" placeholder="#ffffff" value="#7289da">
      </div>
    </div>
-<div class="form-group">
+   <div class="form-group">
      <label>Footer</label>
      <div class="form-row">
        <input id="footer" class="form-input" placeholder="Footer Text">
@@ -609,19 +609,19 @@ select.form-input option {
        <span>Add Timestamp</span>
      </label>
    </div>
-<div class="flex-buttons">
+   <div class="flex-buttons">
      <button id="addField" class="add-field-btn">+ Field</button>
      <button id="addButton" class="add-field-btn">+ Button</button>
      <button id="addSelect" class="add-field-btn">+ Select Menu</button>
      <button id="addModal" class="add-field-btn">+ Modal</button>
    </div>
-<div id="dynamicFields"></div>
-<div class="btn-row">
+   <div id="dynamicFields"></div>
+   <div class="btn-row">
      <button id="generateBtn" class="generate-btn">Generate Embed</button>
      <button id="copyBtn" class="copy-btn">Copy Output</button>
      <button id="clearBtn" class="clear-btn">Clear All</button>
    </div>
-<div id="output" class="output">Generated code appears here...</div>
+   <div id="output" class="output">Generated code appears here...</div>
    <div class="char-count" id="charCount">0 characters</div>
    <div class="error" id="error"></div>
 </div>
@@ -630,8 +630,8 @@ select.form-input option {
 <div class="picker-container">
   <h2 id="send-embed-builder"><a class="header" href="#send-embed-builder">Send Embed Builder</a></h2>
   <p>Fill text input fields below to generate a <code>$sendEmbedMessage</code> call.</p>
-<!-- Destination -->
-<div class="form-group">
+  <!-- Destination -->
+  <div class="form-group">
     <label>Destination</label>
     <div class="form-row">
       <div style="display:flex;flex-direction:column;gap:0.4rem;">
@@ -644,29 +644,29 @@ select.form-input option {
       </div>
     </div>
   </div>
-<!-- Author -->
-<div class="form-group">
+  <!-- Author -->
+  <div class="form-group">
     <label>Author</label>
     <div class="form-row">
       <input id="s_authorName" class="form-input" placeholder="Author Name">
       <input id="s_authorIcon" class="form-input" placeholder="Author Icon URL">
     </div>
   </div>
-<!-- Title -->
-<div class="form-group">
+  <!-- Title -->
+  <div class="form-group">
     <label>Title</label>
     <div class="form-row">
       <input id="s_title" class="form-input" placeholder="Title">
       <input id="s_titleUrl" class="form-input" placeholder="Title URL">
     </div>
   </div>
-<!-- Description -->
-<div class="form-group">
+  <!-- Description -->
+  <div class="form-group">
     <label>Description</label>
     <textarea id="s_description" class="form-input form-textarea" placeholder="Description..."></textarea>
   </div>
-<!-- Media & Style -->
-<div class="form-group">
+  <!-- Media & Style -->
+  <div class="form-group">
     <label>Media &amp; Style</label>
     <div class="form-row">
       <input id="s_thumbnail" class="form-input" placeholder="Thumbnail URL">
@@ -674,8 +674,8 @@ select.form-input option {
       <input id="s_color" class="form-input" placeholder="#ffffff" value="#7289da">
     </div>
   </div>
-<!-- Footer -->
-<div class="form-group">
+  <!-- Footer -->
+  <div class="form-group">
     <label>Footer</label>
     <div class="form-row">
       <input id="s_footer" class="form-input" placeholder="Footer Text">
@@ -690,12 +690,12 @@ select.form-input option {
       <span>Return Message ID</span>
     </label>
   </div>
-<div class="btn-row">
+  <div class="btn-row">
     <button id="s_generateBtn" class="generate-btn">Generate</button>
     <button id="s_copyBtn" class="copy-btn">Copy Output</button>
     <button id="s_clearBtn" class="clear-btn">Clear All</button>
   </div>
-<div id="s_output" class="output">Generated code appears here...</div>
+  <div id="s_output" class="output">Generated code appears here...</div>
   <div class="char-count" id="s_charCount">0 characters</div>
   <div class="error" id="s_error"></div>
 </div>
@@ -707,8 +707,8 @@ select.form-input option {
 <div class="picker-container">
   <h2 id="compv2-builder"><a class="header" href="#compv2-builder">CompV2 Builder</a></h2>
   <p>Add components below to generate Components V2 code.</p>
-<!-- Add Components card -->
-<div class="form-group">
+  <!-- Add Components card -->
+  <div class="form-group">
     <label>Add Components</label>
     <div class="flex-buttons" id="cv2AddButtons">
       <button class="add-field-btn" id="cv2AddContainer">+ Container</button>
@@ -725,10 +725,10 @@ select.form-input option {
       <button class="add-field-btn" id="cv2AddMentionable">+ Mentionable Select</button>
     </div>
   </div>
-<!-- Dynamic component cards go here -->
-<div id="cv2Components"></div>
-<!-- Output -->
-<div class="btn-row">
+  <!-- Dynamic component cards go here -->
+  <div id="cv2Components"></div>
+  <!-- Output -->
+  <div class="btn-row">
     <button id="cv2GenerateBtn" class="generate-btn">Generate Code</button>
     <button id="cv2CopyBtn" class="copy-btn">Copy Output</button>
     <button id="cv2ClearBtn" class="clear-btn">Clear All</button>
@@ -767,19 +767,22 @@ $title[Hello]
 $description[Welcome to embed builder.]
 $color[#673ab7]
 </code></pre>
-<discord-messages>
-    <discord-message author="Zubariel" role-color="#ffffff">
-        !example
-    </discord-message>
-    <discord-message verified role-color="#378afa" author="BDFD Support" bot>
-        <none>
-        <discord-embed embed-title="Hello" color="#673ab7" slot="embeds">
-            <discord-embed-description slot="description">
-                Welcome to embed builder.
-            </discord-embed-description>
-        </discord-embed>
-    </discord-message>
-</discord-messages>
+<pre><code class="language-discord yaml">- user_id: 860384146778226699
+  username: Zubariel
+  color: "#ffffff"
+  content: |
+    !example
+- user_id: 1009018156494368798
+  username: BDFD Support
+  color: "#378afa"
+  bot: true
+  verified: true
+  content: &lt;none&gt;
+  embed:
+    title: Hello
+    description: Welcome to embed builder.
+    color: "#673ab7"
+</code></pre>
 <div id="admonition-how-it-works" class="admonition admonish-question" role="note" aria-labelledby="admonition-how-it-works-title">
 <div class="admonition-title">
 <div id="admonition-how-it-works-title">
