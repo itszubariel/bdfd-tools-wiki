@@ -1905,7 +1905,7 @@ function updateTimestamps() {
   const ampm = hours >= 12 ? "PM" : "AM";
   const displayHours = hours % 12 || 12;
   const timeStr = `Today at ${displayHours}:${minutes} ${ampm}`;
-
+  
   const normalTs = document.getElementById("normalTimestamp");
   const sendTs = document.getElementById("sendTimestamp");
   const cv2Ts = document.getElementById("cv2Timestamp");
@@ -1951,111 +1951,119 @@ function updateNormalPreview() {
   const description = document.getElementById("description")?.value.trim();
   const thumbnail = document.getElementById("thumbnail")?.value.trim();
   const image = document.getElementById("image")?.value.trim();
-  const color = document.getElementById("color")?.value.trim() || "#7289da";
+  const color = document.getElementById("color")?.value.trim(); // NO DEFAULT
   const footer = document.getElementById("footer")?.value.trim();
   const footerIcon = document.getElementById("footerIcon")?.value.trim();
   const timestamp = document.getElementById("timestamp")?.checked;
 
-  // Check if any content exists
-  const hasContent =
-    authorName || title || description || thumbnail || image || footer;
+  // Check if any REAL embed content exists (not just thumbnail)
+  const hasEmbedContent = authorName || title || description || image || footer;
   const fields = Array.from(document.querySelectorAll(".field-row"));
   const buttons = Array.from(document.querySelectorAll(".button-row"));
+  const selects = Array.from(document.querySelectorAll(".select-row"));
+  const modals = Array.from(document.querySelectorAll(".modal-row"));
+  
+  // Count valid fields (both name AND value required)
+  const validFields = fields.filter(field => {
+    const name = field.querySelector(".field-name")?.value.trim();
+    const value = field.querySelector(".field-value")?.value.trim();
+    return name && value;
+  });
 
-  if (!hasContent && fields.length === 0 && buttons.length === 0) {
-    content.innerHTML =
-      '<p class="preview-empty">Fill in the form to see a preview…</p>';
+  if (!hasEmbedContent && validFields.length === 0 && buttons.length === 0 && selects.length === 0 && modals.length === 0) {
+    content.innerHTML = '<p class="preview-empty">Fill in the form to see a preview…</p>';
     return;
   }
 
-  let html =
-    '<div class="preview-embed" style="border-left-color:' + color + ';">';
+  let html = "";
 
-  // Thumbnail (floats right)
-  if (thumbnail && isValidUrl(thumbnail)) {
-    html += `<img src="${thumbnail}" alt="Thumbnail" class="preview-embed-thumbnail" onerror="this.style.display='none'">`;
-  }
+  // Only show embed if there's actual embed content (not just thumbnail alone)
+  if (hasEmbedContent || validFields.length > 0) {
+    const embedColor = color || "#5865f2";
+    html += '<div class="preview-embed" style="border-left-color:' + embedColor + ';">';
 
-  // Author
-  if (authorName) {
-    html += '<div class="preview-embed-author">';
-    if (authorIcon && isValidUrl(authorIcon)) {
-      html += `<img src="${authorIcon}" alt="Author" class="preview-embed-author-icon" onerror="this.style.display='none'">`;
+    // Thumbnail (floats right) - only show if there's other content
+    if (thumbnail && isValidUrl(thumbnail) && hasEmbedContent) {
+      html += `<img src="${thumbnail}" alt="Thumbnail" class="preview-embed-thumbnail" onerror="this.style.display='none'">`;
     }
-    if (authorUrl && isValidUrl(authorUrl)) {
-      html += `<a href="${authorUrl}" class="preview-embed-author-name" target="_blank">${authorName}</a>`;
-    } else {
-      html += `<span class="preview-embed-author-name">${authorName}</span>`;
+
+    // Author
+    if (authorName) {
+      html += '<div class="preview-embed-author">';
+      if (authorIcon && isValidUrl(authorIcon)) {
+        html += `<img src="${authorIcon}" alt="Author" class="preview-embed-author-icon" onerror="this.style.display='none'">`;
+      }
+      if (authorUrl && isValidUrl(authorUrl)) {
+        html += `<a href="${authorUrl}" class="preview-embed-author-name" target="_blank">${authorName}</a>`;
+      } else {
+        html += `<span class="preview-embed-author-name">${authorName}</span>`;
+      }
+      html += "</div>";
     }
-    html += "</div>";
-  }
 
-  // Title
-  if (title) {
-    if (titleUrl && isValidUrl(titleUrl)) {
-      html += `<a href="${titleUrl}" class="preview-embed-title" target="_blank">${title}</a>`;
-    } else {
-      html += `<div class="preview-embed-title">${title}</div>`;
+    // Title - only blue if URL exists
+    if (title) {
+      if (titleUrl && isValidUrl(titleUrl)) {
+        html += `<a href="${titleUrl}" class="preview-embed-title" target="_blank">${title}</a>`;
+      } else {
+        html += `<div class="preview-embed-title" style="color:#fff;">${title}</div>`;
+      }
     }
-  }
 
-  // Description
-  if (description) {
-    html += `<div class="preview-embed-description">${description}</div>`;
-  }
+    // Description
+    if (description) {
+      html += `<div class="preview-embed-description">${description}</div>`;
+    }
 
-  // Fields
-  if (fields.length > 0) {
-    const hasInline = fields.some(
-      (f) => f.querySelector(".field-inline")?.checked,
-    );
-    html += `<div class="preview-embed-fields${hasInline ? " has-inline" : ""}">`;
-    fields.forEach((field) => {
-      const name = field.querySelector(".field-name")?.value.trim();
-      const value = field.querySelector(".field-value")?.value.trim();
-      if (name && value) {
+    // Fields - only show if BOTH name and value exist
+    if (validFields.length > 0) {
+      const hasInline = validFields.some(f => f.querySelector(".field-inline")?.checked);
+      html += `<div class="preview-embed-fields${hasInline ? " has-inline" : ""}">`;
+      validFields.forEach(field => {
+        const name = field.querySelector(".field-name")?.value.trim();
+        const value = field.querySelector(".field-value")?.value.trim();
         html += '<div class="preview-embed-field">';
         html += `<div class="preview-embed-field-name">${name}</div>`;
         html += `<div class="preview-embed-field-value">${value}</div>`;
         html += "</div>";
+      });
+      html += "</div>";
+    }
+
+    // Image
+    if (image && isValidUrl(image)) {
+      html += `<img src="${image}" alt="Image" class="preview-embed-image" onerror="this.style.display='none'">`;
+    }
+
+    // Footer
+    if (footer || timestamp) {
+      html += '<div class="preview-embed-footer">';
+      if (footerIcon && isValidUrl(footerIcon)) {
+        html += `<img src="${footerIcon}" alt="Footer" class="preview-embed-footer-icon" onerror="this.style.display='none'">`;
       }
-    });
+      if (footer) {
+        html += `<span>${footer}</span>`;
+      }
+      if (timestamp) {
+        const now = new Date();
+        const dateStr = now.toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+        });
+        const timeStr = now.toLocaleTimeString("en-US", {
+          hour: "numeric",
+          minute: "2-digit",
+          hour12: true,
+        });
+        if (footer) html += "<span>•</span>";
+        html += `<span>${dateStr} at ${timeStr}</span>`;
+      }
+      html += "</div>";
+    }
+
     html += "</div>";
   }
-
-  // Image
-  if (image && isValidUrl(image)) {
-    html += `<img src="${image}" alt="Image" class="preview-embed-image" onerror="this.style.display='none'">`;
-  }
-
-  // Footer
-  if (footer || timestamp) {
-    html += '<div class="preview-embed-footer">';
-    if (footerIcon && isValidUrl(footerIcon)) {
-      html += `<img src="${footerIcon}" alt="Footer" class="preview-embed-footer-icon" onerror="this.style.display='none'">`;
-    }
-    if (footer) {
-      html += `<span>${footer}</span>`;
-    }
-    if (timestamp) {
-      const now = new Date();
-      const dateStr = now.toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-      });
-      const timeStr = now.toLocaleTimeString("en-US", {
-        hour: "numeric",
-        minute: "2-digit",
-        hour12: true,
-      });
-      if (footer) html += "<span>•</span>";
-      html += `<span>${dateStr} at ${timeStr}</span>`;
-    }
-    html += "</div>";
-  }
-
-  html += "</div>";
 
   // Buttons
   if (buttons.length > 0) {
@@ -2065,12 +2073,12 @@ function updateNormalPreview() {
       const style = btn.querySelector(".button-style")?.value || "primary";
       const disabled = btn.querySelector(".button-disabled")?.checked;
       const emoji = btn.querySelector(".button-emoji")?.value.trim();
-
+      
       if (label || emoji) {
         let btnClass = "preview-button";
         if (style !== "primary") btnClass += " " + style;
         if (disabled) btnClass += " disabled";
-
+        
         html += `<button class="${btnClass}">`;
         if (emoji) html += `<span>${emoji}</span>`;
         if (label) html += `<span>${label}</span>`;
@@ -2080,7 +2088,32 @@ function updateNormalPreview() {
     html += "</div>";
   }
 
-  content.innerHTML = html;
+  // Select Menus
+  if (selects.length > 0) {
+    selects.forEach(select => {
+      const placeholder = select.querySelector(".select-placeholder")?.value.trim() || "Select an option";
+      html += '<div class="preview-buttons">';
+      html += `<button class="preview-button secondary" style="width:100%;justify-content:space-between;">`;
+      html += `<span>${placeholder}</span>`;
+      html += `<span>▼</span>`;
+      html += "</button>";
+      html += "</div>";
+    });
+  }
+
+  // Modals (show as button that would trigger them)
+  if (modals.length > 0) {
+    modals.forEach(modal => {
+      const modalTitle = modal.querySelector(".modal-title")?.value.trim();
+      if (modalTitle) {
+        html += '<div style="margin-top:0.5rem;padding:0.5rem;background:#2b2d31;border-radius:4px;font-size:0.875rem;color:#949ba4;">';
+        html += `📝 Modal: "${modalTitle}" (opens on interaction)`;
+        html += "</div>";
+      }
+    });
+  }
+
+  content.innerHTML = html || '<p class="preview-empty">Fill in the form to see a preview…</p>';
 }
 
 function updateSendPreview() {
@@ -2095,42 +2128,33 @@ function updateSendPreview() {
   const description = document.getElementById("s_description")?.value.trim();
   const thumbnail = document.getElementById("s_thumbnail")?.value.trim();
   const image = document.getElementById("s_image")?.value.trim();
-  const color = document.getElementById("s_color")?.value.trim() || "#7289da";
+  const color = document.getElementById("s_color")?.value.trim(); // NO DEFAULT
   const footer = document.getElementById("s_footer")?.value.trim();
   const footerIcon = document.getElementById("s_footerIcon")?.value.trim();
   const timestamp = document.getElementById("s_timestamp")?.checked;
 
-  const hasContent =
-    messageContent ||
-    authorName ||
-    title ||
-    description ||
-    thumbnail ||
-    image ||
-    footer;
+  const hasEmbedContent = authorName || title || description || image || footer;
+  const hasContent = messageContent || hasEmbedContent;
 
   if (!hasContent) {
-    content.innerHTML =
-      '<p class="preview-empty">Fill in the form to see a preview…</p>';
+    content.innerHTML = '<p class="preview-empty">Fill in the form to see a preview…</p>';
     return;
   }
 
   let html = "";
 
-  // Message content (text above embed)
+  // Message content (text above embed) - styled like Discord message
   if (messageContent) {
-    html += `<div style="color:#dbdee1;font-size:1rem;margin-bottom:0.5rem;">${messageContent}</div>`;
+    html += `<div style="color:#dbdee1;font-size:1rem;margin-bottom:0.5rem;line-height:1.375;white-space:pre-wrap;word-wrap:break-word;">${messageContent}</div>`;
   }
 
-  // Only show embed if there's embed content
-  const hasEmbedContent =
-    authorName || title || description || thumbnail || image || footer;
+  // Only show embed if there's embed content (not just thumbnail alone)
   if (hasEmbedContent) {
-    html +=
-      '<div class="preview-embed" style="border-left-color:' + color + ';">';
+    const embedColor = color || "#5865f2";
+    html += '<div class="preview-embed" style="border-left-color:' + embedColor + ';">';
 
-    // Thumbnail
-    if (thumbnail && isValidUrl(thumbnail)) {
+    // Thumbnail - only show if there's other content
+    if (thumbnail && isValidUrl(thumbnail) && hasEmbedContent) {
       html += `<img src="${thumbnail}" alt="Thumbnail" class="preview-embed-thumbnail" onerror="this.style.display='none'">`;
     }
 
@@ -2144,12 +2168,12 @@ function updateSendPreview() {
       html += "</div>";
     }
 
-    // Title
+    // Title - only blue if URL exists
     if (title) {
       if (titleUrl && isValidUrl(titleUrl)) {
         html += `<a href="${titleUrl}" class="preview-embed-title" target="_blank">${title}</a>`;
       } else {
-        html += `<div class="preview-embed-title">${title}</div>`;
+        html += `<div class="preview-embed-title" style="color:#fff;">${title}</div>`;
       }
     }
 
@@ -2202,13 +2226,10 @@ function updateCV2Preview() {
   const content = document.getElementById("cv2PreviewContent");
   if (!content) return;
 
-  const cards = Array.from(
-    document.querySelectorAll("#cv2Components [data-type]"),
-  );
-
+  const cards = Array.from(document.querySelectorAll("#cv2Components [data-type]"));
+  
   if (cards.length === 0) {
-    content.innerHTML =
-      '<p class="preview-empty">Add components to see a preview…</p>';
+    content.innerHTML = '<p class="preview-empty">Add components to see a preview…</p>';
     return;
   }
 
@@ -2219,16 +2240,16 @@ function updateCV2Preview() {
   const actionRows = {};
 
   // First pass: organize components by container/section/gallery/actionrow
-  cards.forEach((card) => {
+  cards.forEach(card => {
     const type = card.dataset.type;
-
+    
     if (type === "container") {
       const name = cv2f("name", card);
       if (name) {
         containers[name] = {
           color: cv2f("color", card),
           spoiler: cv2f("spoiler", card) === "true",
-          items: [],
+          items: []
         };
       }
     } else if (type === "section") {
@@ -2237,7 +2258,7 @@ function updateCV2Preview() {
         sections[name] = {
           container: cv2f("container", card),
           texts: [],
-          accessories: [],
+          accessories: []
         };
       }
     } else if (type === "mediagallery") {
@@ -2245,7 +2266,7 @@ function updateCV2Preview() {
       if (id) {
         galleries[id] = {
           container: cv2f("container", card),
-          items: [],
+          items: []
         };
       }
     } else if (type === "actionrow") {
@@ -2254,13 +2275,14 @@ function updateCV2Preview() {
         actionRows[id] = {
           container: cv2f("container", card),
           buttons: [],
+          selects: []
         };
       }
     }
   });
 
   // Second pass: populate containers/sections/galleries/actionrows
-  cards.forEach((card) => {
+  cards.forEach(card => {
     const type = card.dataset.type;
 
     if (type === "textdisplay") {
@@ -2296,11 +2318,8 @@ function updateCV2Preview() {
       const sectionName = cv2f("sectionName", card);
       const spoiler = cv2f("spoiler", card) === "true";
       if (url && sections[sectionName]) {
-        sections[sectionName].accessories.push({
-          type: "thumbnail",
-          url,
-          spoiler,
-        });
+        // Thumbnail takes priority - add it first
+        sections[sectionName].accessories.unshift({ type: "thumbnail", url, spoiler });
       }
     } else if (type === "mediaitem") {
       const url = cv2f("url", card);
@@ -2316,7 +2335,7 @@ function updateCV2Preview() {
       const disabled = cv2f("disabled", card) === "true";
       const emoji = cv2f("emoji", card);
       const target = cv2f("actionRowOrSection", card);
-
+      
       if (id || label || emoji) {
         const btn = { label, style, disabled, emoji };
         if (actionRows[target]) {
@@ -2324,6 +2343,14 @@ function updateCV2Preview() {
         } else if (sections[target]) {
           sections[target].accessories.push({ type: "button", ...btn });
         }
+      }
+    } else if (type === "userselect" || type === "roleselect" || type === "mentionable") {
+      const id = cv2f("id", card);
+      const placeholder = cv2f("placeholder", card) || "Select...";
+      const target = cv2f("actionRowId", card);
+      
+      if (id && actionRows[target]) {
+        actionRows[target].selects.push({ placeholder });
       }
     }
   });
@@ -2343,7 +2370,7 @@ function updateCV2Preview() {
     html += `<div class="${containerClass}" style="${containerStyle}">`;
 
     // Render container items
-    container.items.forEach((item) => {
+    container.items.forEach(item => {
       if (item.type === "text") {
         html += `<div class="preview-text-display">${item.content}</div>`;
       } else if (item.type === "separator") {
@@ -2359,27 +2386,30 @@ function updateCV2Preview() {
       if (section.container === name) {
         html += '<div class="preview-section">';
         html += '<div class="preview-section-content">';
-        section.texts.forEach((text) => {
+        section.texts.forEach(text => {
           html += `<div class="preview-text-display">${text.content}</div>`;
         });
         html += "</div>";
-
+        
+        // Only show thumbnail (first accessory if it's a thumbnail)
         if (section.accessories.length > 0) {
-          html += '<div class="preview-section-accessory">';
-          section.accessories.forEach((acc) => {
-            if (acc.type === "thumbnail") {
-              html += `<img src="${acc.url}" alt="Thumbnail" class="preview-section-thumbnail" onerror="this.style.display='none'">`;
-            } else if (acc.type === "button") {
-              let btnClass = "preview-button";
-              if (acc.style !== "primary") btnClass += " " + acc.style;
-              if (acc.disabled) btnClass += " disabled";
-              html += `<button class="${btnClass}">`;
-              if (acc.emoji) html += `<span>${acc.emoji}</span>`;
-              if (acc.label) html += `<span>${acc.label}</span>`;
-              html += "</button>";
-            }
-          });
-          html += "</div>";
+          const firstAccessory = section.accessories[0];
+          if (firstAccessory.type === "thumbnail") {
+            html += '<div class="preview-section-accessory">';
+            html += `<img src="${firstAccessory.url}" alt="Thumbnail" class="preview-section-thumbnail" onerror="this.style.display='none'">`;
+            html += "</div>";
+          } else if (firstAccessory.type === "button") {
+            // Show button only if no thumbnail
+            html += '<div class="preview-section-accessory">';
+            let btnClass = "preview-button";
+            if (firstAccessory.style !== "primary") btnClass += " " + firstAccessory.style;
+            if (firstAccessory.disabled) btnClass += " disabled";
+            html += `<button class="${btnClass}">`;
+            if (firstAccessory.emoji) html += `<span>${firstAccessory.emoji}</span>`;
+            if (firstAccessory.label) html += `<span>${firstAccessory.label}</span>`;
+            html += "</button>";
+            html += "</div>";
+          }
         }
         html += "</div>";
       }
@@ -2389,7 +2419,7 @@ function updateCV2Preview() {
     Object.entries(galleries).forEach(([galleryId, gallery]) => {
       if (gallery.container === name && gallery.items.length > 0) {
         html += '<div class="preview-media-gallery">';
-        gallery.items.forEach((item) => {
+        gallery.items.forEach(item => {
           html += `<img src="${item.url}" alt="Media" class="preview-media-item" onerror="this.style.display='none'">`;
         });
         html += "</div>";
@@ -2398,18 +2428,30 @@ function updateCV2Preview() {
 
     // Render action rows in this container
     Object.entries(actionRows).forEach(([rowId, row]) => {
-      if (row.container === name && row.buttons.length > 0) {
-        html += '<div class="preview-buttons">';
-        row.buttons.forEach((btn) => {
-          let btnClass = "preview-button";
-          if (btn.style !== "primary") btnClass += " " + btn.style;
-          if (btn.disabled) btnClass += " disabled";
-          html += `<button class="${btnClass}">`;
-          if (btn.emoji) html += `<span>${btn.emoji}</span>`;
-          if (btn.label) html += `<span>${btn.label}</span>`;
-          html += "</button>";
-        });
-        html += "</div>";
+      if (row.container === name) {
+        if (row.buttons.length > 0) {
+          html += '<div class="preview-buttons">';
+          row.buttons.forEach(btn => {
+            let btnClass = "preview-button";
+            if (btn.style !== "primary") btnClass += " " + btn.style;
+            if (btn.disabled) btnClass += " disabled";
+            html += `<button class="${btnClass}">`;
+            if (btn.emoji) html += `<span>${btn.emoji}</span>`;
+            if (btn.label) html += `<span>${btn.label}</span>`;
+            html += "</button>";
+          });
+          html += "</div>";
+        }
+        if (row.selects.length > 0) {
+          row.selects.forEach(sel => {
+            html += '<div class="preview-buttons">';
+            html += `<button class="preview-button secondary" style="width:100%;justify-content:space-between;">`;
+            html += `<span>${sel.placeholder}</span>`;
+            html += `<span>▼</span>`;
+            html += "</button>";
+            html += "</div>";
+          });
+        }
       }
     });
 
@@ -2421,27 +2463,28 @@ function updateCV2Preview() {
     if (!section.container) {
       html += '<div class="preview-section">';
       html += '<div class="preview-section-content">';
-      section.texts.forEach((text) => {
+      section.texts.forEach(text => {
         html += `<div class="preview-text-display">${text.content}</div>`;
       });
       html += "</div>";
-
+      
       if (section.accessories.length > 0) {
-        html += '<div class="preview-section-accessory">';
-        section.accessories.forEach((acc) => {
-          if (acc.type === "thumbnail") {
-            html += `<img src="${acc.url}" alt="Thumbnail" class="preview-section-thumbnail" onerror="this.style.display='none'">`;
-          } else if (acc.type === "button") {
-            let btnClass = "preview-button";
-            if (acc.style !== "primary") btnClass += " " + acc.style;
-            if (acc.disabled) btnClass += " disabled";
-            html += `<button class="${btnClass}">`;
-            if (acc.emoji) html += `<span>${acc.emoji}</span>`;
-            if (acc.label) html += `<span>${acc.label}</span>`;
-            html += "</button>";
-          }
-        });
-        html += "</div>";
+        const firstAccessory = section.accessories[0];
+        if (firstAccessory.type === "thumbnail") {
+          html += '<div class="preview-section-accessory">';
+          html += `<img src="${firstAccessory.url}" alt="Thumbnail" class="preview-section-thumbnail" onerror="this.style.display='none'">`;
+          html += "</div>";
+        } else if (firstAccessory.type === "button") {
+          html += '<div class="preview-section-accessory">';
+          let btnClass = "preview-button";
+          if (firstAccessory.style !== "primary") btnClass += " " + firstAccessory.style;
+          if (firstAccessory.disabled) btnClass += " disabled";
+          html += `<button class="${btnClass}">`;
+          if (firstAccessory.emoji) html += `<span>${firstAccessory.emoji}</span>`;
+          if (firstAccessory.label) html += `<span>${firstAccessory.label}</span>`;
+          html += "</button>";
+          html += "</div>";
+        }
       }
       html += "</div>";
     }
@@ -2451,7 +2494,7 @@ function updateCV2Preview() {
   Object.entries(galleries).forEach(([galleryId, gallery]) => {
     if (!gallery.container && gallery.items.length > 0) {
       html += '<div class="preview-media-gallery">';
-      gallery.items.forEach((item) => {
+      gallery.items.forEach(item => {
         html += `<img src="${item.url}" alt="Media" class="preview-media-item" onerror="this.style.display='none'">`;
       });
       html += "</div>";
@@ -2460,23 +2503,34 @@ function updateCV2Preview() {
 
   // Render orphan action rows
   Object.entries(actionRows).forEach(([rowId, row]) => {
-    if (!row.container && row.buttons.length > 0) {
-      html += '<div class="preview-buttons">';
-      row.buttons.forEach((btn) => {
-        let btnClass = "preview-button";
-        if (btn.style !== "primary") btnClass += " " + btn.style;
-        if (btn.disabled) btnClass += " disabled";
-        html += `<button class="${btnClass}">`;
-        if (btn.emoji) html += `<span>${btn.emoji}</span>`;
-        if (btn.label) html += `<span>${btn.label}</span>`;
-        html += "</button>";
-      });
-      html += "</div>";
+    if (!row.container) {
+      if (row.buttons.length > 0) {
+        html += '<div class="preview-buttons">';
+        row.buttons.forEach(btn => {
+          let btnClass = "preview-button";
+          if (btn.style !== "primary") btnClass += " " + btn.style;
+          if (btn.disabled) btnClass += " disabled";
+          html += `<button class="${btnClass}">`;
+          if (btn.emoji) html += `<span>${btn.emoji}</span>`;
+          if (btn.label) html += `<span>${btn.label}</span>`;
+          html += "</button>";
+        });
+        html += "</div>";
+      }
+      if (row.selects.length > 0) {
+        row.selects.forEach(sel => {
+          html += '<div class="preview-buttons">';
+          html += `<button class="preview-button secondary" style="width:100%;justify-content:space-between;">`;
+          html += `<span>${sel.placeholder}</span>`;
+          html += `<span>▼</span>`;
+          html += "</button>";
+          html += "</div>";
+        });
+      }
     }
   });
 
-  content.innerHTML =
-    html || '<p class="preview-empty">Add components to see a preview…</p>';
+  content.innerHTML = html || '<p class="preview-empty">Add components to see a preview…</p>';
 }
 
 // ─── Initialize Preview Updates ───────────────────────────────────────────────
