@@ -780,10 +780,8 @@ function generateNormalEmbed() {
         // Format: $addButton[New row?;Interaction ID/URL;Label;Style;(Disable?;Emoji;Message ID)]
         code += `$addButton[${newRow};${url};${label || "Link"};link;${disabled};${emoji}]\n`;
       } else if (customId) {
-        const styleNum =
-          { primary: 1, secondary: 2, success: 3, danger: 4 }[style] || 1;
         // Format: $addButton[New row?;Interaction ID/URL;Label;Style;(Disable?;Emoji;Message ID)]
-        code += `$addButton[${newRow};${customId};${label};${styleNum};${disabled};${emoji}]\n`;
+        code += `$addButton[${newRow};${customId};${label};${style};${disabled};${emoji}]\n`;
       }
     }
   });
