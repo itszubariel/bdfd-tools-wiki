@@ -1785,66 +1785,103 @@ function generateCV2() {
     return;
   }
 
-  // Code generation — containers first, then rest in order
-  const containerCards = cards.filter((c) => c.dataset.type === "container");
-  const otherCards = cards.filter((c) => c.dataset.type !== "container");
-  const ordered = [...containerCards, ...otherCards];
-
+  // Code generation — proper dependency order
+  // Order: Container → Section/Gallery/ActionRow → TextDisplay/Separator/MediaItem/Thumbnail/Buttons/Selects
   const lines = [];
-  ordered.forEach((card) => {
-    const type = card.dataset.type;
-    let parts;
 
-    if (type === "container") {
-      parts = cv2Trim([
+  // 1. Containers first
+  cards
+    .filter((c) => c.dataset.type === "container")
+    .forEach((card) => {
+      const parts = cv2Trim([
         cv2f("name", card),
         cv2f("color", card),
         cv2f("spoiler", card) === "true" ? "true" : "",
       ]);
       lines.push(`$addContainer[${parts.join(";")}]`);
-    } else if (type === "textdisplay") {
-      parts = cv2Trim([
+    });
+
+  // 2. Sections (need container IDs)
+  cards
+    .filter((c) => c.dataset.type === "section")
+    .forEach((card) => {
+      const parts = cv2Trim([cv2f("name", card), cv2f("container", card)]);
+      lines.push(`$addSection[${parts.join(";")}]`);
+    });
+
+  // 3. Media Galleries (need container IDs)
+  cards
+    .filter((c) => c.dataset.type === "mediagallery")
+    .forEach((card) => {
+      const parts = cv2Trim([cv2f("id", card), cv2f("container", card)]);
+      lines.push(`$addMediaGallery[${parts.join(";")}]`);
+    });
+
+  // 4. Action Rows (need container IDs)
+  cards
+    .filter((c) => c.dataset.type === "actionrow")
+    .forEach((card) => {
+      const parts = cv2Trim([cv2f("id", card), cv2f("container", card)]);
+      lines.push(`$addActionRow[${parts.join(";")}]`);
+    });
+
+  // 5. Text Displays (need container/section IDs)
+  cards
+    .filter((c) => c.dataset.type === "textdisplay")
+    .forEach((card) => {
+      const parts = cv2Trim([
         sanitizeInput(cv2f("content", card)),
         cv2f("containerOrSection", card),
       ]);
       lines.push(`$addTextDisplay[${parts.join(";")}]`);
-    } else if (type === "separator") {
+    });
+
+  // 6. Separators (need container IDs)
+  cards
+    .filter((c) => c.dataset.type === "separator")
+    .forEach((card) => {
       const divider = cv2f("divider", card) === "true" ? "true" : "";
       const spacing = cv2f("spacing", card);
       const container = cv2f("container", card);
-      parts = cv2Trim([divider, spacing, container]);
+      const parts = cv2Trim([divider, spacing, container]);
       lines.push(
         parts.length === 0 || (parts.length === 1 && parts[0] === "")
           ? `$addSeparator[]`
           : `$addSeparator[${parts.join(";")}]`,
       );
-    } else if (type === "section") {
-      parts = cv2Trim([cv2f("name", card), cv2f("container", card)]);
-      lines.push(`$addSection[${parts.join(";")}]`);
-    } else if (type === "thumbnail") {
-      parts = cv2Trim([
+    });
+
+  // 7. Thumbnails (need section IDs)
+  cards
+    .filter((c) => c.dataset.type === "thumbnail")
+    .forEach((card) => {
+      const parts = cv2Trim([
         cv2f("url", card),
         sanitizeInput(cv2f("description", card)),
         cv2f("spoiler", card) === "true" ? "true" : "",
         cv2f("sectionName", card),
       ]);
       lines.push(`$addThumbnail[${parts.join(";")}]`);
-    } else if (type === "mediagallery") {
-      parts = cv2Trim([cv2f("id", card), cv2f("container", card)]);
-      lines.push(`$addMediaGallery[${parts.join(";")}]`);
-    } else if (type === "mediaitem") {
-      parts = cv2Trim([
+    });
+
+  // 8. Media Items (need gallery IDs)
+  cards
+    .filter((c) => c.dataset.type === "mediaitem")
+    .forEach((card) => {
+      const parts = cv2Trim([
         cv2f("url", card),
         sanitizeInput(cv2f("description", card)),
         cv2f("spoiler", card) === "true" ? "true" : "",
         cv2f("galleryId", card),
       ]);
       lines.push(`$addMediaGalleryItem[${parts.join(";")}]`);
-    } else if (type === "actionrow") {
-      parts = cv2Trim([cv2f("id", card), cv2f("container", card)]);
-      lines.push(`$addActionRow[${parts.join(";")}]`);
-    } else if (type === "buttoncv2") {
-      parts = cv2Trim([
+    });
+
+  // 9. Buttons (need action row/section IDs)
+  cards
+    .filter((c) => c.dataset.type === "buttoncv2")
+    .forEach((card) => {
+      const parts = cv2Trim([
         cv2f("id", card),
         sanitizeInput(cv2f("label", card)),
         cv2f("style", card),
@@ -1853,8 +1890,13 @@ function generateCV2() {
         cv2f("actionRowOrSection", card),
       ]);
       lines.push(`$addButtonCV2[${parts.join(";")}]`);
-    } else if (type === "userselect") {
-      parts = cv2Trim([
+    });
+
+  // 10. Selects (need action row IDs)
+  cards
+    .filter((c) => c.dataset.type === "userselect")
+    .forEach((card) => {
+      const parts = cv2Trim([
         cv2f("id", card),
         sanitizeInput(cv2f("placeholder", card)),
         cv2f("min", card),
@@ -1863,8 +1905,12 @@ function generateCV2() {
         cv2f("actionRowId", card),
       ]);
       lines.push(`$addUserSelect[${parts.join(";")}]`);
-    } else if (type === "roleselect") {
-      parts = cv2Trim([
+    });
+
+  cards
+    .filter((c) => c.dataset.type === "roleselect")
+    .forEach((card) => {
+      const parts = cv2Trim([
         cv2f("id", card),
         sanitizeInput(cv2f("placeholder", card)),
         cv2f("min", card),
@@ -1873,8 +1919,12 @@ function generateCV2() {
         cv2f("actionRowId", card),
       ]);
       lines.push(`$addRoleSelect[${parts.join(";")}]`);
-    } else if (type === "mentionable") {
-      parts = cv2Trim([
+    });
+
+  cards
+    .filter((c) => c.dataset.type === "mentionable")
+    .forEach((card) => {
+      const parts = cv2Trim([
         cv2f("id", card),
         sanitizeInput(cv2f("placeholder", card)),
         cv2f("min", card),
@@ -1883,8 +1933,7 @@ function generateCV2() {
         cv2f("actionRowId", card),
       ]);
       lines.push(`$addMentionableSelect[${parts.join(";")}]`);
-    }
-  });
+    });
 
   const code = lines.join("\n");
   document.getElementById("cv2Output").textContent = code;
