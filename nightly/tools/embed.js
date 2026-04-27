@@ -2157,7 +2157,7 @@ function updateNormalPreview() {
         select.querySelector(".select-placeholder")?.value.trim() ||
         "Select an option";
       html += '<div class="preview-buttons">';
-      html += `<button class="preview-button secondary" style="width:100%;justify-content:space-between;">`;
+      html += `<button class="preview-button secondary" style="max-width:400px;width:100%;justify-content:space-between;">`;
       html += `<span>${placeholder}</span>`;
       html += `<span>▼</span>`;
       html += "</button>";
@@ -2530,7 +2530,7 @@ function updateCV2Preview() {
         if (row.selects.length > 0) {
           row.selects.forEach((sel) => {
             html += '<div class="preview-buttons">';
-            html += `<button class="preview-button secondary" style="width:100%;justify-content:space-between;">`;
+            html += `<button class="preview-button secondary" style="max-width:400px;width:100%;justify-content:space-between;">`;
             html += `<span>${sel.placeholder}</span>`;
             html += `<span>▼</span>`;
             html += "</button>";
@@ -2608,7 +2608,7 @@ function updateCV2Preview() {
       if (row.selects.length > 0) {
         row.selects.forEach((sel) => {
           html += '<div class="preview-buttons">';
-          html += `<button class="preview-button secondary" style="width:100%;justify-content:space-between;">`;
+          html += `<button class="preview-button secondary" style="max-width:400px;width:100%;justify-content:space-between;">`;
           html += `<span>${sel.placeholder}</span>`;
           html += `<span>▼</span>`;
           html += "</button>";
