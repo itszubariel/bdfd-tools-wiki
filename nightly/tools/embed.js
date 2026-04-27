@@ -802,20 +802,14 @@ function generateNormalEmbed() {
   const authorNameS = sanitizeInput(authorName);
   const authorIconS = sanitizeInput(authorIcon);
   const authorUrlS = sanitizeInput(authorUrl);
-  if (authorNameS) {
-    code += `$author[${authorNameS}`;
-    if (authorIconS) code += `;${authorIconS}`;
-    if (authorUrlS) code += `;${authorUrlS}`;
-    code += "]\n";
-  }
+  if (authorNameS) code += `$author[${authorNameS}]\n`;
+  if (authorIconS) code += `$authorIcon[${authorIconS}]\n`;
+  if (authorUrlS) code += `$authorURL[${authorUrlS}]\n`;
 
   const titleS = sanitizeInput(titleVal);
   const titleUrlS = sanitizeInput(titleUrl);
-  if (titleS) {
-    code += `$title[${titleS}`;
-    if (titleUrlS) code += `;${titleUrlS}`;
-    code += "]\n";
-  }
+  if (titleS) code += `$title[${titleS}]\n`;
+  if (titleUrlS) code += `$embeddedURL[${titleUrlS}]\n`;
 
   const desc = sanitizeInput(document.getElementById("description").value);
   if (desc) code += `$description[${desc}]\n`;
@@ -831,11 +825,8 @@ function generateNormalEmbed() {
 
   const footerS = sanitizeInput(footerVal);
   const footerIconS = sanitizeInput(footerIcon);
-  if (footerS) {
-    code += `$footer[${footerS}`;
-    if (footerIconS) code += `;${footerIconS}`;
-    code += "]\n";
-  }
+  if (footerS) code += `$footer[${footerS}]\n`;
+  if (footerIconS) code += `$footerIcon[${footerIconS}]\n`;
 
   if (document.getElementById("timestamp").checked) code += "$addTimestamp\n";
 
