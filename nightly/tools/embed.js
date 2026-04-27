@@ -2560,7 +2560,7 @@ function updateSendPreview() {
 
   // Message content (text above embed) - styled like Discord message
   if (messageContent) {
-    html += `<div style="color:#dbdee1;font-size:1rem;margin-bottom:0.5rem;line-height:1.375;white-space:pre-wrap;word-wrap:break-word;">${messageContent}</div>`;
+    html += `<div style="color:#dbdee1;font-size:1rem;margin-bottom:0.25rem;line-height:1.375;white-space:pre-wrap;word-wrap:break-word;">${messageContent}</div>`;
   }
 
   // Only show embed if there's embed content (not just thumbnail alone)
