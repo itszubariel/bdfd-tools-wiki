@@ -1151,12 +1151,6 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// COMPV2 BUILDER
-// ═══════════════════════════════════════════════════════════════════════════════
-
-// ─── CV2 state persistence ────────────────────────────────────────────────────
-
 // Track per-type counters for numbering (persists across mode switches)
 const cv2Counters = {};
 
@@ -1330,8 +1324,6 @@ function cv2RefreshAllDropdowns() {
     }
   });
 }
-
-// ─── CV2 card builder ─────────────────────────────────────────────────────────
 
 const CV2_BADGE_LABELS = {
   container: ["Container", "cv2-badge-container"],
@@ -1886,3 +1878,622 @@ function generateCV2() {
     code.length + " characters";
   saveCV2State();
 }
+
+// Update timestamps
+function updateTimestamps() {
+  const now = new Date();
+  const hours = now.getHours();
+  const minutes = now.getMinutes().toString().padStart(2, "0");
+  const ampm = hours >= 12 ? "PM" : "AM";
+  const displayHours = hours % 12 || 12;
+  const timeStr = `Today at ${displayHours}:${minutes} ${ampm}`;
+
+  const normalTs = document.getElementById("normalTimestamp");
+  const sendTs = document.getElementById("sendTimestamp");
+  const cv2Ts = document.getElementById("cv2Timestamp");
+  if (normalTs) normalTs.textContent = timeStr;
+  if (sendTs) sendTs.textContent = timeStr;
+  if (cv2Ts) cv2Ts.textContent = timeStr;
+}
+
+// Render Discord markdown (basic support)
+function renderMarkdown(text) {
+  if (!text) return "";
+  return text
+    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+    .replace(/\*(.+?)\*/g, "<em>$1</em>")
+    .replace(/__(.+?)__/g, "<u>$1</u>")
+    .replace(/~~(.+?)~~/g, "<del>$1</del>")
+    .replace(
+      /`(.+?)`/g,
+      '<code style="background:#1e1f22;padding:0.1rem 0.3rem;border-radius:3px;">$1</code>',
+    )
+    .replace(
+      /^> (.+)$/gm,
+      '<blockquote style="border-left:4px solid #4e5058;padding-left:0.75rem;color:#b5bac1;">$1</blockquote>',
+    )
+    .replace(
+      /^# (.+)$/gm,
+      '<h1 style="font-size:1.5rem;font-weight:700;margin:0.5rem 0;">$1</h1>',
+    )
+    .replace(/\n/g, "<br>");
+}
+
+// ─── Normal & Send Mode Preview ───────────────────────────────────────────────
+
+function updateNormalPreview() {
+  const content = document.getElementById("normalPreviewContent");
+  if (!content) return;
+
+  const authorName = document.getElementById("authorName")?.value.trim();
+  const authorIcon = document.getElementById("authorIcon")?.value.trim();
+  const authorUrl = document.getElementById("authorUrl")?.value.trim();
+  const title = document.getElementById("title")?.value.trim();
+  const titleUrl = document.getElementById("titleUrl")?.value.trim();
+  const description = document.getElementById("description")?.value.trim();
+  const thumbnail = document.getElementById("thumbnail")?.value.trim();
+  const image = document.getElementById("image")?.value.trim();
+  const color = document.getElementById("color")?.value.trim() || "#7289da";
+  const footer = document.getElementById("footer")?.value.trim();
+  const footerIcon = document.getElementById("footerIcon")?.value.trim();
+  const timestamp = document.getElementById("timestamp")?.checked;
+
+  // Check if any content exists
+  const hasContent =
+    authorName || title || description || thumbnail || image || footer;
+  const fields = Array.from(document.querySelectorAll(".field-row"));
+  const buttons = Array.from(document.querySelectorAll(".button-row"));
+
+  if (!hasContent && fields.length === 0 && buttons.length === 0) {
+    content.innerHTML =
+      '<p class="preview-empty">Fill in the form to see a preview…</p>';
+    return;
+  }
+
+  let html =
+    '<div class="preview-embed" style="border-left-color:' + color + ';">';
+
+  // Thumbnail (floats right)
+  if (thumbnail && isValidUrl(thumbnail)) {
+    html += `<img src="${thumbnail}" alt="Thumbnail" class="preview-embed-thumbnail" onerror="this.style.display='none'">`;
+  }
+
+  // Author
+  if (authorName) {
+    html += '<div class="preview-embed-author">';
+    if (authorIcon && isValidUrl(authorIcon)) {
+      html += `<img src="${authorIcon}" alt="Author" class="preview-embed-author-icon" onerror="this.style.display='none'">`;
+    }
+    if (authorUrl && isValidUrl(authorUrl)) {
+      html += `<a href="${authorUrl}" class="preview-embed-author-name" target="_blank">${authorName}</a>`;
+    } else {
+      html += `<span class="preview-embed-author-name">${authorName}</span>`;
+    }
+    html += "</div>";
+  }
+
+  // Title
+  if (title) {
+    if (titleUrl && isValidUrl(titleUrl)) {
+      html += `<a href="${titleUrl}" class="preview-embed-title" target="_blank">${title}</a>`;
+    } else {
+      html += `<div class="preview-embed-title">${title}</div>`;
+    }
+  }
+
+  // Description
+  if (description) {
+    html += `<div class="preview-embed-description">${description}</div>`;
+  }
+
+  // Fields
+  if (fields.length > 0) {
+    const hasInline = fields.some(
+      (f) => f.querySelector(".field-inline")?.checked,
+    );
+    html += `<div class="preview-embed-fields${hasInline ? " has-inline" : ""}">`;
+    fields.forEach((field) => {
+      const name = field.querySelector(".field-name")?.value.trim();
+      const value = field.querySelector(".field-value")?.value.trim();
+      if (name && value) {
+        html += '<div class="preview-embed-field">';
+        html += `<div class="preview-embed-field-name">${name}</div>`;
+        html += `<div class="preview-embed-field-value">${value}</div>`;
+        html += "</div>";
+      }
+    });
+    html += "</div>";
+  }
+
+  // Image
+  if (image && isValidUrl(image)) {
+    html += `<img src="${image}" alt="Image" class="preview-embed-image" onerror="this.style.display='none'">`;
+  }
+
+  // Footer
+  if (footer || timestamp) {
+    html += '<div class="preview-embed-footer">';
+    if (footerIcon && isValidUrl(footerIcon)) {
+      html += `<img src="${footerIcon}" alt="Footer" class="preview-embed-footer-icon" onerror="this.style.display='none'">`;
+    }
+    if (footer) {
+      html += `<span>${footer}</span>`;
+    }
+    if (timestamp) {
+      const now = new Date();
+      const dateStr = now.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      });
+      const timeStr = now.toLocaleTimeString("en-US", {
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true,
+      });
+      if (footer) html += "<span>•</span>";
+      html += `<span>${dateStr} at ${timeStr}</span>`;
+    }
+    html += "</div>";
+  }
+
+  html += "</div>";
+
+  // Buttons
+  if (buttons.length > 0) {
+    html += '<div class="preview-buttons">';
+    buttons.forEach((btn) => {
+      const label = btn.querySelector(".button-label")?.value.trim();
+      const style = btn.querySelector(".button-style")?.value || "primary";
+      const disabled = btn.querySelector(".button-disabled")?.checked;
+      const emoji = btn.querySelector(".button-emoji")?.value.trim();
+
+      if (label || emoji) {
+        let btnClass = "preview-button";
+        if (style !== "primary") btnClass += " " + style;
+        if (disabled) btnClass += " disabled";
+
+        html += `<button class="${btnClass}">`;
+        if (emoji) html += `<span>${emoji}</span>`;
+        if (label) html += `<span>${label}</span>`;
+        html += "</button>";
+      }
+    });
+    html += "</div>";
+  }
+
+  content.innerHTML = html;
+}
+
+function updateSendPreview() {
+  const content = document.getElementById("sendPreviewContent");
+  if (!content) return;
+
+  const messageContent = document.getElementById("s_content")?.value.trim();
+  const authorName = document.getElementById("s_authorName")?.value.trim();
+  const authorIcon = document.getElementById("s_authorIcon")?.value.trim();
+  const title = document.getElementById("s_title")?.value.trim();
+  const titleUrl = document.getElementById("s_titleUrl")?.value.trim();
+  const description = document.getElementById("s_description")?.value.trim();
+  const thumbnail = document.getElementById("s_thumbnail")?.value.trim();
+  const image = document.getElementById("s_image")?.value.trim();
+  const color = document.getElementById("s_color")?.value.trim() || "#7289da";
+  const footer = document.getElementById("s_footer")?.value.trim();
+  const footerIcon = document.getElementById("s_footerIcon")?.value.trim();
+  const timestamp = document.getElementById("s_timestamp")?.checked;
+
+  const hasContent =
+    messageContent ||
+    authorName ||
+    title ||
+    description ||
+    thumbnail ||
+    image ||
+    footer;
+
+  if (!hasContent) {
+    content.innerHTML =
+      '<p class="preview-empty">Fill in the form to see a preview…</p>';
+    return;
+  }
+
+  let html = "";
+
+  // Message content (text above embed)
+  if (messageContent) {
+    html += `<div style="color:#dbdee1;font-size:1rem;margin-bottom:0.5rem;">${messageContent}</div>`;
+  }
+
+  // Only show embed if there's embed content
+  const hasEmbedContent =
+    authorName || title || description || thumbnail || image || footer;
+  if (hasEmbedContent) {
+    html +=
+      '<div class="preview-embed" style="border-left-color:' + color + ';">';
+
+    // Thumbnail
+    if (thumbnail && isValidUrl(thumbnail)) {
+      html += `<img src="${thumbnail}" alt="Thumbnail" class="preview-embed-thumbnail" onerror="this.style.display='none'">`;
+    }
+
+    // Author
+    if (authorName) {
+      html += '<div class="preview-embed-author">';
+      if (authorIcon && isValidUrl(authorIcon)) {
+        html += `<img src="${authorIcon}" alt="Author" class="preview-embed-author-icon" onerror="this.style.display='none'">`;
+      }
+      html += `<span class="preview-embed-author-name">${authorName}</span>`;
+      html += "</div>";
+    }
+
+    // Title
+    if (title) {
+      if (titleUrl && isValidUrl(titleUrl)) {
+        html += `<a href="${titleUrl}" class="preview-embed-title" target="_blank">${title}</a>`;
+      } else {
+        html += `<div class="preview-embed-title">${title}</div>`;
+      }
+    }
+
+    // Description
+    if (description) {
+      html += `<div class="preview-embed-description">${description}</div>`;
+    }
+
+    // Image
+    if (image && isValidUrl(image)) {
+      html += `<img src="${image}" alt="Image" class="preview-embed-image" onerror="this.style.display='none'">`;
+    }
+
+    // Footer
+    if (footer || timestamp) {
+      html += '<div class="preview-embed-footer">';
+      if (footerIcon && isValidUrl(footerIcon)) {
+        html += `<img src="${footerIcon}" alt="Footer" class="preview-embed-footer-icon" onerror="this.style.display='none'">`;
+      }
+      if (footer) {
+        html += `<span>${footer}</span>`;
+      }
+      if (timestamp) {
+        const now = new Date();
+        const dateStr = now.toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+        });
+        const timeStr = now.toLocaleTimeString("en-US", {
+          hour: "numeric",
+          minute: "2-digit",
+          hour12: true,
+        });
+        if (footer) html += "<span>•</span>";
+        html += `<span>${dateStr} at ${timeStr}</span>`;
+      }
+      html += "</div>";
+    }
+
+    html += "</div>";
+  }
+
+  content.innerHTML = html;
+}
+
+function updateCV2Preview() {
+  const content = document.getElementById("cv2PreviewContent");
+  if (!content) return;
+
+  const cards = Array.from(
+    document.querySelectorAll("#cv2Components [data-type]"),
+  );
+
+  if (cards.length === 0) {
+    content.innerHTML =
+      '<p class="preview-empty">Add components to see a preview…</p>';
+    return;
+  }
+
+  let html = "";
+  const containers = {};
+  const sections = {};
+  const galleries = {};
+  const actionRows = {};
+
+  // First pass: organize components by container/section/gallery/actionrow
+  cards.forEach((card) => {
+    const type = card.dataset.type;
+
+    if (type === "container") {
+      const name = cv2f("name", card);
+      if (name) {
+        containers[name] = {
+          color: cv2f("color", card),
+          spoiler: cv2f("spoiler", card) === "true",
+          items: [],
+        };
+      }
+    } else if (type === "section") {
+      const name = cv2f("name", card);
+      if (name) {
+        sections[name] = {
+          container: cv2f("container", card),
+          texts: [],
+          accessories: [],
+        };
+      }
+    } else if (type === "mediagallery") {
+      const id = cv2f("id", card);
+      if (id) {
+        galleries[id] = {
+          container: cv2f("container", card),
+          items: [],
+        };
+      }
+    } else if (type === "actionrow") {
+      const id = cv2f("id", card);
+      if (id) {
+        actionRows[id] = {
+          container: cv2f("container", card),
+          buttons: [],
+        };
+      }
+    }
+  });
+
+  // Second pass: populate containers/sections/galleries/actionrows
+  cards.forEach((card) => {
+    const type = card.dataset.type;
+
+    if (type === "textdisplay") {
+      const content = cv2f("content", card);
+      const target = cv2f("containerOrSection", card);
+      if (content) {
+        const item = { type: "text", content: renderMarkdown(content) };
+        if (sections[target]) {
+          sections[target].texts.push(item);
+        } else if (containers[target]) {
+          containers[target].items.push(item);
+        } else {
+          // Orphan text display
+          html += `<div class="preview-text-display">${renderMarkdown(content)}</div>`;
+        }
+      }
+    } else if (type === "separator") {
+      const target = cv2f("container", card);
+      const spacing = cv2f("spacing", card);
+      const divider = cv2f("divider", card) === "true";
+      const item = { type: "separator", spacing, divider };
+      if (containers[target]) {
+        containers[target].items.push(item);
+      } else {
+        // Orphan separator
+        let sepClass = "preview-separator";
+        if (spacing) sepClass += " " + spacing;
+        if (!divider) sepClass += " no-divider";
+        html += `<div class="${sepClass}"></div>`;
+      }
+    } else if (type === "thumbnail") {
+      const url = cv2f("url", card);
+      const sectionName = cv2f("sectionName", card);
+      const spoiler = cv2f("spoiler", card) === "true";
+      if (url && sections[sectionName]) {
+        sections[sectionName].accessories.push({
+          type: "thumbnail",
+          url,
+          spoiler,
+        });
+      }
+    } else if (type === "mediaitem") {
+      const url = cv2f("url", card);
+      const galleryId = cv2f("galleryId", card);
+      const spoiler = cv2f("spoiler", card) === "true";
+      if (url && galleries[galleryId]) {
+        galleries[galleryId].items.push({ url, spoiler });
+      }
+    } else if (type === "buttoncv2") {
+      const id = cv2f("id", card);
+      const label = cv2f("label", card);
+      const style = cv2f("style", card) || "primary";
+      const disabled = cv2f("disabled", card) === "true";
+      const emoji = cv2f("emoji", card);
+      const target = cv2f("actionRowOrSection", card);
+
+      if (id || label || emoji) {
+        const btn = { label, style, disabled, emoji };
+        if (actionRows[target]) {
+          actionRows[target].buttons.push(btn);
+        } else if (sections[target]) {
+          sections[target].accessories.push({ type: "button", ...btn });
+        }
+      }
+    }
+  });
+
+  // Render containers
+  Object.entries(containers).forEach(([name, container]) => {
+    let containerClass = "preview-container";
+    let containerStyle = "";
+    if (container.color && isValidHex(container.color)) {
+      containerClass += " has-color";
+      containerStyle = `border-left-color:${container.color};`;
+    }
+    if (container.spoiler) {
+      containerClass += " spoiler";
+    }
+
+    html += `<div class="${containerClass}" style="${containerStyle}">`;
+
+    // Render container items
+    container.items.forEach((item) => {
+      if (item.type === "text") {
+        html += `<div class="preview-text-display">${item.content}</div>`;
+      } else if (item.type === "separator") {
+        let sepClass = "preview-separator";
+        if (item.spacing) sepClass += " " + item.spacing;
+        if (!item.divider) sepClass += " no-divider";
+        html += `<div class="${sepClass}"></div>`;
+      }
+    });
+
+    // Render sections in this container
+    Object.entries(sections).forEach(([sectionName, section]) => {
+      if (section.container === name) {
+        html += '<div class="preview-section">';
+        html += '<div class="preview-section-content">';
+        section.texts.forEach((text) => {
+          html += `<div class="preview-text-display">${text.content}</div>`;
+        });
+        html += "</div>";
+
+        if (section.accessories.length > 0) {
+          html += '<div class="preview-section-accessory">';
+          section.accessories.forEach((acc) => {
+            if (acc.type === "thumbnail") {
+              html += `<img src="${acc.url}" alt="Thumbnail" class="preview-section-thumbnail" onerror="this.style.display='none'">`;
+            } else if (acc.type === "button") {
+              let btnClass = "preview-button";
+              if (acc.style !== "primary") btnClass += " " + acc.style;
+              if (acc.disabled) btnClass += " disabled";
+              html += `<button class="${btnClass}">`;
+              if (acc.emoji) html += `<span>${acc.emoji}</span>`;
+              if (acc.label) html += `<span>${acc.label}</span>`;
+              html += "</button>";
+            }
+          });
+          html += "</div>";
+        }
+        html += "</div>";
+      }
+    });
+
+    // Render galleries in this container
+    Object.entries(galleries).forEach(([galleryId, gallery]) => {
+      if (gallery.container === name && gallery.items.length > 0) {
+        html += '<div class="preview-media-gallery">';
+        gallery.items.forEach((item) => {
+          html += `<img src="${item.url}" alt="Media" class="preview-media-item" onerror="this.style.display='none'">`;
+        });
+        html += "</div>";
+      }
+    });
+
+    // Render action rows in this container
+    Object.entries(actionRows).forEach(([rowId, row]) => {
+      if (row.container === name && row.buttons.length > 0) {
+        html += '<div class="preview-buttons">';
+        row.buttons.forEach((btn) => {
+          let btnClass = "preview-button";
+          if (btn.style !== "primary") btnClass += " " + btn.style;
+          if (btn.disabled) btnClass += " disabled";
+          html += `<button class="${btnClass}">`;
+          if (btn.emoji) html += `<span>${btn.emoji}</span>`;
+          if (btn.label) html += `<span>${btn.label}</span>`;
+          html += "</button>";
+        });
+        html += "</div>";
+      }
+    });
+
+    html += "</div>";
+  });
+
+  // Render orphan sections (not in any container)
+  Object.entries(sections).forEach(([sectionName, section]) => {
+    if (!section.container) {
+      html += '<div class="preview-section">';
+      html += '<div class="preview-section-content">';
+      section.texts.forEach((text) => {
+        html += `<div class="preview-text-display">${text.content}</div>`;
+      });
+      html += "</div>";
+
+      if (section.accessories.length > 0) {
+        html += '<div class="preview-section-accessory">';
+        section.accessories.forEach((acc) => {
+          if (acc.type === "thumbnail") {
+            html += `<img src="${acc.url}" alt="Thumbnail" class="preview-section-thumbnail" onerror="this.style.display='none'">`;
+          } else if (acc.type === "button") {
+            let btnClass = "preview-button";
+            if (acc.style !== "primary") btnClass += " " + acc.style;
+            if (acc.disabled) btnClass += " disabled";
+            html += `<button class="${btnClass}">`;
+            if (acc.emoji) html += `<span>${acc.emoji}</span>`;
+            if (acc.label) html += `<span>${acc.label}</span>`;
+            html += "</button>";
+          }
+        });
+        html += "</div>";
+      }
+      html += "</div>";
+    }
+  });
+
+  // Render orphan galleries
+  Object.entries(galleries).forEach(([galleryId, gallery]) => {
+    if (!gallery.container && gallery.items.length > 0) {
+      html += '<div class="preview-media-gallery">';
+      gallery.items.forEach((item) => {
+        html += `<img src="${item.url}" alt="Media" class="preview-media-item" onerror="this.style.display='none'">`;
+      });
+      html += "</div>";
+    }
+  });
+
+  // Render orphan action rows
+  Object.entries(actionRows).forEach(([rowId, row]) => {
+    if (!row.container && row.buttons.length > 0) {
+      html += '<div class="preview-buttons">';
+      row.buttons.forEach((btn) => {
+        let btnClass = "preview-button";
+        if (btn.style !== "primary") btnClass += " " + btn.style;
+        if (btn.disabled) btnClass += " disabled";
+        html += `<button class="${btnClass}">`;
+        if (btn.emoji) html += `<span>${btn.emoji}</span>`;
+        if (btn.label) html += `<span>${btn.label}</span>`;
+        html += "</button>";
+      });
+      html += "</div>";
+    }
+  });
+
+  content.innerHTML =
+    html || '<p class="preview-empty">Add components to see a preview…</p>';
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  // Update timestamps every second
+  updateTimestamps();
+  setInterval(updateTimestamps, 1000);
+
+  // Normal mode preview updates
+  const normalBuilder = document.getElementById("normalBuilder");
+  if (normalBuilder) {
+    normalBuilder.addEventListener("input", updateNormalPreview);
+    normalBuilder.addEventListener("change", updateNormalPreview);
+    // Update when dynamic fields are added/removed
+    const observer = new MutationObserver(updateNormalPreview);
+    const dynamicFields = document.getElementById("dynamicFields");
+    if (dynamicFields) {
+      observer.observe(dynamicFields, { childList: true, subtree: true });
+    }
+    // Initial update
+    setTimeout(updateNormalPreview, 100);
+  }
+
+  // Send mode preview updates
+  const sendBuilder = document.getElementById("sendBuilder");
+  if (sendBuilder) {
+    sendBuilder.addEventListener("input", updateSendPreview);
+    sendBuilder.addEventListener("change", updateSendPreview);
+    setTimeout(updateSendPreview, 100);
+  }
+
+  // CompV2 mode preview updates
+  const cv2Components = document.getElementById("cv2Components");
+  if (cv2Components) {
+    const cv2Observer = new MutationObserver(updateCV2Preview);
+    cv2Observer.observe(cv2Components, { childList: true, subtree: true });
+    cv2Components.addEventListener("input", updateCV2Preview);
+    cv2Components.addEventListener("change", updateCV2Preview);
+    setTimeout(updateCV2Preview, 100);
+  }
+});
