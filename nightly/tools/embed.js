@@ -1963,11 +1963,10 @@ function updateNormalPreview() {
   const selects = Array.from(document.querySelectorAll(".select-row"));
   const modals = Array.from(document.querySelectorAll(".modal-row"));
   
-  // Count valid fields (both name AND value required)
+  // Count valid fields (both name AND value required for DISPLAY, but show name-only too)
   const validFields = fields.filter(field => {
     const name = field.querySelector(".field-name")?.value.trim();
-    const value = field.querySelector(".field-value")?.value.trim();
-    return name && value;
+    return name; // Show if name exists, even without value
   });
 
   if (!hasEmbedContent && validFields.length === 0 && buttons.length === 0 && selects.length === 0 && modals.length === 0) {
@@ -2001,12 +2000,12 @@ function updateNormalPreview() {
       html += "</div>";
     }
 
-    // Title - only blue if URL exists
+    // Title - consistent styling whether link or not
     if (title) {
       if (titleUrl && isValidUrl(titleUrl)) {
         html += `<a href="${titleUrl}" class="preview-embed-title" target="_blank">${title}</a>`;
       } else {
-        html += `<div class="preview-embed-title" style="color:#fff;">${title}</div>`;
+        html += `<a class="preview-embed-title" style="color:#fff;cursor:default;text-decoration:none;">${title}</a>`;
       }
     }
 
@@ -2015,7 +2014,7 @@ function updateNormalPreview() {
       html += `<div class="preview-embed-description">${description}</div>`;
     }
 
-    // Fields - only show if BOTH name and value exist
+    // Fields - show name even without value
     if (validFields.length > 0) {
       const hasInline = validFields.some(f => f.querySelector(".field-inline")?.checked);
       html += `<div class="preview-embed-fields${hasInline ? " has-inline" : ""}">`;
@@ -2024,7 +2023,9 @@ function updateNormalPreview() {
         const value = field.querySelector(".field-value")?.value.trim();
         html += '<div class="preview-embed-field">';
         html += `<div class="preview-embed-field-name">${name}</div>`;
-        html += `<div class="preview-embed-field-value">${value}</div>`;
+        if (value) {
+          html += `<div class="preview-embed-field-value">${value}</div>`;
+        }
         html += "</div>";
       });
       html += "</div>";
@@ -2168,12 +2169,12 @@ function updateSendPreview() {
       html += "</div>";
     }
 
-    // Title - only blue if URL exists
+    // Title - consistent styling whether link or not
     if (title) {
       if (titleUrl && isValidUrl(titleUrl)) {
         html += `<a href="${titleUrl}" class="preview-embed-title" target="_blank">${title}</a>`;
       } else {
-        html += `<div class="preview-embed-title" style="color:#fff;">${title}</div>`;
+        html += `<a class="preview-embed-title" style="color:#fff;cursor:default;text-decoration:none;">${title}</a>`;
       }
     }
 
