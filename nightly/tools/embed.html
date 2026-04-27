@@ -546,6 +546,262 @@ select.form-input option {
 	margin-left: 0.2rem;
 	font-weight: 700;
 }
+/* Live Preview Styles */
+.preview-wrap {
+	background: #1e1f22;
+	border-radius: 14px;
+	padding: 1rem;
+	margin-top: 1.5rem;
+	margin-bottom: 1.5rem;
+}
+.preview-message {
+	display: flex;
+	gap: 1rem;
+	padding: 0.5rem;
+}
+.preview-avatar {
+	width: 36px;
+	height: 36px;
+	border-radius: 50%;
+	flex-shrink: 0;
+}
+.preview-content {
+	flex: 1;
+	min-width: 0;
+}
+.preview-header {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	margin-bottom: 0.25rem;
+}
+.preview-username {
+	color: #fff;
+	font-weight: 600;
+	font-size: 1rem;
+}
+.preview-bot-badge {
+	background: #5865f2;
+	color: #fff;
+	font-size: 0.65rem;
+	font-weight: 600;
+	padding: 0.1rem 0.3rem;
+	border-radius: 3px;
+	text-transform: uppercase;
+}
+.preview-timestamp {
+	color: #949ba4;
+	font-size: 0.75rem;
+	font-weight: 500;
+}
+.preview-embed {
+	background: #2b2d31;
+	border-left: 4px solid #5865f2;
+	border-radius: 4px;
+	padding: 0.75rem 1rem;
+	max-width: 520px;
+	margin-top: 0.5rem;
+}
+.preview-embed-author {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	margin-bottom: 0.5rem;
+}
+.preview-embed-author-icon {
+	width: 24px;
+	height: 24px;
+	border-radius: 50%;
+}
+.preview-embed-author-name {
+	color: #fff;
+	font-size: 0.875rem;
+	font-weight: 600;
+}
+.preview-embed-title {
+	color: #00a8fc;
+	font-size: 1rem;
+	font-weight: 600;
+	margin-bottom: 0.5rem;
+	word-wrap: break-word;
+}
+.preview-embed-title:hover {
+	text-decoration: underline;
+}
+.preview-embed-description {
+	color: #dbdee1;
+	font-size: 0.875rem;
+	line-height: 1.375;
+	white-space: pre-wrap;
+	word-wrap: break-word;
+	margin-bottom: 0.5rem;
+}
+.preview-embed-fields {
+	display: grid;
+	gap: 0.5rem;
+	margin-top: 0.5rem;
+}
+.preview-embed-field {
+	min-width: 0;
+}
+.preview-embed-field-name {
+	color: #fff;
+	font-size: 0.875rem;
+	font-weight: 600;
+	margin-bottom: 0.25rem;
+}
+.preview-embed-field-value {
+	color: #dbdee1;
+	font-size: 0.875rem;
+	line-height: 1.375;
+	word-wrap: break-word;
+}
+.preview-embed-fields.has-inline {
+	grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+}
+.preview-embed-thumbnail {
+	float: right;
+	margin-left: 1rem;
+	margin-bottom: 0.5rem;
+	max-width: 80px;
+	max-height: 80px;
+	border-radius: 4px;
+}
+.preview-embed-image {
+	max-width: 100%;
+	border-radius: 4px;
+	margin-top: 1rem;
+}
+.preview-embed-footer {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	margin-top: 0.75rem;
+	color: #949ba4;
+	font-size: 0.75rem;
+}
+.preview-embed-footer-icon {
+	width: 20px;
+	height: 20px;
+	border-radius: 50%;
+}
+.preview-buttons {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	margin-top: 0.5rem;
+}
+.preview-button {
+	background: #5865f2;
+	color: #fff;
+	border: none;
+	border-radius: 3px;
+	padding: 0.25rem 1rem;
+	font-size: 0.875rem;
+	font-weight: 500;
+	cursor: default;
+	min-height: 32px;
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+.preview-button.secondary {
+	background: #4e5058;
+}
+.preview-button.success {
+	background: #248046;
+}
+.preview-button.danger {
+	background: #da373c;
+}
+.preview-button.link {
+	background: transparent;
+	color: #00a8fc;
+	padding: 0.25rem 0;
+}
+.preview-button.disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+.preview-empty {
+	font-size: 0.8rem;
+	color: #72767d;
+	font-style: italic;
+	padding: 1rem;
+	text-align: center;
+}
+.preview-container {
+	background: #2b2d31;
+	border-radius: 8px;
+	padding: 1rem;
+	margin-top: 0.5rem;
+	max-width: 520px;
+}
+.preview-container.has-color {
+	border-left: 4px solid;
+}
+.preview-container.spoiler {
+	filter: blur(8px);
+	cursor: pointer;
+}
+.preview-text-display {
+	color: #dbdee1;
+	font-size: 0.875rem;
+	line-height: 1.375;
+	white-space: pre-wrap;
+	word-wrap: break-word;
+	margin-bottom: 0.75rem;
+}
+.preview-text-display:last-child {
+	margin-bottom: 0;
+}
+.preview-separator {
+	height: 1px;
+	background: #3f4147;
+	margin: 1rem 0;
+}
+.preview-separator.small {
+	margin: 0.5rem 0;
+}
+.preview-separator.large {
+	margin: 1.5rem 0;
+}
+.preview-separator.no-divider {
+	background: transparent;
+}
+.preview-section {
+	background: #383a40;
+	border-radius: 8px;
+	padding: 1rem;
+	margin-top: 0.75rem;
+	display: flex;
+	gap: 1rem;
+}
+.preview-section-content {
+	flex: 1;
+	min-width: 0;
+}
+.preview-section-accessory {
+	flex-shrink: 0;
+}
+.preview-section-thumbnail {
+	width: 80px;
+	height: 80px;
+	border-radius: 8px;
+	object-fit: cover;
+}
+.preview-media-gallery {
+	display: flex;
+	gap: 0.5rem;
+	margin-top: 0.75rem;
+	overflow-x: auto;
+}
+.preview-media-item {
+	max-width: 200px;
+	max-height: 200px;
+	border-radius: 8px;
+	object-fit: cover;
+}
 
 </style>
 <p>Here you can make embeds using the respective text inputs. (supports normal components and components v2.)</p>
@@ -621,6 +877,27 @@ select.form-input option {
      <button id="copyBtn" class="copy-btn">Copy Output</button>
      <button id="clearBtn" class="clear-btn">Clear All</button>
    </div>
+   <!-- Live Preview -->
+   <div class="picker-container">
+     <h2 id="live-preview"><a class="header" href="#live-preview">Live Preview</a></h2>
+     <div class="preview-wrap">
+       <div id="normalPreview" class="preview-message">
+         <img src="https://scrobbler.netlify.app/assets/images/scrobbler_logo.png" alt="Bot" class="preview-avatar">
+         <div class="preview-content">
+           <div class="preview-header">
+             <span class="preview-username">scrobbler</span>
+             <span class="preview-bot-badge">BOT</span>
+             <span class="preview-timestamp" id="normalTimestamp">Today at 12:00 PM</span>
+           </div>
+           <div id="normalPreviewContent">
+             <p class="preview-empty">Fill in the form to see a preview…</p>
+           </div>
+         </div>
+       </div>
+     </div>
+   </div>
+   <div class="picker-container">
+     <h2 id="output"><a class="header" href="#output">Output</a></h2>
    <div id="output" class="output">Generated code appears here...</div>
    <div class="char-count" id="charCount">0 characters</div>
    <div class="error" id="error"></div>
@@ -695,6 +972,27 @@ select.form-input option {
     <button id="s_copyBtn" class="copy-btn">Copy Output</button>
     <button id="s_clearBtn" class="clear-btn">Clear All</button>
   </div>
+  <!-- Live Preview -->
+  <div class="picker-container">
+    <h2 id="live-preview-1"><a class="header" href="#live-preview-1">Live Preview</a></h2>
+    <div class="preview-wrap">
+      <div id="sendPreview" class="preview-message">
+        <img src="https://scrobbler.netlify.app/assets/images/scrobbler_logo.png" alt="Bot" class="preview-avatar">
+        <div class="preview-content">
+          <div class="preview-header">
+            <span class="preview-username">scrobbler</span>
+            <span class="preview-bot-badge">BOT</span>
+            <span class="preview-timestamp" id="sendTimestamp">Today at 12:00 PM</span>
+          </div>
+          <div id="sendPreviewContent">
+            <p class="preview-empty">Fill in the form to see a preview…</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="picker-container">
+    <h2 id="output-1"><a class="header" href="#output-1">Output</a></h2>
   <div id="s_output" class="output">Generated code appears here...</div>
   <div class="char-count" id="s_charCount">0 characters</div>
   <div class="error" id="s_error"></div>
@@ -733,6 +1031,27 @@ select.form-input option {
     <button id="cv2CopyBtn" class="copy-btn">Copy Output</button>
     <button id="cv2ClearBtn" class="clear-btn">Clear All</button>
   </div>
+  <!-- Live Preview -->
+  <div class="picker-container">
+    <h2 id="live-preview-2"><a class="header" href="#live-preview-2">Live Preview</a></h2>
+    <div class="preview-wrap">
+      <div id="cv2Preview" class="preview-message">
+        <img src="https://scrobbler.netlify.app/assets/images/scrobbler_logo.png" alt="Bot" class="preview-avatar">
+        <div class="preview-content">
+          <div class="preview-header">
+            <span class="preview-username">scrobbler</span>
+            <span class="preview-bot-badge">BOT</span>
+            <span class="preview-timestamp" id="cv2Timestamp">Today at 12:00 PM</span>
+          </div>
+          <div id="cv2PreviewContent">
+            <p class="preview-empty">Add components to see a preview…</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="picker-container">
+    <h2 id="output-2"><a class="header" href="#output-2">Output</a></h2>
   <div id="cv2Output" class="output">Generated code appears here...</div>
   <div class="char-count" id="cv2CharCount">0 characters</div>
   <div class="error" id="cv2Error"></div>
