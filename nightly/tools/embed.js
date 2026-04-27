@@ -517,7 +517,7 @@ function generateNormalEmbed() {
   if (colorVal && !isValidHex(colorVal)) {
     formRowError(
       document.getElementById("color"),
-      "Color: must be a valid hex code (e.g. #7289da)",
+      "Color: must be a valid hex code (e.g. #5865F2)",
     );
     hasErrors = true;
   }
@@ -745,8 +745,8 @@ function generateNormalEmbed() {
   const image = sanitizeInput(document.getElementById("image").value);
   if (image) code += `$image[${image}]\n`;
 
-  const color = document.getElementById("color").value || "#7289da";
-  code += `$color[${color}]\n`;
+  const color = document.getElementById("color").value;
+  if (color) code += `$color[${color}]\n`;
 
   const footerS = sanitizeInput(footerVal);
   const footerIconS = sanitizeInput(footerIcon);
@@ -943,7 +943,7 @@ function generateSendEmbed() {
     sanitizeInput(titleVal),
     sanitizeInput(titleUrl),
     sanitizeInput(desc),
-    colorVal || "#7289da",
+    colorVal,
     sanitizeInput(authorName),
     sanitizeInput(authorIcon),
     sanitizeInput(footerVal),
@@ -1038,7 +1038,7 @@ document.addEventListener("DOMContentLoaded", () => {
         "#normalBuilder .form-input, #normalBuilder .form-textarea",
       )
       .forEach((input) => {
-        input.value = input.id === "color" ? "#7289da" : "";
+        input.value = input.id === "color" ? "" : "";
       });
     document
       .querySelectorAll("#normalBuilder .form-checkbox")
@@ -1078,7 +1078,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("s_error").textContent = "";
     SEND_FIELDS.forEach((id) => {
       const el = document.getElementById(id);
-      if (el) el.value = id === "s_color" ? "#7289da" : "";
+      if (el) el.value = id === "s_color" ? "" : "";
     });
     SEND_CHECKS.forEach((id) => {
       const el = document.getElementById(id);
