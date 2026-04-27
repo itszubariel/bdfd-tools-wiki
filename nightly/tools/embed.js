@@ -1978,8 +1978,8 @@ function updateNormalPreview() {
 
   // Only show embed if there's actual embed content (not just thumbnail alone)
   if (hasEmbedContent || validFields.length > 0) {
-    const embedColor = color || "#5865f2";
-    html += '<div class="preview-embed" style="border-left-color:' + embedColor + ';">';
+    const embedColor = color;
+    html += '<div class="preview-embed"' + (embedColor ? ` style="border-left-color:${embedColor};"` : '') + '>';
 
     // Thumbnail (floats right) - only show if there's other content
     if (thumbnail && isValidUrl(thumbnail) && hasEmbedContent) {
@@ -2151,8 +2151,8 @@ function updateSendPreview() {
 
   // Only show embed if there's embed content (not just thumbnail alone)
   if (hasEmbedContent) {
-    const embedColor = color || "#5865f2";
-    html += '<div class="preview-embed" style="border-left-color:' + embedColor + ';">';
+    const embedColor = color;
+    html += '<div class="preview-embed"' + (embedColor ? ` style="border-left-color:${embedColor};"` : '') + '>';
 
     // Thumbnail - only show if there's other content
     if (thumbnail && isValidUrl(thumbnail) && hasEmbedContent) {
