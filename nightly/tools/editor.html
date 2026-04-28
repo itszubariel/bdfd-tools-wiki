@@ -998,10 +998,10 @@ function refreshHighlight() {
 const minimapPlugin = ViewPlugin.fromClass(class {
   constructor(view) {
     this.canvas = document.createElement('canvas');
-    this.canvas.style.cssText = 'position:absolute;top:0;right:0;width:80px;height:100%;opacity:0.6;cursor:pointer;border-radius:0 10px 10px 0;';
+    this.canvas.style.cssText = 'position:absolute;top:0;right:0;width:60px;height:100%;opacity:0.7;cursor:pointer;border-radius:0 10px 10px 0;pointer-events:auto;';
     this.ctx = this.canvas.getContext('2d');
     this.overlay = document.createElement('div');
-    this.overlay.style.cssText = 'position:absolute;right:0;width:80px;background:rgba(255,255,255,0.1);pointer-events:none;border-radius:2px;';
+    this.overlay.style.cssText = 'position:absolute;right:0;width:60px;background:rgba(255,255,255,0.08);pointer-events:none;border-radius:2px;border:1px solid rgba(255,255,255,0.15);box-sizing:border-box;';
     view.dom.style.position = 'relative';
     view.dom.appendChild(this.canvas);
     view.dom.appendChild(this.overlay);
@@ -1017,8 +1017,8 @@ const minimapPlugin = ViewPlugin.fromClass(class {
     const canvas = this.canvas;
     const ctx = this.ctx;
     const dpr = window.devicePixelRatio || 1;
-    const w = canvas.offsetWidth || 80;
-    const h = view.dom.offsetHeight || 400;
+    const w = canvas.offsetWidth || 60;
+    const h = canvas.offsetHeight || 400;
     canvas.width = w * dpr;
     canvas.height = h * dpr;
     ctx.scale(dpr, dpr);
@@ -1028,24 +1028,34 @@ const minimapPlugin = ViewPlugin.fromClass(class {
     const totalLines = doc.lines;
     if (totalLines === 0) return;
 
-    const lineH = Math.max(1, h / totalLines);
-    const charW = w / 80;
+    // Fixed 2px per line with 0.5px gap
+    const lineH = 2;
+    const gap = 0.5;
+    const step = lineH + gap;
+    const maxW = w - 6;
 
     for (let i = 1; i <= totalLines; i++) {
       const line = doc.line(i);
-      const y = (i - 1) * lineH;
+      const y = (i - 1) * step;
+      if (y > h) break;
       const text = line.text;
+      const trimmed = text.trimStart();
+      const indentLen = text.length - trimmed.length;
+      const contentLen = trimmed.length;
+      if (contentLen === 0) continue;
+
       // Color based on content
-      if (/^\s*\$[a-zA-Z]/.test(text)) {
+      if (/^\$[a-zA-Z]/.test(trimmed)) {
         ctx.fillStyle = currentTheme.fallback || '#a78bfa';
-      } else if (/[\[\]]/.test(text)) {
+      } else if (/^[\[\]]/.test(trimmed)) {
         ctx.fillStyle = currentTheme.bracket || '#f472b6';
       } else {
-        ctx.fillStyle = 'rgba(255,255,255,0.3)';
+        ctx.fillStyle = 'rgba(200,210,230,0.35)';
       }
-      const len = Math.min(text.trimStart().length * charW, w - 4);
-      const indent = (text.length - text.trimStart().length) * charW;
-      if (len > 0) ctx.fillRect(indent + 2, y, len, Math.max(1, lineH - 0.5));
+
+      const indentPx = Math.min(indentLen * 1.5, maxW * 0.4);
+      const barW = Math.min(contentLen * 1.5, maxW - indentPx);
+      if (barW > 0) ctx.fillRect(3 + indentPx, y, barW, lineH);
     }
 
     // Viewport overlay
@@ -1053,11 +1063,12 @@ const minimapPlugin = ViewPlugin.fromClass(class {
     const scrollTop = scroller.scrollTop;
     const scrollHeight = scroller.scrollHeight;
     const clientHeight = scroller.clientHeight;
-    if (scrollHeight > clientHeight) {
-      const ratio = h / scrollHeight;
+    const totalH = totalLines * step;
+    if (totalH > 0) {
+      const ratio = Math.min(h, totalH) / scrollHeight;
       const oy = scrollTop * ratio;
-      const oh = clientHeight * ratio;
-      this.overlay.style.top = oy + 'px';
+      const oh = Math.max(20, clientHeight * ratio);
+      this.overlay.style.top = Math.min(oy, h - oh) + 'px';
       this.overlay.style.height = oh + 'px';
     }
   }
