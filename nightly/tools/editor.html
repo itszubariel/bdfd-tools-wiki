@@ -781,7 +781,7 @@ import { EditorView, keymap, lineNumbers } from 'https://esm.sh/@codemirror/view
 import { EditorState, Compartment } from 'https://esm.sh/@codemirror/state@6';
 import { defaultKeymap, history, historyKeymap } from 'https://esm.sh/@codemirror/commands@6';
 import { autocompletion, completeFromList, closeBrackets } from 'https://esm.sh/@codemirror/autocomplete@6';
-import { indentOnInput, bracketMatching } from 'https://esm.sh/@codemirror/language@6';
+import { indentOnInput, bracketMatching, StreamLanguage } from 'https://esm.sh/@codemirror/language@6';
 
 const base = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
 let completions = [];
@@ -798,6 +798,18 @@ try {
 const autocompleteCompartment = new Compartment();
 const lineWrappingCompartment = new Compartment();
 const lineNumbersCompartment = new Compartment();
+
+// BDScript syntax highlighting
+const bdscriptLanguage = StreamLanguage.define({
+  token(stream) {
+    if (stream.match(/\$[a-zA-Z]+/)) return 'keyword';
+    if (stream.match(/[\[\]]/)) return 'bracket';
+    if (stream.eat(';')) return 'separator';
+    if (stream.match(/\d+/)) return 'number';
+    stream.next();
+    return null;
+  }
+});
 
 const updateListener = EditorView.updateListener.of((update) => {
   if (update.docChanged) {
@@ -817,6 +829,7 @@ window.cmEditor = new EditorView({
       indentOnInput(),
       bracketMatching(),
       closeBrackets(),
+      bdscriptLanguage,
       autocompleteCompartment.of(autocompletion({
         override: [completeFromList(completions)],
         activateOnTyping: true,
@@ -832,6 +845,10 @@ window.cmEditor = new EditorView({
         '&.cm-focused .cm-selectionBackground': { backgroundColor: 'hsl(0deg 0% 100% / 20%) !important' },
         '.cm-activeLine': { backgroundColor: 'hsl(0deg 0% 100% / 3%)' },
         '.cm-activeLineGutter': { backgroundColor: 'hsl(0deg 0% 100% / 5%)' },
+        '.cm-content .tok-keyword':   { color: '#a78bfa' },
+        '.cm-content .tok-bracket':   { color: '#f472b6' },
+        '.cm-content .tok-separator': { color: '#fb923c' },
+        '.cm-content .tok-number':    { color: '#34d399' },
       }, { dark: true }),
       updateListener,
     ],
