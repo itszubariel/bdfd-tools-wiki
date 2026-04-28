@@ -28,7 +28,7 @@ function autoSettingChange(buttonName, status) {
 
 // Main autocomplete
 function autocomplete() {
-  fetch("../tools/functions.json")
+  fetch("../tools/functions_tag.json")
     .then((res) => res.json())
     .then((data) => {
       const functions = data.functions || [];
@@ -64,8 +64,8 @@ function autocomplete() {
           .substring(dollarIndex, cursorPosition)
           .toLowerCase();
         autocompleteOutput.innerHTML = "";
-        const matchingFunctions = functions.filter((func) =>
-          func.toLowerCase().startsWith(searchTerm),
+        const matchingFunctions = functions.filter((entry) =>
+          entry.tag.toLowerCase().startsWith(searchTerm),
         );
         const displayedFunctions = matchingFunctions.slice(0, 5);
         selectedIndex = -1;
@@ -73,11 +73,11 @@ function autocomplete() {
           child.classList.remove("selected"),
         );
 
-        displayedFunctions.forEach((func) => {
+        displayedFunctions.forEach((entry) => {
           const span = document.createElement("span");
-          span.textContent = func;
+          span.textContent = entry.tag;
           span.addEventListener("click", () =>
-            selectFunction(func, dollarIndex, cursorPosition, inputText),
+            selectFunction(entry.tag, dollarIndex, cursorPosition, inputText),
           );
           autocompleteOutput.appendChild(span);
         });
