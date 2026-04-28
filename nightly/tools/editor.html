@@ -814,7 +814,29 @@
     border-radius: 0;
 }
 
-/* CodeMirror overrides */
+/* VSCode-style scrollbar */
+.cm-scroller::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+.cm-scroller::-webkit-scrollbar-track {
+    background: hsl(0deg 0% 100% / 3%);
+    border-radius: 0 10px 10px 0;
+}
+.cm-scroller::-webkit-scrollbar-thumb {
+    background: hsl(0deg 0% 100% / 20%);
+    border-radius: 5px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+    min-height: 40px;
+}
+.cm-scroller::-webkit-scrollbar-thumb:hover {
+    background: hsl(0deg 0% 100% / 35%);
+    background-clip: content-box;
+}
+.cm-scroller::-webkit-scrollbar-corner {
+    background: transparent;
+}
 .cm-editor {
     height: 40rem;
     border-radius: 10px;
@@ -966,6 +988,8 @@ window.cmEditor = new EditorView({
 // Expose compartments for settings toggles
 window._cmCompartments = { autocompleteCompartment, lineWrappingCompartment, lineNumbersCompartment };
 window._cmExtensions = { autocompletion, completeFromList, completions, lineNumbers, EditorView };
+window._cmLang = { HighlightStyle, syntaxHighlighting };
+window._cmTags = { tags };
 
 // localStorage persistence — restore saved content on load
 const saved = localStorage.getItem('bdfd_editor_content');
@@ -985,6 +1009,96 @@ window.toggleEditorFullscreen = function() {
   const isFullscreen = wrapper.classList.toggle('editor-fullscreen');
   closeBtn.style.display = isFullscreen ? 'flex' : 'none';
   window.cmEditor.requestMeasure();
+};
+
+// Highlight theme import
+const HIGHLIGHT_KEY = 'bdfd_highlight_theme';
+
+function uint32ToHex(uint32) {
+  const r = (uint32 >> 16) & 0xff;
+  const g = (uint32 >> 8) & 0xff;
+  const b = uint32 & 0xff;
+  return '#' + r.toString(16).padStart(2,'0') + g.toString(16).padStart(2,'0') + b.toString(16).padStart(2,'0');
+}
+
+function buildHighlightStyle(themeJson) {
+  const { HighlightStyle, syntaxHighlighting } = window._cmLang;
+  const { tags } = window._cmTags;
+
+  const baseKeyMap = {
+    defaultTextHighlight: null,
+    fallbackHighlight: null,
+    numberHighlight: tags.number,
+    bracketHighlight: tags.bracket,
+    semicolonHighlight: tags.separator,
+  };
+
+  const tagDefs = [];
+
+  // Base highlights
+  for (const [key, tag] of Object.entries(baseKeyMap)) {
+    if (tag && themeJson[key] && typeof themeJson[key].color === 'number') {
+      tagDefs.push({ tag, color: uint32ToHex(themeJson[key].color) });
+    }
+  }
+
+  // Function highlights → keyword tag
+  if (themeJson.functionsHighlights) {
+    // We can't map individual functions to tags, so use keyword color from first entry
+    const colors = Object.values(themeJson.functionsHighlights);
+    if (colors.length > 0 && typeof colors[0].color === 'number') {
+      tagDefs.push({ tag: tags.keyword, color: uint32ToHex(colors[0].color) });
+    }
+  }
+
+  if (tagDefs.length === 0) return null;
+  return syntaxHighlighting(HighlightStyle.define(tagDefs));
+}
+
+const highlightCompartment = new Compartment();
+
+// Apply saved theme on load
+const savedTheme = localStorage.getItem(HIGHLIGHT_KEY);
+if (savedTheme) {
+  try {
+    const ext = buildHighlightStyle(JSON.parse(savedTheme));
+    if (ext) {
+      window.cmEditor.dispatch({ effects: highlightCompartment.reconfigure(ext) });
+    }
+  } catch(e) {}
+}
+
+window.applyHighlightTheme = function() {
+  const input = document.getElementById('highlightThemeInput');
+  const errEl = document.getElementById('highlightThemeError');
+  errEl.textContent = '';
+  let parsed;
+  try {
+    parsed = JSON.parse(input.value.trim());
+  } catch(e) {
+    errEl.textContent = 'Invalid JSON — check your theme format.';
+    return;
+  }
+  const ext = buildHighlightStyle(parsed);
+  if (!ext) {
+    errEl.textContent = 'No valid highlight entries found in theme.';
+    return;
+  }
+  window.cmEditor.dispatch({ effects: highlightCompartment.reconfigure(ext) });
+  localStorage.setItem(HIGHLIGHT_KEY, input.value.trim());
+  errEl.style.color = 'hsl(120deg 60% 50%)';
+  errEl.textContent = '✓ Theme applied!';
+  setTimeout(() => { errEl.textContent = ''; errEl.style.color = ''; }, 2000);
+};
+
+window.resetHighlightTheme = function() {
+  localStorage.removeItem(HIGHLIGHT_KEY);
+  window.cmEditor.dispatch({ effects: highlightCompartment.reconfigure([]) });
+  document.getElementById('highlightThemeInput').value = '';
+  const errEl = document.getElementById('highlightThemeError');
+  errEl.style.color = 'hsl(120deg 60% 50%)';
+  errEl.textContent = '✓ Reset to default.';
+  setTimeout(() => { errEl.textContent = ''; errEl.style.color = ''; }, 2000);
 };
 </script>
 <div id="stats-container">
@@ -1092,6 +1206,18 @@ window.toggleEditorFullscreen = function() {
   <div class="setting-item">
     <p>Number each line.</p>
     <button onclick="changeCodeLines()" id="changeCodeLines">Line Number</button>
+  </div>
+  <hr>
+  <div class="setting-item" style="flex-direction:column;align-items:flex-start;gap:0.5rem;">
+    <p style="margin:0;">Import a custom code highlight theme from <a href="../tools/highlighter.html" target="_blank">Code Highlighter</a>. Paste the JSON below and click Apply.</p>
+    <div style="display:flex;gap:0.5rem;width:100%;margin-top:0.25rem;">
+      <textarea id="highlightThemeInput" rows="3" placeholder='{"defaultTextHighlight":{"color":...},"functionsHighlights":{...}}' style="flex:1;padding:0.5rem;background:hsl(0deg 0% 100% / 7%);border:1px solid hsl(0deg 0% 100% / 15%);border-radius:8px;color:#fff;font-size:0.85rem;font-family:monospace;resize:vertical;outline:none;"></textarea>
+      <div style="display:flex;flex-direction:column;gap:0.4rem;">
+        <button onclick="applyHighlightTheme()" style="width:6rem;height:auto;padding:0.5rem;font-size:0.9rem;">Apply</button>
+        <button onclick="resetHighlightTheme()" style="width:6rem;height:auto;padding:0.5rem;font-size:0.9rem;background:linear-gradient(to left, rgb(255 255 255 / 40%), rgb(192 1 1 / 75%));">Reset</button>
+      </div>
+    </div>
+    <div id="highlightThemeError" style="color:var(--error);font-size:0.85rem;min-height:1rem;"></div>
   </div>
   <div class="setting-item">
     <p id="internetConnection">Loading...</p>
