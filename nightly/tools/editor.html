@@ -763,8 +763,8 @@
     gap: 1rem;
     padding: 0.3rem 0.75rem;
     background: hsl(0deg 0% 100% / 5%);
-    font-size: 0.85rem;
-    color: hsl(0deg 0% 100% / 40%);
+    font-size: 1rem;
+    color: hsl(0deg 0% 100% / 50%);
     font-family: monospace;
     user-select: none;
     flex-shrink: 0;
@@ -899,6 +899,7 @@ import { EditorState, Compartment, RangeSetBuilder } from 'https://esm.sh/@codem
 import { defaultKeymap, history, historyKeymap } from 'https://esm.sh/@codemirror/commands@6';
 import { autocompletion, completeFromList, closeBrackets } from 'https://esm.sh/@codemirror/autocomplete@6';
 import { indentOnInput, bracketMatching } from 'https://esm.sh/@codemirror/language@6';
+import { showMinimap } from 'https://esm.sh/@replit/codemirror-minimap@0.1.1';
 
 const base = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
 let completions = [];
@@ -999,41 +1000,6 @@ const autocompleteCompartment = new Compartment();
 const lineWrappingCompartment = new Compartment();
 const lineNumbersCompartment  = new Compartment();
 const highlightPluginCompartment = new Compartment();
-const autoIndentCompartment = new Compartment();
-
-// ── Auto-indent logic ─────────────────────────────────────────────────────────
-const OPENS  = ['$if[','$elseif[','$else','$loop[','$try','$switch[','$case['];
-const CLOSES = ['$endif','$endloop','$endtry','$endswitch','$break'];
-const MIDS   = ['$elseif[','$else','$catch','$case['];
-
-let autoIndentSize = 2; // spaces; 0 = off
-
-function getAutoIndentExtension() {
-  if (autoIndentSize === 0) return [];
-  const unit = autoIndentSize === 'tab' ? '\t' : ' '.repeat(autoIndentSize);
-  return keymap.of([{
-    key: 'Enter',
-    run(view) {
-      const state = view.state;
-      const cursor = state.selection.main.head;
-      const line = state.doc.lineAt(cursor);
-      const trimmed = line.text.trim().toLowerCase();
-
-      // Current indentation
-      const indentMatch = line.text.match(/^(\s*)/);
-      let indent = indentMatch ? indentMatch[1] : '';
-
-      const isOpen  = OPENS.some(t  => trimmed.startsWith(t.toLowerCase()));
-      const isMid   = MIDS.some(t   => trimmed.startsWith(t.toLowerCase()));
-
-      let newIndent = indent;
-      if (isOpen || isMid) newIndent = indent + unit;
-
-      view.dispatch(state.replaceSelection('\n' + newIndent));
-      return true;
-    }
-  }]);
-}
 
 const updateListener = EditorView.updateListener.of((update) => {
   if (update.docChanged) {
@@ -1062,7 +1028,6 @@ window.cmEditor = new EditorView({
     doc: '',
     extensions: [
       history(),
-      autoIndentCompartment.of(getAutoIndentExtension()),
       keymap.of([...defaultKeymap, ...historyKeymap]),
       lineNumbersCompartment.of(lineNumbers()),
       indentOnInput(),
@@ -1074,6 +1039,14 @@ window.cmEditor = new EditorView({
         activateOnTyping: true,
       })),
       lineWrappingCompartment.of([]),
+      showMinimap.compute(['doc'], state => ({
+        create(view) {
+          const dom = document.createElement('div');
+          return { dom };
+        },
+        displayText: 'blocks',
+        showOverlay: 'mouse-over',
+      })),
       EditorView.theme({
         '&': { backgroundColor: 'hsl(0deg 0% 100% / 7%)', color: '#dbdee1', borderRadius: '10px', height: '40rem' },
         '.cm-scroller': { fontFamily: 'monospace', fontSize: '1.5rem', overflow: 'auto' },
@@ -1092,29 +1065,11 @@ window.cmEditor = new EditorView({
 });
 
 // Expose compartments for settings toggles
-window._cmCompartments = { autocompleteCompartment, lineWrappingCompartment, lineNumbersCompartment, highlightPluginCompartment, autoIndentCompartment };
+window._cmCompartments = { autocompleteCompartment, lineWrappingCompartment, lineNumbersCompartment, highlightPluginCompartment };
 window._cmExtensions = { autocompletion, completeFromList, completions, lineNumbers, EditorView };
 window._bdscriptPlugin = bdscriptPlugin;
 
-// Auto-indent size toggle (called from settings)
-window.setAutoIndentSize = function(size) {
-  autoIndentSize = size === 'tab' ? 'tab' : parseInt(size);
-  window.cmEditor.dispatch({
-    effects: autoIndentCompartment.reconfigure(getAutoIndentExtension()),
-  });
-  localStorage.setItem('bdfd_indent_size', size);
-};
-
-// Restore saved editor content
-const savedIndent = localStorage.getItem('bdfd_indent_size');
-if (savedIndent !== null) {
-  autoIndentSize = parseInt(savedIndent);
-  window.cmEditor.dispatch({ effects: autoIndentCompartment.reconfigure(getAutoIndentExtension()) });
-  const sel = document.getElementById('indentSizeSelect');
-  if (sel) sel.value = String(autoIndentSize);
-}
-
-const saved = localStorage.getItem('bdfd_editor_content');if (saved) {
+// Restore saved editor contentif (saved) {
   window.cmEditor.dispatch({ changes: { from: 0, to: window.cmEditor.state.doc.length, insert: saved } });
   updateStats();
   checkBrackets();
@@ -1301,15 +1256,6 @@ window.resetHighlightTheme = function() {
     <button onclick="openHighlightModal()" id="importHighlightButton">Import Theme</button>
   </div>
   <hr>
-  <div class="setting-item">
-    <p>Auto-indent code on Enter after opening functions ($if, $loop, etc). Set to 0 to disable.</p>
-    <select id="indentSizeSelect" onchange="setAutoIndentSize(this.value === 'tab' ? 'tab' : parseInt(this.value))" style="cursor:pointer;outline:none;width:15rem;padding:8px 5px;background:var(--card-bg);color:rgb(255 255 255 / 80%);border-radius:10px;box-sizing:border-box;border:0;">
-      <option value="0">Off (0)</option>
-      <option value="2" selected>2 spaces</option>
-      <option value="4">4 spaces</option>
-      <option value="tab">Tab</option>
-    </select>
-  </div>
   <div class="setting-item">
     <p id="internetConnection">Loading...</p>
   </div>
