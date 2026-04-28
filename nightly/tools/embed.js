@@ -2650,7 +2650,7 @@ function updateNormalPreview() {
 
     // Description
     if (description) {
-      html += `<div class="preview-embed-description">${description}</div>`;
+      html += `<div class="preview-embed-description">${renderMarkdown(description)}</div>`;
     }
 
     // Fields - show name even without value
@@ -2663,9 +2663,9 @@ function updateNormalPreview() {
         const name = field.querySelector(".field-name")?.value.trim();
         const value = field.querySelector(".field-value")?.value.trim();
         html += '<div class="preview-embed-field">';
-        html += `<div class="preview-embed-field-name">${name}</div>`;
+        html += `<div class="preview-embed-field-name">${renderMarkdown(name)}</div>`;
         if (value) {
-          html += `<div class="preview-embed-field-value">${value}</div>`;
+          html += `<div class="preview-embed-field-value">${renderMarkdown(value)}</div>`;
         }
         html += "</div>";
       });
@@ -2793,7 +2793,7 @@ function updateSendPreview() {
 
   // Message content (text above embed) - styled like Discord message
   if (messageContent) {
-    html += `<div style="color:#dbdee1;font-size:1rem;margin-bottom:0.25rem;line-height:1.375;white-space:pre-wrap;word-wrap:break-word;">${messageContent}</div>`;
+    html += `<div style="color:#dbdee1;font-size:1rem;margin-bottom:0.25rem;line-height:1.375;white-space:pre-wrap;word-wrap:break-word;">${renderMarkdown(messageContent)}</div>`;
   }
 
   // Only show embed if there's embed content (not just thumbnail alone)
@@ -2830,7 +2830,7 @@ function updateSendPreview() {
 
     // Description
     if (description) {
-      html += `<div class="preview-embed-description">${description}</div>`;
+      html += `<div class="preview-embed-description">${renderMarkdown(description)}</div>`;
     }
 
     // Image
