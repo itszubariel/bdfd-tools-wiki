@@ -478,6 +478,9 @@ function editorFindCase() {
 
 function toggleHighlight() {
   const highlightedTextDiv = document.getElementById("highlightedText");
+  // Auto-open the Editor details panel when Find is triggered
+  const editorUi = document.getElementById("text-editorui");
+  if (editorUi && !editorUi.open) editorUi.open = true;
   const text = window.cmEditor ? window.cmEditor.state.doc.toString() : "";
   const searchText = document.getElementById("searchText").value;
   let highlighted = text;
@@ -680,6 +683,24 @@ function toggleHighlight() {
 function textHighlighting() {
   highlightEnabled = !highlightEnabled;
   callButtonChange("findHighlightingButton", highlightEnabled);
+  // Toggle the CodeMirror syntax highlight plugin
+  if (window.cmEditor && window._cmCompartments) {
+    const { highlightPluginCompartment } = window._cmCompartments;
+    if (highlightPluginCompartment) {
+      if (highlightEnabled) {
+        // Restore — dispatch a reconfigure with the current plugin
+        window.cmEditor.dispatch({
+          effects: highlightPluginCompartment.reconfigure(
+            window._bdscriptPlugin,
+          ),
+        });
+      } else {
+        window.cmEditor.dispatch({
+          effects: highlightPluginCompartment.reconfigure([]),
+        });
+      }
+    }
+  }
   toggleHighlight();
 }
 
@@ -930,15 +951,29 @@ function editorAreaButtons() {
   callButtonChange("usefulButtonsButton", isHidden);
 }
 
+let brokeLinksEnabled = false;
+let savedHrefs = [];
+
 function editorBrokeLinks() {
+  brokeLinksEnabled = !brokeLinksEnabled;
   const links = document.getElementsByTagName("a");
 
-  for (let i = 0; i < links.length; i++) {
-    links[i].setAttribute("href", "#");
-    links[i].style.pointerEvents = "none";
+  if (brokeLinksEnabled) {
+    savedHrefs = [];
+    for (let i = 0; i < links.length; i++) {
+      savedHrefs.push(links[i].getAttribute("href"));
+      links[i].setAttribute("href", "#");
+      links[i].style.pointerEvents = "none";
+    }
+  } else {
+    for (let i = 0; i < links.length; i++) {
+      if (savedHrefs[i] != null) links[i].setAttribute("href", savedHrefs[i]);
+      links[i].style.pointerEvents = "";
+    }
+    savedHrefs = [];
   }
 
-  callButtonChange("brokeLinksButton", "true");
+  callButtonChange("brokeLinksButton", brokeLinksEnabled);
 }
 
 let isWrappingEnabled = false;
