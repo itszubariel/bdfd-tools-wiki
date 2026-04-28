@@ -43,6 +43,7 @@ function autocomplete() {
 
       function hideAutocomplete() {
         autocompleteOutput.innerHTML = "";
+        autocompleteOutput.style.display = "none";
         clearTimeout(cursorInactiveTimeout);
         selectedIndex = -1;
         Array.from(autocompleteOutput.children).forEach((child) =>
@@ -114,6 +115,17 @@ function autocomplete() {
 
         clearTimeout(cursorInactiveTimeout);
         cursorInactiveTimeout = setTimeout(hideAutocomplete, 10000);
+
+        // Position the floating dropdown at the cursor
+        const rect = textarea.getBoundingClientRect();
+        const lineHeight =
+          parseInt(window.getComputedStyle(textarea).lineHeight) || 24;
+        const lines = inputText.substring(0, cursorPosition).split("\n");
+        const currentLine = lines.length;
+        autocompleteOutput.style.left = rect.left + 16 + "px";
+        autocompleteOutput.style.top =
+          rect.top + currentLine * lineHeight + "px";
+        autocompleteOutput.style.display = "block";
       };
 
       function selectFunction(func, dollarIndex, cursorPosition, inputText) {
