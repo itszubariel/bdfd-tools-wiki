@@ -247,7 +247,8 @@
 
 #editor {
 	height: 40rem;
-	resize: vertical;
+	border-radius: 10px;
+	overflow: auto;
 }
 
 #name {
@@ -711,11 +712,8 @@
 
 #autocomplete {
     display: none;
-    position: absolute;
+    position: fixed;
     z-index: 9999;
-    width: 100%;
-    box-sizing: border-box;
-    left: 0;
     border-radius: 8px;
     background: var(--card-bg);
     border: 1px solid rgba(255, 255, 255, 0.1);
@@ -743,8 +741,108 @@
     background: hsl(0deg 0% 100% / 8%);
     border-radius: 6px;
 }
+
+/* CodeMirror overrides */
+.cm-editor {
+    height: 40rem;
+    border-radius: 10px;
+    font-size: 1rem;
+}
+.cm-editor.cm-focused {
+    outline: none;
+}
+.cm-tooltip-autocomplete {
+    background: var(--card-bg) !important;
+    border: 1px solid rgba(255,255,255,0.1) !important;
+    border-radius: 8px !important;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5) !important;
+}
+.cm-tooltip-autocomplete ul li {
+    color: var(--text-secondary) !important;
+    padding: 0.4rem 0.75rem !important;
+}
+.cm-tooltip-autocomplete ul li[aria-selected] {
+    background: hsl(0deg 0% 100% / 8%) !important;
+    color: #fff !important;
+}
+.cm-completionLabel {
+    color: #fff;
+}
+.cm-completionDetail {
+    color: rgba(255,255,255,0.35);
+    font-style: normal;
+    font-size: 0.85em;
+    margin-left: 0.5rem;
+}
 </style>
 <script src="../theme/autocomplete.js" defer></script>
+<script type="module">
+import { EditorView, keymap, lineNumbers } from 'https://esm.sh/@codemirror/view@6';
+import { EditorState, Compartment } from 'https://esm.sh/@codemirror/state@6';
+import { defaultKeymap, history, historyKeymap } from 'https://esm.sh/@codemirror/commands@6';
+import { autocompletion, completeFromList, closeBrackets } from 'https://esm.sh/@codemirror/autocomplete@6';
+import { indentOnInput, bracketMatching } from 'https://esm.sh/@codemirror/language@6';
+
+const base = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
+let completions = [];
+try {
+  const functionsData = await fetch(base + '../tools/functions_tag.json').then(r => r.json());
+  completions = (functionsData.functions || []).map(entry => ({
+    label: entry.tag.includes('[') ? entry.tag.substring(0, entry.tag.indexOf('[')) : entry.tag,
+    apply: entry.tag,
+    detail: entry.description || '',
+    type: 'function',
+  }));
+} catch(e) { console.error('Failed to load functions_tag.json', e); }
+
+const autocompleteCompartment = new Compartment();
+const lineWrappingCompartment = new Compartment();
+const lineNumbersCompartment = new Compartment();
+
+const updateListener = EditorView.updateListener.of((update) => {
+  if (update.docChanged) {
+    updateStats();
+    checkBrackets();
+    bdscript2();
+  }
+});
+
+window.cmEditor = new EditorView({
+  state: EditorState.create({
+    doc: '',
+    extensions: [
+      history(),
+      keymap.of([...defaultKeymap, ...historyKeymap]),
+      lineNumbersCompartment.of(lineNumbers()),
+      indentOnInput(),
+      bracketMatching(),
+      closeBrackets(),
+      autocompleteCompartment.of(autocompletion({
+        override: [completeFromList(completions)],
+        activateOnTyping: true,
+      })),
+      lineWrappingCompartment.of([]),
+      EditorView.theme({
+        '&': { backgroundColor: 'hsl(0deg 0% 100% / 7%)', color: '#fff', borderRadius: '10px', height: '40rem' },
+        '.cm-scroller': { fontFamily: 'monospace', fontSize: '1rem', overflow: 'auto' },
+        '.cm-content': { caretColor: '#fff' },
+        '.cm-gutters': { backgroundColor: 'hsl(0deg 0% 100% / 5%)', color: 'hsl(0deg 0% 100% / 30%)', border: 'none', borderRadius: '10px 0 0 10px' },
+        '.cm-cursor': { borderLeftColor: '#fff' },
+        '.cm-selectionBackground': { backgroundColor: 'hsl(0deg 0% 100% / 15%) !important' },
+        '&.cm-focused .cm-selectionBackground': { backgroundColor: 'hsl(0deg 0% 100% / 20%) !important' },
+        '.cm-activeLine': { backgroundColor: 'hsl(0deg 0% 100% / 3%)' },
+        '.cm-activeLineGutter': { backgroundColor: 'hsl(0deg 0% 100% / 5%)' },
+      }, { dark: true }),
+      updateListener,
+    ],
+  }),
+  parent: document.getElementById('editor'),
+});
+
+// Expose compartments for settings toggles
+window._cmCompartments = { autocompleteCompartment, lineWrappingCompartment, lineNumbersCompartment };
+window._cmExtensions = { autocompletion, completeFromList, completions, lineNumbers, EditorView };
+</script>
 <div id="stats-container">
 	<p>Words: <span id="wordCount">0</span></p>
 	<p>Spaces: <span id="spaceCount">0</span></p>
@@ -773,10 +871,9 @@
 		</select>
 	</div>
 	<p id="error-message"></p>
-	<p id="autocomplete"></p>
 	<div class="scriptdiv">
-		<textarea id="editor" oninput="updateStats(); checkBrackets(); bdscript2()"></textarea><br>
-	 	<button class="fa fa-regular fa-paste clip-button" onclick="copyCodeText() title="Copy" aria-label="Copy"></button>
+		<div id="editor"></div>
+	 	<button class="fa fa-regular fa-paste clip-button" onclick="copyCodeText()" title="Copy" aria-label="Copy"></button>
 	  	<button class="fa fa-file-word-o" onclick="saveFile()" title="Save as file" aria-label="Save as file"></button>
 	</div>
 </div>
