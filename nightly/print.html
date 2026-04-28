@@ -1015,27 +1015,36 @@ $color[#673ab7]
 #editor-fullscreen-wrapper {
     position: relative;
 }
-#editor-fullscreen-btn {
-    position: absolute;
-    top: 0.4rem;
-    right: 0.4rem;
-    z-index: 10;
-    background: hsl(0deg 0% 100% / 10%);
-    border: 1px solid hsl(0deg 0% 100% / 20%);
-    color: #fff;
-    border-radius: 6px;
-    width: 2rem;
-    height: 2rem;
-    font-size: 1rem;
-    cursor: pointer;
+#editor-statusbar {
     display: flex;
     align-items: center;
-    justify-content: center;
-    opacity: 0.7;
-    transition: opacity 0.2s;
+    gap: 1rem;
+    padding: 0.3rem 0.75rem;
+    background: hsl(0deg 0% 100% / 5%);
+    border-radius: 0 0 10px 10px;
+    font-size: 0.8rem;
+    color: hsl(0deg 0% 100% / 40%);
+    font-family: monospace;
+    user-select: none;
+}
+#editor-statusbar span {
+    flex-shrink: 0;
+}
+#editor-fullscreen-btn {
+    margin-left: auto;
+    background: none;
+    border: 1px solid hsl(0deg 0% 100% / 15%);
+    color: hsl(0deg 0% 100% / 50%);
+    border-radius: 4px;
+    padding: 0.1rem 0.5rem;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: monospace;
 }
 #editor-fullscreen-btn:hover {
-    opacity: 1;
+    color: #fff;
+    border-color: hsl(0deg 0% 100% / 40%);
 }
 .editor-fullscreen {
     position: fixed !important;
@@ -1054,17 +1063,15 @@ $color[#673ab7]
     border-radius: 0 !important;
     width: 100% !important;
     margin: 0 !important;
+    min-height: 0;
 }
 .editor-fullscreen .cm-editor {
     height: 100% !important;
     border-radius: 0 !important;
 }
-.editor-fullscreen #editor-fullscreen-btn {
-    top: 0.75rem;
-    right: 0.75rem;
-    width: 2.25rem;
-    height: 2.25rem;
-    font-size: 1.1rem;
+.editor-fullscreen #editor-statusbar {
+    border-radius: 0;
+    flex-shrink: 0;
 }
 
 /* CodeMirror overrides */
@@ -1168,6 +1175,18 @@ const updateListener = EditorView.updateListener.of((update) => {
     checkBrackets();
     bdscript2();
   }
+  // Update cursor position and line count on any change (doc or selection)
+  if (update.docChanged || update.selectionSet) {
+    const state = update.state;
+    const cursor = state.selection.main.head;
+    const line = state.doc.lineAt(cursor);
+    const col = cursor - line.from + 1;
+    const totalLines = state.doc.lines;
+    const cursorEl = document.getElementById('editor-cursor-pos');
+    const linesEl = document.getElementById('editor-total-lines');
+    if (cursorEl) cursorEl.textContent = `Ln ${line.number}, Col ${col}`;
+    if (linesEl) linesEl.textContent = `${totalLines} line${totalLines !== 1 ? 's' : ''}`;
+  }
 });
 
 window.cmEditor = new EditorView({
@@ -1189,7 +1208,7 @@ window.cmEditor = new EditorView({
       lineWrappingCompartment.of([]),
       EditorView.theme({
         '&': { backgroundColor: 'hsl(0deg 0% 100% / 7%)', color: '#fff', borderRadius: '10px', height: '40rem' },
-        '.cm-scroller': { fontFamily: 'monospace', fontSize: '1rem', overflow: 'auto' },
+        '.cm-scroller': { fontFamily: 'monospace', fontSize: '1.35rem', overflow: 'auto' },
         '.cm-content': { caretColor: '#fff' },
         '.cm-gutters': { backgroundColor: 'hsl(0deg 0% 100% / 5%)', color: 'hsl(0deg 0% 100% / 30%)', border: 'none', borderRadius: '10px 0 0 10px' },
         '.cm-cursor': { borderLeftColor: '#fff' },
@@ -1258,10 +1277,14 @@ window.toggleEditorFullscreen = function() {
 	</div>
 	<p id="error-message"></p>
 	<div class="scriptdiv">
-	<div id="editor-fullscreen-wrapper">
-		<button id="editor-fullscreen-btn" onclick="toggleEditorFullscreen()" title="Fullscreen">⛶</button>
-		<div id="editor"></div>
-	</div>
+		<div id="editor-fullscreen-wrapper">
+			<div id="editor"></div>
+			<div id="editor-statusbar">
+				<span id="editor-cursor-pos">Ln 1, Col 1</span>
+				<span id="editor-total-lines">1 line</span>
+				<button id="editor-fullscreen-btn" onclick="toggleEditorFullscreen()" title="Fullscreen">⛶ Fullscreen</button>
+			</div>
+		</div>
 	 	<button class="fa fa-regular fa-paste clip-button" onclick="copyCodeText()" title="Copy" aria-label="Copy"></button>
 	  	<button class="fa fa-file-word-o" onclick="saveFile()" title="Save as file" aria-label="Save as file"></button>
 	</div>
