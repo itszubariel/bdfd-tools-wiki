@@ -79,7 +79,9 @@ function autocomplete() {
 
         displayedFunctions.forEach((entry) => {
           const span = document.createElement("span");
-          const displayName = entry.tag.includes('[') ? entry.tag.substring(0, entry.tag.indexOf('[')) : entry.tag;
+          const displayName = entry.tag.includes("[")
+            ? entry.tag.substring(0, entry.tag.indexOf("["))
+            : entry.tag;
           span.textContent = displayName;
           span.dataset.tag = entry.tag;
           span.addEventListener("click", () =>
