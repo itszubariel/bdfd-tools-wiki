@@ -2,8 +2,8 @@
 let autocompleteEnabled = true;
 
 // Hoisted so updateAutocompleteState() can reference them
-let updateAutocomplete = () => { };
-let updateTooltip = () => { };
+let updateAutocomplete = () => {};
+let updateTooltip = () => {};
 
 function changeAutocomplete() {
   autocompleteEnabled = !autocompleteEnabled;
@@ -40,6 +40,12 @@ function autocomplete() {
       const autocompleteOutput = document.getElementById("autocomplete");
       let cursorInactiveTimeout;
       let selectedIndex = -1;
+
+      // Move autocomplete inside the editor's parent so position: absolute works correctly
+      const scriptDiv =
+        textarea.closest(".scriptdiv") ?? textarea.parentElement;
+      scriptDiv.style.position = "relative";
+      scriptDiv.appendChild(autocompleteOutput);
 
       function hideAutocomplete() {
         autocompleteOutput.innerHTML = "";
@@ -124,31 +130,23 @@ function autocomplete() {
         clearTimeout(cursorInactiveTimeout);
         cursorInactiveTimeout = setTimeout(hideAutocomplete, 10000);
 
-        // Position the floating dropdown at the cursor
-        const rect = textarea.getBoundingClientRect();
+        // Position dropdown above or below the editor box
         const lineHeight =
           parseInt(window.getComputedStyle(textarea).lineHeight) || 24;
-        const lines = inputText.substring(0, cursorPosition).split("\n");
-        const currentLine = lines.length;
-        
-        // Fix 1: Clamp to editor bounds
-        const dropdownWidth = Math.min(600, rect.width);
-        let leftPos = rect.left + 16;
-        if (leftPos + dropdownWidth > rect.right) {
-          leftPos = rect.right - dropdownWidth;
-        }
-        autocompleteOutput.style.width = dropdownWidth + "px";
-        autocompleteOutput.style.left = leftPos + "px";
-        
-        // Fix 2: Flip upward if near bottom
-        const dropdownHeight = 6 * 48;
-        const topPos = rect.top + currentLine * lineHeight;
-        if (topPos + dropdownHeight > window.innerHeight) {
-          autocompleteOutput.style.top = topPos - dropdownHeight - lineHeight + "px";
+        const lines = inputText.substring(0, cursorPosition).split("\n").length;
+        const cursorY = lines * lineHeight - textarea.scrollTop;
+        const textareaHeight = textarea.offsetHeight;
+        const dropdownHeight = autocompleteOutput.offsetHeight || 250;
+        const spaceBelow = textareaHeight - cursorY;
+
+        if (spaceBelow < dropdownHeight + 8) {
+          autocompleteOutput.style.bottom = textareaHeight + "px";
+          autocompleteOutput.style.top = "auto";
         } else {
-          autocompleteOutput.style.top = topPos + "px";
+          autocompleteOutput.style.top = textareaHeight + "px";
+          autocompleteOutput.style.bottom = "auto";
         }
-        
+
         autocompleteOutput.style.display = "block";
       };
 
@@ -161,6 +159,7 @@ function autocomplete() {
           dollarIndex + func.length;
         hideAutocomplete();
         textarea.focus();
+        hideAutocomplete();
       }
 
       function handleArrowKeys(event) {
@@ -297,7 +296,7 @@ function addTooltips() {
           textarea.value.substring(0, textarea.selectionStart).split("\n")
             .length,
         ) *
-        lineHeight +
+          lineHeight +
         30;
 
       tooltip.style.left = `${x}px`;
