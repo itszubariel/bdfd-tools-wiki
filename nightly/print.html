@@ -1051,6 +1051,8 @@ import { EditorState, Compartment } from 'https://esm.sh/@codemirror/state@6';
 import { defaultKeymap, history, historyKeymap } from 'https://esm.sh/@codemirror/commands@6';
 import { autocompletion, completeFromList, closeBrackets } from 'https://esm.sh/@codemirror/autocomplete@6';
 import { indentOnInput, bracketMatching, StreamLanguage } from 'https://esm.sh/@codemirror/language@6';
+import { tags } from 'https://esm.sh/@lezer/highlight@1';
+import { HighlightStyle, syntaxHighlighting } from 'https://esm.sh/@codemirror/language@6';
 
 const base = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
 let completions = [];
@@ -1080,6 +1082,13 @@ const bdscriptLanguage = StreamLanguage.define({
   }
 });
 
+const bdscriptHighlightStyle = HighlightStyle.define([
+  { tag: tags.keyword,   color: '#a78bfa' },
+  { tag: tags.bracket,   color: '#f472b6' },
+  { tag: tags.separator, color: '#fb923c' },
+  { tag: tags.number,    color: '#34d399' },
+]);
+
 const updateListener = EditorView.updateListener.of((update) => {
   if (update.docChanged) {
     updateStats();
@@ -1099,6 +1108,7 @@ window.cmEditor = new EditorView({
       bracketMatching(),
       closeBrackets(),
       bdscriptLanguage,
+      syntaxHighlighting(bdscriptHighlightStyle),
       autocompleteCompartment.of(autocompletion({
         override: [completeFromList(completions)],
         activateOnTyping: true,
@@ -1106,7 +1116,7 @@ window.cmEditor = new EditorView({
       lineWrappingCompartment.of([]),
       EditorView.theme({
         '&': { backgroundColor: 'hsl(0deg 0% 100% / 7%)', color: '#fff', borderRadius: '10px', height: '40rem' },
-        '.cm-scroller': { fontFamily: 'monospace', fontSize: '1rem', overflow: 'auto' },
+        '.cm-scroller': { fontFamily: 'monospace', fontSize: '1.1rem', overflow: 'auto' },
         '.cm-content': { caretColor: '#fff' },
         '.cm-gutters': { backgroundColor: 'hsl(0deg 0% 100% / 5%)', color: 'hsl(0deg 0% 100% / 30%)', border: 'none', borderRadius: '10px 0 0 10px' },
         '.cm-cursor': { borderLeftColor: '#fff' },
@@ -1114,10 +1124,6 @@ window.cmEditor = new EditorView({
         '&.cm-focused .cm-selectionBackground': { backgroundColor: 'hsl(0deg 0% 100% / 20%) !important' },
         '.cm-activeLine': { backgroundColor: 'hsl(0deg 0% 100% / 3%)' },
         '.cm-activeLineGutter': { backgroundColor: 'hsl(0deg 0% 100% / 5%)' },
-        '.cm-content .tok-keyword':   { color: '#a78bfa' },
-        '.cm-content .tok-bracket':   { color: '#f472b6' },
-        '.cm-content .tok-separator': { color: '#fb923c' },
-        '.cm-content .tok-number':    { color: '#34d399' },
       }, { dark: true }),
       updateListener,
     ],
