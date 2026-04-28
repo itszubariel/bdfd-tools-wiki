@@ -723,25 +723,23 @@
 }
 
 #autocomplete span {
-    display: flex;
+    display: flex !important;
 	justify-content: space-between;
 	align-items: center;
 	gap: 1rem;
     color: var(--text-secondary);
-	margin-top: 0;
-    margin-bottom: 0;
-	margin-left: 0;
-	margin-right: 0;
+	margin: 0;
     cursor: pointer;
-    padding: 0.5rem 0.75rem;
+    padding: 0.45rem 0.75rem;
     width: 100%;
-    transition: 0.2s;
+    transition: background 0.15s;
 	box-sizing: border-box;
+	border-left: 2.5px solid transparent;
 }
 
 #autocomplete span .autocomplete-name {
 	color: #fff;
-	font-size: 0.95rem;
+	font-size: 0.9rem;
 	font-weight: 500;
 	flex-shrink: 0;
 }
@@ -749,21 +747,17 @@
 #autocomplete span .autocomplete-sig {
 	color: var(--text-secondary);
 	font-size: 0.75rem;
-	opacity: 0.7;
+	opacity: 0.6;
 	text-align: right;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
+	min-width: 0;
 }
 
 #autocomplete span.selected, #autocomplete span:hover {
+	background: rgba(255,255,255,0.07);
 	border-left-color: var(--link-color);
-	border-left-width: 2.5px;
-	border-top-left-radius: 0;
-	border-bottom-left-radius: 0;
-	border-left-style: solid;
-	transition: 0.2s;
-	background: rgba(255,255,255,0.05);
 }
 </style>
 <script src="../theme/autocomplete.js" defer></script>
