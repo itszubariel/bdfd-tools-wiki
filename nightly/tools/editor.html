@@ -718,46 +718,28 @@
 	border-radius: 10px;
 	background: var(--card-bg);
 	border: 1px solid rgba(255, 255, 255, 0.05);
-	max-height: 300px;
-	overflow-y: auto;
 }
 
 #autocomplete span {
-    display: flex !important;
-	justify-content: space-between;
-	align-items: center;
-	gap: 1rem;
+    display: block;
     color: var(--text-secondary);
-	margin: 0;
+	margin-top: .5rem;
+    margin-bottom: .5rem;
+	margin-left: .5rem;
+	margin-right: 1rem;
     cursor: pointer;
-    padding: 0.45rem 0.75rem;
+    padding: .5rem;
     width: 100%;
-    transition: background 0.15s;
-	box-sizing: border-box;
-	border-left: 2.5px solid transparent;
-}
-
-#autocomplete span .autocomplete-name {
-	color: #fff;
-	font-size: 0.9rem;
-	font-weight: 500;
-	flex-shrink: 0;
-}
-
-#autocomplete span .autocomplete-sig {
-	color: var(--text-secondary);
-	font-size: 0.75rem;
-	opacity: 0.6;
-	text-align: right;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-	min-width: 0;
+    transition: 0.2s;
 }
 
 #autocomplete span.selected, #autocomplete span:hover {
-	background: rgba(255,255,255,0.07);
 	border-left-color: var(--link-color);
+	border-left-width: 2.5px;
+	border-top-left-radius: 0;
+	border-bottom-left-radius: 0;
+	border-left-style: solid;
+	transition: 0.2s;
 }
 </style>
 <script src="../theme/autocomplete.js" defer></script>
