@@ -1263,97 +1263,6 @@ function refreshHighlight() {
   });
 }
 
-// ── Canvas minimap ────────────────────────────────────────────────────────────
-const minimapPlugin = ViewPlugin.fromClass(class {
-  constructor(view) {
-    this.canvas = document.createElement('canvas');
-    this.canvas.style.cssText = 'position:absolute;top:0;right:0;width:60px;height:100%;opacity:0.7;cursor:pointer;border-radius:0 10px 10px 0;pointer-events:auto;';
-    this.ctx = this.canvas.getContext('2d');
-    this.overlay = document.createElement('div');
-    this.overlay.style.cssText = 'position:absolute;right:0;width:60px;background:rgba(255,255,255,0.08);pointer-events:none;border-radius:2px;border:1px solid rgba(255,255,255,0.15);box-sizing:border-box;';
-    view.dom.style.position = 'relative';
-    view.dom.appendChild(this.canvas);
-    view.dom.appendChild(this.overlay);
-    this.canvas.addEventListener('click', e => this._onClick(e, view));
-    this.draw(view);
-  }
-  update(update) {
-    if (update.docChanged || update.viewportChanged || update.geometryChanged) {
-      this.draw(update.view);
-    }
-  }
-  draw(view) {
-    const canvas = this.canvas;
-    const ctx = this.ctx;
-    const dpr = window.devicePixelRatio || 1;
-    const w = canvas.offsetWidth || 60;
-    const h = canvas.offsetHeight || 400;
-    canvas.width = w * dpr;
-    canvas.height = h * dpr;
-    ctx.scale(dpr, dpr);
-    ctx.clearRect(0, 0, w, h);
-
-    const doc = view.state.doc;
-    const totalLines = doc.lines;
-    if (totalLines === 0) return;
-
-    // Fixed 2px per line with 0.5px gap
-    const lineH = 2;
-    const gap = 0.5;
-    const step = lineH + gap;
-    const maxW = w - 6;
-
-    for (let i = 1; i <= totalLines; i++) {
-      const line = doc.line(i);
-      const y = (i - 1) * step;
-      if (y > h) break;
-      const text = line.text;
-      const trimmed = text.trimStart();
-      const indentLen = text.length - trimmed.length;
-      const contentLen = trimmed.length;
-      if (contentLen === 0) continue;
-
-      // Color based on content
-      if (/^\$[a-zA-Z]/.test(trimmed)) {
-        ctx.fillStyle = currentTheme.fallback || '#a78bfa';
-      } else if (/^[\[\]]/.test(trimmed)) {
-        ctx.fillStyle = currentTheme.bracket || '#f472b6';
-      } else {
-        ctx.fillStyle = 'rgba(200,210,230,0.35)';
-      }
-
-      const indentPx = Math.min(indentLen * 1.5, maxW * 0.4);
-      const barW = Math.min(contentLen * 1.5, maxW - indentPx);
-      if (barW > 0) ctx.fillRect(3 + indentPx, y, barW, lineH);
-    }
-
-    // Viewport overlay
-    const scroller = view.scrollDOM;
-    const scrollTop = scroller.scrollTop;
-    const scrollHeight = scroller.scrollHeight;
-    const clientHeight = scroller.clientHeight;
-    const totalH = totalLines * step;
-    if (totalH > 0) {
-      const ratio = Math.min(h, totalH) / scrollHeight;
-      const oy = scrollTop * ratio;
-      const oh = Math.max(20, clientHeight * ratio);
-      this.overlay.style.top = Math.min(oy, h - oh) + 'px';
-      this.overlay.style.height = oh + 'px';
-    }
-  }
-  _onClick(e, view) {
-    const rect = this.canvas.getBoundingClientRect();
-    const ratio = (e.clientY - rect.top) / rect.height;
-    const scroller = view.scrollDOM;
-    scroller.scrollTop = ratio * scroller.scrollHeight;
-  }
-  destroy() {
-    this.canvas.remove();
-    this.overlay.remove();
-  }
-});
-
-
 const autocompleteCompartment = new Compartment();
 const lineWrappingCompartment = new Compartment();
 const lineNumbersCompartment  = new Compartment();
@@ -1397,11 +1306,10 @@ window.cmEditor = new EditorView({
         activateOnTyping: true,
       })),
       lineWrappingCompartment.of([]),
-      minimapPlugin,
       EditorView.theme({
         '&': { backgroundColor: 'hsl(0deg 0% 100% / 7%)', color: '#dbdee1', borderRadius: '10px', height: '40rem' },
         '.cm-scroller': { fontFamily: 'monospace', fontSize: '1.5rem', overflow: 'auto' },
-        '.cm-content': { caretColor: '#fff', paddingRight: '88px' },
+        '.cm-content': { caretColor: '#fff' },
         '.cm-gutters': { backgroundColor: 'hsl(0deg 0% 100% / 5%)', color: 'hsl(0deg 0% 100% / 30%)', border: 'none', borderRadius: '10px 0 0 10px' },
         '.cm-cursor': { borderLeftColor: '#fff' },
         '.cm-selectionBackground': { backgroundColor: 'hsl(0deg 0% 100% / 15%) !important' },
