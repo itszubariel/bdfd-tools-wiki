@@ -72,7 +72,7 @@ function autocomplete() {
         const matchingFunctions = functions.filter((entry) =>
           entry.tag.toLowerCase().startsWith(searchTerm),
         );
-        const displayedFunctions = matchingFunctions.slice(0, 5);
+        const displayedFunctions = matchingFunctions.slice(0, 6);
         selectedIndex = -1;
         Array.from(autocompleteOutput.children).forEach((child) =>
           child.classList.remove("selected"),
@@ -103,6 +103,14 @@ function autocomplete() {
           previewEl.style.overflow = "hidden";
           previewEl.style.textOverflow = "ellipsis";
           previewEl.style.maxWidth = "55%";
+          previewEl.style.display = "none";
+
+          span.addEventListener("mouseenter", () => {
+            previewEl.style.display = "block";
+          });
+          span.addEventListener("mouseleave", () => {
+            previewEl.style.display = "none";
+          });
 
           span.appendChild(nameEl);
           span.appendChild(previewEl);
@@ -122,9 +130,25 @@ function autocomplete() {
           parseInt(window.getComputedStyle(textarea).lineHeight) || 24;
         const lines = inputText.substring(0, cursorPosition).split("\n");
         const currentLine = lines.length;
-        autocompleteOutput.style.left = rect.left + 16 + "px";
-        autocompleteOutput.style.top =
-          rect.top + currentLine * lineHeight + "px";
+        
+        // Fix 1: Clamp to editor bounds
+        const dropdownWidth = Math.min(600, rect.width);
+        let leftPos = rect.left + 16;
+        if (leftPos + dropdownWidth > rect.right) {
+          leftPos = rect.right - dropdownWidth;
+        }
+        autocompleteOutput.style.width = dropdownWidth + "px";
+        autocompleteOutput.style.left = leftPos + "px";
+        
+        // Fix 2: Flip upward if near bottom
+        const dropdownHeight = 6 * 48;
+        const topPos = rect.top + currentLine * lineHeight;
+        if (topPos + dropdownHeight > window.innerHeight) {
+          autocompleteOutput.style.top = topPos - dropdownHeight - lineHeight + "px";
+        } else {
+          autocompleteOutput.style.top = topPos + "px";
+        }
+        
         autocompleteOutput.style.display = "block";
       };
 
@@ -172,7 +196,10 @@ function autocomplete() {
 
       function highlightSelected() {
         Array.from(autocompleteOutput.children).forEach((child, index) => {
-          child.classList.toggle("selected", index === selectedIndex);
+          const isSelected = index === selectedIndex;
+          child.classList.toggle("selected", isSelected);
+          const preview = child.querySelector("span:last-child");
+          if (preview) preview.style.display = isSelected ? "block" : "none";
         });
       }
 
