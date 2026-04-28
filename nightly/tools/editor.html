@@ -229,7 +229,7 @@
 	margin-bottom: -1rem;
 }
 
-#editor, #name {
+#name {
 	width: 96%;
 	font-size: 1.5rem;
 	min-height: 1.3rem;
@@ -239,18 +239,18 @@
 	color: #fff;
 	background: hsl(0deg 0% 100% / 7%);
 	padding: 7px;
-	font-size: 1.5rem;
 	margin: -2rem auto;
 	display: block;
 	outline: none;
 }
 
 #editor {
-	height: 40rem;
+	width: 96%;
+	margin: -2rem auto;
+	display: block;
 	border-radius: 10px;
-	overflow: auto;
+	overflow: hidden;
 }
-
 #name {
 	white-space: nowrap;
 	overflow: auto;
@@ -742,6 +742,62 @@
     border-radius: 6px;
 }
 
+/* Fullscreen editor */
+#editor-fullscreen-wrapper {
+    position: relative;
+}
+#editor-fullscreen-btn {
+    position: absolute;
+    top: 0.4rem;
+    right: 0.4rem;
+    z-index: 10;
+    background: hsl(0deg 0% 100% / 10%);
+    border: 1px solid hsl(0deg 0% 100% / 20%);
+    color: #fff;
+    border-radius: 6px;
+    width: 2rem;
+    height: 2rem;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+#editor-fullscreen-btn:hover {
+    opacity: 1;
+}
+.editor-fullscreen {
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 9998 !important;
+    background: #1a1b1e !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    display: flex;
+    flex-direction: column;
+}
+.editor-fullscreen #editor {
+    flex: 1;
+    border-radius: 0 !important;
+    width: 100% !important;
+    margin: 0 !important;
+}
+.editor-fullscreen .cm-editor {
+    height: 100% !important;
+    border-radius: 0 !important;
+}
+.editor-fullscreen #editor-fullscreen-btn {
+    top: 0.75rem;
+    right: 0.75rem;
+    width: 2.25rem;
+    height: 2.25rem;
+    font-size: 1.1rem;
+}
+
 /* CodeMirror overrides */
 .cm-editor {
     height: 40rem;
@@ -762,7 +818,7 @@
 .cm-tooltip-autocomplete ul li {
     color: var(--text-secondary) !important;
     padding: 0.3rem 0.75rem !important;
-    font-size: 1.05rem !important;
+    font-size: 1rem !important;
     display: flex !important;
     align-items: center !important;
     gap: 0.5rem !important;
@@ -780,7 +836,7 @@
 .cm-completionDetail {
     color: rgba(255,255,255,0.35);
     font-style: normal;
-    font-size: 0.88em;
+    font-size: 0.8em;
     margin-left: 0.25rem;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -838,6 +894,7 @@ const bdscriptHighlightStyle = HighlightStyle.define([
 
 const updateListener = EditorView.updateListener.of((update) => {
   if (update.docChanged) {
+    localStorage.setItem('bdfd_editor_content', update.state.doc.toString());
     updateStats();
     checkBrackets();
     bdscript2();
@@ -863,7 +920,7 @@ window.cmEditor = new EditorView({
       lineWrappingCompartment.of([]),
       EditorView.theme({
         '&': { backgroundColor: 'hsl(0deg 0% 100% / 7%)', color: '#fff', borderRadius: '10px', height: '40rem' },
-        '.cm-scroller': { fontFamily: 'monospace', fontSize: '1.1rem', overflow: 'auto' },
+        '.cm-scroller': { fontFamily: 'monospace', fontSize: '1rem', overflow: 'auto' },
         '.cm-content': { caretColor: '#fff' },
         '.cm-gutters': { backgroundColor: 'hsl(0deg 0% 100% / 5%)', color: 'hsl(0deg 0% 100% / 30%)', border: 'none', borderRadius: '10px 0 0 10px' },
         '.cm-cursor': { borderLeftColor: '#fff' },
@@ -881,6 +938,27 @@ window.cmEditor = new EditorView({
 // Expose compartments for settings toggles
 window._cmCompartments = { autocompleteCompartment, lineWrappingCompartment, lineNumbersCompartment };
 window._cmExtensions = { autocompletion, completeFromList, completions, lineNumbers, EditorView };
+
+// localStorage persistence — restore saved content on load
+const saved = localStorage.getItem('bdfd_editor_content');
+if (saved) {
+  window.cmEditor.dispatch({
+    changes: { from: 0, to: window.cmEditor.state.doc.length, insert: saved }
+  });
+  updateStats();
+  checkBrackets();
+  bdscript2();
+}
+
+// Fullscreen toggle
+window.toggleEditorFullscreen = function() {
+  const wrapper = document.getElementById('editor-fullscreen-wrapper');
+  const btn = document.getElementById('editor-fullscreen-btn');
+  const isFullscreen = wrapper.classList.toggle('editor-fullscreen');
+  btn.title = isFullscreen ? 'Exit fullscreen' : 'Fullscreen';
+  btn.textContent = isFullscreen ? '✕' : '⛶';
+  window.cmEditor.requestMeasure();
+};
 </script>
 <div id="stats-container">
 	<p>Words: <span id="wordCount">0</span></p>
@@ -911,7 +989,10 @@ window._cmExtensions = { autocompletion, completeFromList, completions, lineNumb
 	</div>
 	<p id="error-message"></p>
 	<div class="scriptdiv">
+	<div id="editor-fullscreen-wrapper">
+		<button id="editor-fullscreen-btn" onclick="toggleEditorFullscreen()" title="Fullscreen">⛶</button>
 		<div id="editor"></div>
+	</div>
 	 	<button class="fa fa-regular fa-paste clip-button" onclick="copyCodeText()" title="Copy" aria-label="Copy"></button>
 	  	<button class="fa fa-file-word-o" onclick="saveFile()" title="Save as file" aria-label="Save as file"></button>
 	</div>
