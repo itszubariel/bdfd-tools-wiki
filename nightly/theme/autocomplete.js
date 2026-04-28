@@ -54,6 +54,42 @@ function autocomplete() {
         );
       }
 
+      function getCaretCoordinates(textarea, position) {
+        const mirror = document.createElement("div");
+        const style = window.getComputedStyle(textarea);
+        [
+          "fontFamily", "fontSize", "fontWeight", "lineHeight", "letterSpacing",
+          "padding", "paddingTop", "paddingRight", "paddingBottom", "paddingLeft",
+          "borderTopWidth", "borderRightWidth", "borderBottomWidth", "borderLeftWidth",
+          "width", "boxSizing", "whiteSpace", "wordWrap", "overflowWrap",
+        ].forEach((prop) => {
+          mirror.style[prop] = style[prop];
+        });
+        mirror.style.position = "absolute";
+        mirror.style.visibility = "hidden";
+        mirror.style.overflow = "hidden";
+        mirror.style.top = "0";
+        mirror.style.left = "0";
+        mirror.style.height = "auto";
+        mirror.style.whiteSpace = "pre-wrap";
+
+        const textBefore = textarea.value.substring(0, position);
+        mirror.textContent = textBefore;
+
+        const caret = document.createElement("span");
+        caret.textContent = "|";
+        mirror.appendChild(caret);
+
+        document.body.appendChild(mirror);
+        const rect = textarea.getBoundingClientRect();
+
+        const x = rect.left + (caret.offsetLeft - mirror.scrollLeft);
+        const y = rect.top + (caret.offsetTop - textarea.scrollTop);
+
+        document.body.removeChild(mirror);
+        return { x, y };
+      }
+
       updateAutocomplete = function () {
         if (!autocompleteEnabled) {
           hideAutocomplete();
@@ -129,34 +165,27 @@ function autocomplete() {
         clearTimeout(cursorInactiveTimeout);
         cursorInactiveTimeout = setTimeout(hideAutocomplete, 10000);
 
-        // Position dropdown near cursor using fixed positioning
-        const rect = textarea.getBoundingClientRect();
+        // Position dropdown using mirror div technique for accurate caret position
+        const caret = getCaretCoordinates(textarea, dollarIndex);
         const lineHeight =
           parseInt(window.getComputedStyle(textarea).lineHeight) || 24;
-        const linesBeforeCursor = inputText
-          .substring(0, cursorPosition)
-          .split("\n").length;
-        const cursorTop =
-          rect.top + linesBeforeCursor * lineHeight - textarea.scrollTop;
-
         const dropdownHeight = displayedFunctions.length * 48;
-        const oneLineBelow = cursorTop + lineHeight;
-        const oneLineAbove = cursorTop - dropdownHeight - lineHeight;
+        const dropdownWidth = Math.min(
+          textarea.getBoundingClientRect().width,
+          480,
+        );
+        const leftPos = Math.min(caret.x, window.innerWidth - dropdownWidth - 8);
 
+        const spaceBelow = window.innerHeight - caret.y - lineHeight;
         const topPos =
-          oneLineBelow + dropdownHeight < window.innerHeight
-            ? oneLineBelow
-            : Math.max(8, oneLineAbove);
-
-        const dropdownWidth = Math.min(rect.width, 480);
-        const leftPos = Math.min(rect.left, window.innerWidth - dropdownWidth - 8);
+          spaceBelow >= dropdownHeight + 8
+            ? caret.y + lineHeight
+            : Math.max(8, caret.y - dropdownHeight);
 
         autocompleteOutput.style.position = "fixed";
         autocompleteOutput.style.top = topPos + "px";
         autocompleteOutput.style.left = leftPos + "px";
         autocompleteOutput.style.width = dropdownWidth + "px";
-        autocompleteOutput.style.minWidth = "";
-        autocompleteOutput.style.maxWidth = "";
         autocompleteOutput.style.bottom = "auto";
         autocompleteOutput.style.display = "block";
       };
