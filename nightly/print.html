@@ -1250,13 +1250,17 @@ const bdscriptPlugin = ViewPlugin.fromClass(class {
 
 function refreshHighlight() {
   Object.keys(markCache).forEach(k => delete markCache[k]);
-  window.cmEditor.dispatch({ effects: [] });
+  // Reconfigure the compartment with a fresh instance of the plugin to force full rebuild
+  window.cmEditor.dispatch({
+    effects: highlightPluginCompartment.reconfigure(bdscriptPlugin),
+  });
 }
 
 // ── Compartments ─────────────────────────────────────────────────────────────
 const autocompleteCompartment = new Compartment();
 const lineWrappingCompartment = new Compartment();
 const lineNumbersCompartment  = new Compartment();
+const highlightPluginCompartment = new Compartment();
 
 const updateListener = EditorView.updateListener.of((update) => {
   if (update.docChanged) {
@@ -1288,7 +1292,7 @@ window.cmEditor = new EditorView({
       indentOnInput(),
       bracketMatching(),
       closeBrackets(),
-      bdscriptPlugin,
+      highlightPluginCompartment.of(bdscriptPlugin),
       autocompleteCompartment.of(autocompletion({
         override: [completeFromList(completions)],
         activateOnTyping: true,
