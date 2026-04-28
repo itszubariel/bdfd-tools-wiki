@@ -44,13 +44,7 @@ function updateAutocompleteState() {
   // No-op: CodeMirror manages its own autocomplete state
 }
 
-window.addEventListener("beforeunload", function (event) {
-  if (!window.cmEditor) return;
-  if (window.cmEditor.state.doc.toString().trim() === "") return;
-  event.preventDefault();
-  event.returnValue = "";
-  return "Are you sure you want to leave the page?";
-});
+// Content is saved to localStorage automatically — no warning needed on unload
 
 function updateInternetConnection() {
   const text = document.getElementById("internetConnection");
