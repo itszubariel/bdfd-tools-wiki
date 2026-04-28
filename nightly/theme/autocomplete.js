@@ -1,16 +1,30 @@
 // Setting
 let autocompleteEnabled = true;
 
-// Hoisted so updateAutocompleteState() can reference them
+// Hoisted stubs — kept for any legacy references in updateAutocompleteState
 let updateAutocomplete = () => {};
 let updateTooltip = () => {};
 
 function changeAutocomplete() {
   autocompleteEnabled = !autocompleteEnabled;
-  const autocompleteElement = document.getElementById("autocomplete");
-  autocompleteElement.style.display = autocompleteEnabled ? "block" : "none";
   autoSettingChange("changeAutocompleteButton", autocompleteEnabled);
-  updateAutocompleteState();
+
+  // Toggle CodeMirror autocompletion extension
+  if (window.cmEditor && window._cmCompartments && window._cmExtensions) {
+    const { autocompleteCompartment } = window._cmCompartments;
+    const { autocompletion, completeFromList, completions } =
+      window._cmExtensions;
+    window.cmEditor.dispatch({
+      effects: autocompleteCompartment.reconfigure(
+        autocompleteEnabled
+          ? autocompletion({
+              override: [completeFromList(completions)],
+              activateOnTyping: true,
+            })
+          : autocompletion({ override: [] }),
+      ),
+    });
+  }
 }
 
 function autoSettingChange(buttonName, status) {
@@ -26,371 +40,20 @@ function autoSettingChange(buttonName, status) {
   button.style.background = status ? activeGradient : inactiveGradient;
 }
 
-// Main autocomplete
-function autocomplete() {
-  const base = window.location.pathname.substring(
-    0,
-    window.location.pathname.lastIndexOf("/") + 1,
-  );
-  fetch(base + "../tools/functions_tag.json")
-    .then((res) => res.json())
-    .then((data) => {
-      const functions = data.functions || [];
-      const textarea = document.getElementById("editor");
-      const autocompleteOutput = document.getElementById("autocomplete");
-      let cursorInactiveTimeout;
-      let selectedIndex = -1;
-
-      // Move autocomplete to body since we're using fixed positioning
-      document.body.appendChild(autocompleteOutput);
-
-      function hideAutocomplete() {
-        autocompleteOutput.innerHTML = "";
-        autocompleteOutput.style.display = "none";
-        clearTimeout(cursorInactiveTimeout);
-        selectedIndex = -1;
-        Array.from(autocompleteOutput.children).forEach((child) =>
-          child.classList.remove("selected"),
-        );
-      }
-
-      function getCaretCoordinates(textarea, position) {
-        const mirror = document.createElement("div");
-        const style = window.getComputedStyle(textarea);
-        [
-          "fontFamily", "fontSize", "fontWeight", "lineHeight", "letterSpacing",
-          "padding", "paddingTop", "paddingRight", "paddingBottom", "paddingLeft",
-          "borderTopWidth", "borderRightWidth", "borderBottomWidth", "borderLeftWidth",
-          "width", "boxSizing", "whiteSpace", "wordWrap", "overflowWrap",
-        ].forEach((prop) => {
-          mirror.style[prop] = style[prop];
-        });
-        mirror.style.position = "absolute";
-        mirror.style.visibility = "hidden";
-        mirror.style.overflow = "hidden";
-        mirror.style.top = "0";
-        mirror.style.left = "0";
-        mirror.style.height = "auto";
-        mirror.style.whiteSpace = "pre-wrap";
-
-        const textBefore = textarea.value.substring(0, position);
-        mirror.textContent = textBefore;
-
-        const caret = document.createElement("span");
-        caret.textContent = "|";
-        mirror.appendChild(caret);
-
-        document.body.appendChild(mirror);
-        const rect = textarea.getBoundingClientRect();
-
-        const x = rect.left + (caret.offsetLeft - mirror.scrollLeft);
-        const y = rect.top + (caret.offsetTop - textarea.scrollTop);
-
-        document.body.removeChild(mirror);
-        return { x, y };
-      }
-
-      updateAutocomplete = function () {
-        if (!autocompleteEnabled) {
-          hideAutocomplete();
-          return;
-        }
-        const inputText = textarea.value;
-        const cursorPosition = textarea.selectionStart;
-        let dollarIndex = inputText
-          .substring(0, cursorPosition)
-          .lastIndexOf("$");
-        if (dollarIndex === -1) {
-          hideAutocomplete();
-          return;
-        }
-        const searchTerm = inputText
-          .substring(dollarIndex, cursorPosition)
-          .toLowerCase();
-        autocompleteOutput.innerHTML = "";
-        const matchingFunctions = functions.filter((entry) =>
-          entry.tag.toLowerCase().startsWith(searchTerm),
-        );
-        const displayedFunctions = matchingFunctions.slice(0, 6);
-        selectedIndex = -1;
-        Array.from(autocompleteOutput.children).forEach((child) =>
-          child.classList.remove("selected"),
-        );
-
-        displayedFunctions.forEach((entry) => {
-          const span = document.createElement("span");
-          const displayName = entry.tag.includes("[")
-            ? entry.tag.substring(0, entry.tag.indexOf("["))
-            : entry.tag;
-          const preview =
-            entry.tag.length > 40
-              ? entry.tag.substring(0, 40) + "..."
-              : entry.tag;
-
-          span.style.display = "flex";
-          span.style.justifyContent = "space-between";
-          span.style.gap = "1rem";
-          span.style.overflow = "hidden";
-
-          const nameEl = document.createElement("span");
-          nameEl.textContent = displayName;
-
-          const previewEl = document.createElement("span");
-          previewEl.textContent = preview;
-          previewEl.style.color = "rgba(255,255,255,0.35)";
-          previewEl.style.fontSize = "0.9em";
-          previewEl.style.whiteSpace = "nowrap";
-          previewEl.style.overflow = "hidden";
-          previewEl.style.textOverflow = "ellipsis";
-          previewEl.style.maxWidth = "200px";
-          previewEl.style.flexShrink = "0";
-          previewEl.style.display = "none";
-
-          span.addEventListener("mouseenter", () => {
-            previewEl.style.display = "block";
-          });
-          span.addEventListener("mouseleave", () => {
-            previewEl.style.display = "none";
-          });
-
-          span.appendChild(nameEl);
-          span.appendChild(previewEl);
-          span.dataset.tag = entry.tag;
-          span.addEventListener("click", () =>
-            selectFunction(entry.tag, dollarIndex, cursorPosition, inputText),
-          );
-          autocompleteOutput.appendChild(span);
-        });
-
-        clearTimeout(cursorInactiveTimeout);
-        cursorInactiveTimeout = setTimeout(hideAutocomplete, 10000);
-
-        // Position dropdown using mirror div technique for accurate caret position
-        const caret = getCaretCoordinates(textarea, dollarIndex);
-        const lineHeight =
-          parseInt(window.getComputedStyle(textarea).lineHeight) || 24;
-        const dropdownHeight = displayedFunctions.length * 48;
-        const dropdownWidth = Math.min(
-          textarea.getBoundingClientRect().width,
-          480,
-        );
-        const leftPos = Math.min(caret.x, window.innerWidth - dropdownWidth - 8);
-
-        const spaceBelow = window.innerHeight - caret.y - lineHeight;
-        const topPos =
-          spaceBelow >= dropdownHeight + 8
-            ? caret.y + lineHeight
-            : Math.max(8, caret.y - dropdownHeight);
-
-        autocompleteOutput.style.position = "fixed";
-        autocompleteOutput.style.top = topPos + "px";
-        autocompleteOutput.style.left = leftPos + "px";
-        autocompleteOutput.style.width = dropdownWidth + "px";
-        autocompleteOutput.style.bottom = "auto";
-        autocompleteOutput.style.display = "block";
-      };
-
-      function selectFunction(func, dollarIndex, cursorPosition, inputText) {
-        textarea.value =
-          inputText.substring(0, dollarIndex) +
-          func +
-          inputText.substring(cursorPosition);
-        textarea.selectionStart = textarea.selectionEnd =
-          dollarIndex + func.length;
-        hideAutocomplete();
-        textarea.focus();
-        hideAutocomplete();
-      }
-
-      function handleArrowKeys(event) {
-        if (autocompleteOutput.children.length === 0) return;
-        if (event.key === "ArrowDown") {
-          event.preventDefault();
-          selectedIndex = Math.min(
-            selectedIndex + 1,
-            autocompleteOutput.children.length - 1,
-          );
-        } else if (event.key === "ArrowUp") {
-          event.preventDefault();
-          selectedIndex = Math.max(selectedIndex - 1, 0);
-        } else if (event.key === "Enter" && selectedIndex !== -1) {
-          event.preventDefault();
-          const selectedFunction =
-            autocompleteOutput.children[selectedIndex].dataset.tag;
-          const inputText = textarea.value;
-          const cursorPosition = textarea.selectionStart;
-          let dollarIndex = inputText
-            .substring(0, cursorPosition)
-            .lastIndexOf("$");
-          selectFunction(
-            selectedFunction,
-            dollarIndex,
-            cursorPosition,
-            inputText,
-          );
-          return;
-        }
-        highlightSelected();
-      }
-
-      function highlightSelected() {
-        Array.from(autocompleteOutput.children).forEach((child, index) => {
-          const isSelected = index === selectedIndex;
-          child.classList.toggle("selected", isSelected);
-          const preview = child.querySelector("span:last-child");
-          if (preview) preview.style.display = isSelected ? "block" : "none";
-        });
-      }
-
-      if (textarea) {
-        textarea.addEventListener("input", updateAutocomplete);
-        textarea.addEventListener("mouseup", updateAutocomplete);
-        textarea.addEventListener("keydown", (event) => {
-          if (
-            event.key === "ArrowDown" ||
-            event.key === "ArrowUp" ||
-            event.key === "Enter"
-          ) {
-            handleArrowKeys(event);
-          }
-        });
-
-        textarea.addEventListener("blur", () => {
-          setTimeout(hideAutocomplete, 200);
-        });
-
-        document.addEventListener("click", (event) => {
-          if (
-            !autocompleteOutput.contains(event.target) &&
-            event.target !== textarea
-          ) {
-            hideAutocomplete();
-          }
-        });
-      }
-    })
-    .catch((err) => console.error("Failed to load functions_tag.json:", err));
-}
-
-function addTooltips() {
-  const textarea = document.getElementById("editor");
-  const tooltip = document.createElement("div");
-  tooltip.id = "tooltip";
-  tooltip.style.position = "absolute";
-  tooltip.style.display = "none";
-  tooltip.style.zIndex = "1001";
-  document.body.appendChild(tooltip);
-
-  textarea.addEventListener("keyup", updateTooltip);
-  textarea.addEventListener("mouseup", updateTooltip);
-
-  function updateTooltip() {
-    if (!autocompleteEnabled) {
-      tooltip.style.display = "none";
-      return;
-    }
-
-    const text = textarea.value;
-    const cursor = textarea.selectionStart;
-    const commandTrigger = "$commandTrigger";
-    const isSlashTrigger = "$isSlash";
-    const timestampTrigger = "$getTimestamp";
-    let tooltipText = "";
-
-    if (
-      text.substring(cursor - commandTrigger.length, cursor) === commandTrigger
-    ) {
-      const name = document.getElementById("name").value || "trigger";
-      tooltipText = `Returns '${name}'`;
-    } else if (
-      text.substring(cursor - isSlashTrigger.length, cursor) === isSlashTrigger
-    ) {
-      const slash = document
-        .getElementById("scriptType")
-        .textContent.includes("Slash Command")
-        ? "true"
-        : "false";
-      tooltipText = `Returns '${slash}'`;
-    } else if (
-      text
-        .substring(cursor - timestampTrigger.length, cursor)
-        .startsWith(timestampTrigger)
-    ) {
-      const timestamp = Math.floor(Date.now() / 1000);
-      tooltipText = `Returns '${timestamp}'`;
-    }
-
-    if (tooltipText) {
-      const { left, top } = textarea.getBoundingClientRect();
-      const textareaStyle = window.getComputedStyle(textarea);
-      let lineHeight = parseInt(textareaStyle.lineHeight);
-      lineHeight = isNaN(lineHeight) ? 16 : lineHeight;
-      const paddingTop = parseInt(textareaStyle.paddingTop) || 0;
-      const borderTopWidth = parseInt(textareaStyle.borderTopWidth) || 0;
-      const x = left + cursor * 8;
-      const y =
-        top +
-        paddingTop +
-        borderTopWidth +
-        Math.floor(
-          textarea.value.substring(0, textarea.selectionStart).split("\n")
-            .length,
-        ) *
-          lineHeight +
-        30;
-
-      tooltip.style.left = `${x}px`;
-      tooltip.style.top = `${y}px`;
-      tooltip.textContent = tooltipText;
-      tooltip.style.display = "block";
-    } else {
-      tooltip.style.display = "none";
-    }
-  }
-}
-
 function updateAutocompleteState() {
-  const textarea = document.getElementById("editor");
-  const autocompleteOutput = document.getElementById("autocomplete");
-  if (!autocompleteEnabled) {
-    autocompleteOutput.innerHTML = ""; // Clear autocomplete
-    textarea.removeEventListener("input", updateAutocomplete);
-    textarea.removeEventListener("mouseup", updateAutocomplete);
-    document.getElementById("tooltip").style.display = "none"; // Hide tooltip
-    textarea.removeEventListener("keyup", updateTooltip);
-    textarea.removeEventListener("mouseup", updateTooltip);
-  } else {
-    textarea.addEventListener("input", updateAutocomplete);
-    textarea.addEventListener("mouseup", updateAutocomplete);
-    textarea.addEventListener("keyup", updateTooltip);
-    textarea.addEventListener("mouseup", updateTooltip);
-  }
+  // No-op: CodeMirror manages its own autocomplete state
 }
-
-document.addEventListener("DOMContentLoaded", function () {
-  if (window.location.href.includes("editor.html")) {
-    autocomplete();
-    addTooltips();
-    updateAutocompleteState();
-  }
-});
 
 window.addEventListener("beforeunload", function (event) {
-  const textarea = document.getElementById("editor");
-
-  if (textarea.value.trim() === "") {
-    return;
-  }
-
+  if (!window.cmEditor) return;
+  if (window.cmEditor.state.doc.toString().trim() === "") return;
   event.preventDefault();
   event.returnValue = "";
-  const confirmationMessage = "Are you sure you want to leave the page?";
-  return confirmationMessage;
+  return "Are you sure you want to leave the page?";
 });
 
 function updateInternetConnection() {
   const text = document.getElementById("internetConnection");
-
   if (text) {
     if (window.navigator.onLine) {
       text.textContent = "👍 All services work stably.";
