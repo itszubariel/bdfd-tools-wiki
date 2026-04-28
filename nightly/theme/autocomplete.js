@@ -41,11 +41,8 @@ function autocomplete() {
       let cursorInactiveTimeout;
       let selectedIndex = -1;
 
-      // Move autocomplete inside the editor's parent so position: absolute works correctly
-      const scriptDiv =
-        textarea.closest(".scriptdiv") ?? textarea.parentElement;
-      scriptDiv.style.position = "relative";
-      scriptDiv.appendChild(autocompleteOutput);
+      // Move autocomplete to body since we're using fixed positioning
+      document.body.appendChild(autocompleteOutput);
 
       function hideAutocomplete() {
         autocompleteOutput.innerHTML = "";
@@ -130,23 +127,30 @@ function autocomplete() {
         clearTimeout(cursorInactiveTimeout);
         cursorInactiveTimeout = setTimeout(hideAutocomplete, 10000);
 
-        // Position dropdown above or below the editor box
+        // Position dropdown near cursor using fixed positioning
+        const rect = textarea.getBoundingClientRect();
         const lineHeight =
           parseInt(window.getComputedStyle(textarea).lineHeight) || 24;
-        const lines = inputText.substring(0, cursorPosition).split("\n").length;
-        const cursorY = lines * lineHeight - textarea.scrollTop;
-        const textareaHeight = textarea.offsetHeight;
-        const dropdownHeight = autocompleteOutput.offsetHeight || 250;
-        const spaceBelow = textareaHeight - cursorY;
+        const linesBeforeCursor = inputText
+          .substring(0, cursorPosition)
+          .split("\n").length;
+        const cursorTop =
+          rect.top + linesBeforeCursor * lineHeight - textarea.scrollTop;
+        const dropdownHeight = Math.min(displayedFunctions.length * 48, 300);
 
-        if (spaceBelow < dropdownHeight + 8) {
-          autocompleteOutput.style.bottom = textareaHeight + "px";
-          autocompleteOutput.style.top = "auto";
+        // Flip above cursor if not enough space below, but never go above textarea top
+        let topPos;
+        if (cursorTop + dropdownHeight + 8 > rect.bottom) {
+          topPos = Math.max(rect.top, cursorTop - dropdownHeight - 8);
         } else {
-          autocompleteOutput.style.top = textareaHeight + "px";
-          autocompleteOutput.style.bottom = "auto";
+          topPos = Math.min(cursorTop, rect.bottom - dropdownHeight - 8);
         }
 
+        autocompleteOutput.style.position = "fixed";
+        autocompleteOutput.style.top = topPos + "px";
+        autocompleteOutput.style.left = rect.left + "px";
+        autocompleteOutput.style.width = rect.width + "px";
+        autocompleteOutput.style.bottom = "auto";
         autocompleteOutput.style.display = "block";
       };
 
