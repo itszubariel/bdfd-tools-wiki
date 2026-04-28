@@ -71,12 +71,13 @@ function autocomplete() {
         const matchingFunctions = functions.filter((entry) =>
           entry.tag.toLowerCase().startsWith(searchTerm),
         );
+        const displayedFunctions = matchingFunctions.slice(0, 5);
         selectedIndex = -1;
         Array.from(autocompleteOutput.children).forEach((child) =>
           child.classList.remove("selected"),
         );
 
-        matchingFunctions.forEach((entry) => {
+        displayedFunctions.forEach((entry) => {
           const span = document.createElement("span");
           const displayName = entry.tag.includes("[")
             ? entry.tag.substring(0, entry.tag.indexOf("["))
