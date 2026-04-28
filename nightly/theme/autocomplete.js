@@ -137,19 +137,29 @@ function autocomplete() {
         const cursorTop =
           rect.top + linesBeforeCursor * lineHeight - textarea.scrollTop;
         const dropdownHeight = Math.min(displayedFunctions.length * 48, 300);
+        const viewportHeight = window.innerHeight;
+        const viewportWidth = window.innerWidth;
+        const spaceBelow = rect.bottom - cursorTop;
+        const spaceAbove = cursorTop - rect.top;
 
-        // Flip above cursor if not enough space below, but never go above textarea top
+        // Flip above cursor if more space above, clamped to viewport
         let topPos;
-        if (cursorTop + dropdownHeight + 8 > rect.bottom) {
-          topPos = Math.max(rect.top, cursorTop - dropdownHeight - 8);
+        if (spaceBelow < dropdownHeight + 8 && spaceAbove > spaceBelow) {
+          topPos = Math.max(8, cursorTop - dropdownHeight - 8);
         } else {
-          topPos = Math.min(cursorTop, rect.bottom - dropdownHeight - 8);
+          topPos = Math.min(cursorTop, viewportHeight - dropdownHeight - 8);
         }
+
+        // Clamp left so dropdown never goes off the right edge
+        const dropdownWidth = Math.min(rect.width, 560);
+        const leftPos = Math.min(rect.left, viewportWidth - dropdownWidth - 8);
 
         autocompleteOutput.style.position = "fixed";
         autocompleteOutput.style.top = topPos + "px";
-        autocompleteOutput.style.left = rect.left + "px";
-        autocompleteOutput.style.width = rect.width + "px";
+        autocompleteOutput.style.left = leftPos + "px";
+        autocompleteOutput.style.width = "auto";
+        autocompleteOutput.style.minWidth = "280px";
+        autocompleteOutput.style.maxWidth = dropdownWidth + "px";
         autocompleteOutput.style.bottom = "auto";
         autocompleteOutput.style.display = "block";
       };
