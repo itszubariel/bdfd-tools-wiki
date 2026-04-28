@@ -502,6 +502,10 @@
   	right: 0.8rem;
 }
 
+.scriptdiv button:nth-of-type(3) {
+	right: 8rem;
+}
+
 #error-message {
     display: block !important;
 	text-align: center;
@@ -747,35 +751,40 @@
     position: relative;
 }
 #editor-statusbar {
-    display: flex;
+    display: none; /* hidden in normal mode */
     align-items: center;
     gap: 1rem;
     padding: 0.3rem 0.75rem;
     background: hsl(0deg 0% 100% / 5%);
-    border-radius: 0 0 10px 10px;
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     color: hsl(0deg 0% 100% / 40%);
     font-family: monospace;
     user-select: none;
+    flex-shrink: 0;
 }
 #editor-statusbar span {
     flex-shrink: 0;
 }
-#editor-fullscreen-btn {
-    margin-left: auto;
-    background: none;
-    border: 1px solid hsl(0deg 0% 100% / 15%);
-    color: hsl(0deg 0% 100% / 50%);
-    border-radius: 4px;
-    padding: 0.1rem 0.5rem;
-    font-size: 0.8rem;
-    cursor: pointer;
-    transition: all 0.2s;
-    font-family: monospace;
-}
-#editor-fullscreen-btn:hover {
+#editor-close-btn {
+    display: none;
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 9999;
+    background: hsl(0deg 0% 100% / 10%);
+    border: 1px solid hsl(0deg 0% 100% / 20%);
     color: #fff;
-    border-color: hsl(0deg 0% 100% / 40%);
+    border-radius: 8px;
+    width: 2.5rem;
+    height: 2.5rem;
+    font-size: 1.2rem;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+#editor-close-btn:hover {
+    background: hsl(0deg 0% 100% / 20%);
 }
 .editor-fullscreen {
     position: fixed !important;
@@ -786,7 +795,7 @@
     margin: 0 !important;
     width: 100% !important;
     height: 100% !important;
-    display: flex;
+    display: flex !important;
     flex-direction: column;
 }
 .editor-fullscreen #editor {
@@ -801,8 +810,8 @@
     border-radius: 0 !important;
 }
 .editor-fullscreen #editor-statusbar {
+    display: flex;
     border-radius: 0;
-    flex-shrink: 0;
 }
 
 /* CodeMirror overrides */
@@ -825,7 +834,7 @@
 .cm-tooltip-autocomplete ul li {
     color: var(--text-secondary) !important;
     padding: 0.3rem 0.75rem !important;
-    font-size: 1rem !important;
+    font-size: 1.35rem !important;
     display: flex !important;
     align-items: center !important;
     gap: 0.5rem !important;
@@ -972,10 +981,9 @@ if (saved) {
 // Fullscreen toggle
 window.toggleEditorFullscreen = function() {
   const wrapper = document.getElementById('editor-fullscreen-wrapper');
-  const btn = document.getElementById('editor-fullscreen-btn');
+  const closeBtn = document.getElementById('editor-close-btn');
   const isFullscreen = wrapper.classList.toggle('editor-fullscreen');
-  btn.title = isFullscreen ? 'Exit fullscreen' : 'Fullscreen';
-  btn.textContent = isFullscreen ? '✕' : '⛶';
+  closeBtn.style.display = isFullscreen ? 'flex' : 'none';
   window.cmEditor.requestMeasure();
 };
 </script>
@@ -1013,11 +1021,12 @@ window.toggleEditorFullscreen = function() {
 			<div id="editor-statusbar">
 				<span id="editor-cursor-pos">Ln 1, Col 1</span>
 				<span id="editor-total-lines">1 line</span>
-				<button id="editor-fullscreen-btn" onclick="toggleEditorFullscreen()" title="Fullscreen">⛶ Fullscreen</button>
 			</div>
 		</div>
 	 	<button class="fa fa-regular fa-paste clip-button" onclick="copyCodeText()" title="Copy" aria-label="Copy"></button>
 	  	<button class="fa fa-file-word-o" onclick="saveFile()" title="Save as file" aria-label="Save as file"></button>
+	  	<button class="fa fa-expand" onclick="toggleEditorFullscreen()" title="Fullscreen" aria-label="Fullscreen" id="editor-fullscreen-btn"></button>
+	  	<button id="editor-close-btn" onclick="toggleEditorFullscreen()" title="Exit fullscreen" aria-label="Exit fullscreen">✕</button>
 	</div>
 </div>
 <div id="another-info">
