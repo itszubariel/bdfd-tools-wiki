@@ -1,6 +1,10 @@
 // Setting
 let autocompleteEnabled = true;
 
+// Hoisted so updateAutocompleteState() can reference them
+let updateAutocomplete = () => {};
+let updateTooltip = () => {};
+
 function changeAutocomplete() {
   autocompleteEnabled = !autocompleteEnabled;
   const autocompleteElement = document.getElementById("autocomplete");
@@ -42,7 +46,7 @@ function autocomplete() {
         );
       }
 
-      function updateAutocomplete() {
+      updateAutocomplete = function () {
         if (!autocompleteEnabled) {
           hideAutocomplete();
           return;
@@ -69,31 +73,7 @@ function autocomplete() {
           child.classList.remove("selected"),
         );
 
-        const { left, top } = textarea.getBoundingClientRect();
-
-        const textareaStyle = window.getComputedStyle(textarea);
-        let lineHeight = parseInt(textareaStyle.lineHeight) || 16;
-        const paddingTop = parseInt(textareaStyle.paddingTop) || 0;
-        const borderTopWidth = parseInt(textareaStyle.borderTopWidth) || 0;
-
-        const x = left + textarea.selectionStart * 8;
-
-        let y =
-          top +
-          paddingTop +
-          borderTopWidth +
-          Math.floor(
-            inputText.substring(0, cursorPosition).split("\n").length,
-          ) *
-            lineHeight +
-          30;
-
-        autocompleteOutput.style.position = "absolute";
-        autocompleteOutput.style.left = `${x}px`;
-        autocompleteOutput.style.top = `${y}px`;
-        autocompleteOutput.style.zIndex = "1000";
-
-        displayedFunctions.forEach((func, index) => {
+        displayedFunctions.forEach((func) => {
           const span = document.createElement("span");
           span.textContent = func;
           span.addEventListener("click", () =>
@@ -104,7 +84,7 @@ function autocomplete() {
 
         clearTimeout(cursorInactiveTimeout);
         cursorInactiveTimeout = setTimeout(hideAutocomplete, 10000);
-      }
+      };
 
       function selectFunction(func, dollarIndex, cursorPosition, inputText) {
         textarea.value =
