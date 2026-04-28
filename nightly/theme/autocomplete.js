@@ -82,7 +82,29 @@ function autocomplete() {
           const displayName = entry.tag.includes("[")
             ? entry.tag.substring(0, entry.tag.indexOf("["))
             : entry.tag;
-          span.textContent = displayName;
+          const preview =
+            entry.tag.length > 40
+              ? entry.tag.substring(0, 40) + "..."
+              : entry.tag;
+
+          span.style.display = "flex";
+          span.style.justifyContent = "space-between";
+          span.style.gap = "1rem";
+
+          const nameEl = document.createElement("span");
+          nameEl.textContent = displayName;
+
+          const previewEl = document.createElement("span");
+          previewEl.textContent = preview;
+          previewEl.style.color = "rgba(255,255,255,0.35)";
+          previewEl.style.fontSize = "0.9em";
+          previewEl.style.whiteSpace = "nowrap";
+          previewEl.style.overflow = "hidden";
+          previewEl.style.textOverflow = "ellipsis";
+          previewEl.style.maxWidth = "55%";
+
+          span.appendChild(nameEl);
+          span.appendChild(previewEl);
           span.dataset.tag = entry.tag;
           span.addEventListener("click", () =>
             selectFunction(entry.tag, dollarIndex, cursorPosition, inputText),
