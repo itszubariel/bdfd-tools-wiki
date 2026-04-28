@@ -1338,7 +1338,9 @@ window._cmCompartments = { autocompleteCompartment, lineWrappingCompartment, lin
 window._cmExtensions = { autocompletion, completeFromList, completions, lineNumbers, EditorView };
 window._bdscriptPlugin = bdscriptPlugin;
 
-// Restore saved editor contentif (saved) {
+// Restore saved editor content
+const saved = localStorage.getItem('bdfd_editor_content');
+if (saved) {
   window.cmEditor.dispatch({ changes: { from: 0, to: window.cmEditor.state.doc.length, insert: saved } });
   updateStats();
   checkBrackets();
