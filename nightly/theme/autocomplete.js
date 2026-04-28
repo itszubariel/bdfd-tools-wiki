@@ -71,19 +71,29 @@ function autocomplete() {
         const matchingFunctions = functions.filter((entry) =>
           entry.tag.toLowerCase().startsWith(searchTerm),
         );
-        const displayedFunctions = matchingFunctions.slice(0, 5);
         selectedIndex = -1;
         Array.from(autocompleteOutput.children).forEach((child) =>
           child.classList.remove("selected"),
         );
 
-        displayedFunctions.forEach((entry) => {
+        matchingFunctions.forEach((entry) => {
           const span = document.createElement("span");
           const displayName = entry.tag.includes("[")
             ? entry.tag.substring(0, entry.tag.indexOf("["))
             : entry.tag;
-          span.textContent = displayName;
           span.dataset.tag = entry.tag;
+
+          const nameLine = document.createElement("span");
+          nameLine.className = "autocomplete-name";
+          nameLine.textContent = displayName;
+
+          const sigLine = document.createElement("span");
+          sigLine.className = "autocomplete-sig";
+          sigLine.textContent = entry.tag;
+
+          span.appendChild(nameLine);
+          span.appendChild(sigLine);
+
           span.addEventListener("click", () =>
             selectFunction(entry.tag, dollarIndex, cursorPosition, inputText),
           );
