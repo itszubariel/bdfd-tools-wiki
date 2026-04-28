@@ -82,19 +82,8 @@ function autocomplete() {
           const displayName = entry.tag.includes("[")
             ? entry.tag.substring(0, entry.tag.indexOf("["))
             : entry.tag;
+          span.textContent = displayName;
           span.dataset.tag = entry.tag;
-
-          const nameLine = document.createElement("span");
-          nameLine.className = "autocomplete-name";
-          nameLine.textContent = displayName;
-
-          const sigLine = document.createElement("span");
-          sigLine.className = "autocomplete-sig";
-          sigLine.textContent = entry.tag;
-
-          span.appendChild(nameLine);
-          span.appendChild(sigLine);
-
           span.addEventListener("click", () =>
             selectFunction(entry.tag, dollarIndex, cursorPosition, inputText),
           );
