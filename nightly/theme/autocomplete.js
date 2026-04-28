@@ -79,7 +79,9 @@ function autocomplete() {
 
         displayedFunctions.forEach((entry) => {
           const span = document.createElement("span");
-          span.textContent = entry.tag;
+          const displayName = entry.tag.includes('[') ? entry.tag.substring(0, entry.tag.indexOf('[')) : entry.tag;
+          span.textContent = displayName;
+          span.dataset.tag = entry.tag;
           span.addEventListener("click", () =>
             selectFunction(entry.tag, dollarIndex, cursorPosition, inputText),
           );
@@ -115,7 +117,7 @@ function autocomplete() {
         } else if (event.key === "Enter" && selectedIndex !== -1) {
           event.preventDefault();
           const selectedFunction =
-            autocompleteOutput.children[selectedIndex].textContent;
+            autocompleteOutput.children[selectedIndex].dataset.tag;
           const inputText = textarea.value;
           const cursorPosition = textarea.selectionStart;
           let dollarIndex = inputText
