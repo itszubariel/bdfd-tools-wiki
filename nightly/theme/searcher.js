@@ -325,7 +325,7 @@ window.search = window.search || {};
     
     // Eventhandler for keyevents on `document`
     function globalKeyHandler(e) {
-        if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey || e.target.type === 'textarea' || e.target.type === 'text') { return; }
+        if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey || e.target.type === 'textarea' || e.target.type === 'text' || e.target.isContentEditable || e.target.closest('.cm-editor')) { return; }
 
         if (e.keyCode === ESCAPE_KEYCODE) {
             e.preventDefault();
