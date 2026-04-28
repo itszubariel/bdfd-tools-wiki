@@ -276,6 +276,11 @@
 	border-radius: 10px;
 }
 
+#text-editorui[open] #highlightedText {
+	display: block;
+}
+
+
 #text-editorui p {
 	user-select: none;
 	-webkit-user-select: none;
@@ -335,6 +340,7 @@
 }
 
 #highlightedText {
+	display: none;
 	overflow-x: auto;
 	color: #fff;
 	font-size: 1.5rem;
@@ -344,6 +350,7 @@
 	height: 100%;
 	word-break: break-all;
 	background: hsl(0deg 0% 100% / 7%);
+	margin-top: 1rem;
 }
 
 #highlightedText p {
@@ -1184,8 +1191,8 @@ window.resetHighlightTheme = function() {
 	<button onclick="replaceOneText()">Replace</button>
 	<button onclick="replaceText()">Replace all</button>
 	<p><i class="fa fa-info" aria-hidden="true"></i> Regex is supported</p>
+	<div id="highlightedText"></div>
 </details>
-<div id="highlightedText"></div>
 <details id="settings">
   <summary>Settings</summary>
   <div class="setting-item">
