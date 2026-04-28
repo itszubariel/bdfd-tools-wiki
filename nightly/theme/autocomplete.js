@@ -28,7 +28,11 @@ function autoSettingChange(buttonName, status) {
 
 // Main autocomplete
 function autocomplete() {
-  fetch("../tools/functions_tag.json")
+  const base = window.location.pathname.substring(
+    0,
+    window.location.pathname.lastIndexOf("/") + 1,
+  );
+  fetch(base + "../tools/functions_tag.json")
     .then((res) => res.json())
     .then((data) => {
       const functions = data.functions || [];
@@ -161,7 +165,7 @@ function autocomplete() {
         });
       }
     })
-    .catch((err) => console.error("Failed to load functions.json:", err));
+    .catch((err) => console.error("Failed to load functions_tag.json:", err));
 }
 
 function addTooltips() {
