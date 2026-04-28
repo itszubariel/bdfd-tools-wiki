@@ -2,8 +2,8 @@
 let autocompleteEnabled = true;
 
 // Hoisted so updateAutocompleteState() can reference them
-let updateAutocomplete = () => {};
-let updateTooltip = () => {};
+let updateAutocomplete = () => { };
+let updateTooltip = () => { };
 
 function changeAutocomplete() {
   autocompleteEnabled = !autocompleteEnabled;
@@ -270,7 +270,7 @@ function addTooltips() {
           textarea.value.substring(0, textarea.selectionStart).split("\n")
             .length,
         ) *
-          lineHeight +
+        lineHeight +
         30;
 
       tooltip.style.left = `${x}px`;
