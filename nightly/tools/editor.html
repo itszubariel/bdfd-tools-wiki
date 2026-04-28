@@ -723,7 +723,10 @@
 }
 
 #autocomplete span {
-    display: block;
+    display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 1rem;
     color: var(--text-secondary);
 	margin-top: 0;
     margin-bottom: 0;
@@ -737,18 +740,20 @@
 }
 
 #autocomplete span .autocomplete-name {
-	display: block;
 	color: #fff;
 	font-size: 0.95rem;
 	font-weight: 500;
+	flex-shrink: 0;
 }
 
 #autocomplete span .autocomplete-sig {
-	display: block;
 	color: var(--text-secondary);
 	font-size: 0.75rem;
-	margin-top: 0.1rem;
 	opacity: 0.7;
+	text-align: right;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
 #autocomplete span.selected, #autocomplete span:hover {
