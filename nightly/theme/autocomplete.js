@@ -24,156 +24,164 @@ function autoSettingChange(buttonName, status) {
 
 // Main autocomplete
 function autocomplete() {
-  const textarea = document.getElementById("editor");
-  const autocompleteOutput = document.getElementById("autocomplete");
-  let cursorInactiveTimeout;
-  let selectedIndex = -1;
-  let functions = [];
-
   fetch("/src/tools/functions.json")
     .then((res) => res.json())
     .then((data) => {
-      functions = data.functions || [];
-    })
-    .catch(() => {
-      functions = [];
-    });
+      const functions = data.functions || [];
+      const textarea = document.getElementById("editor");
+      const autocompleteOutput = document.getElementById("autocomplete");
+      let cursorInactiveTimeout;
+      let selectedIndex = -1;
 
-  function hideAutocomplete() {
-    autocompleteOutput.innerHTML = "";
-    clearTimeout(cursorInactiveTimeout);
-    selectedIndex = -1;
-    Array.from(autocompleteOutput.children).forEach((child) =>
-      child.classList.remove("selected"),
-    );
-  }
-
-  function updateAutocomplete() {
-    if (!autocompleteEnabled) {
-      hideAutocomplete();
-      return;
-    }
-    const inputText = textarea.value;
-    const cursorPosition = textarea.selectionStart;
-    let dollarIndex = inputText.substring(0, cursorPosition).lastIndexOf("$");
-    if (dollarIndex === -1) {
-      hideAutocomplete();
-      return;
-    }
-    const searchTerm = inputText
-      .substring(dollarIndex, cursorPosition)
-      .toLowerCase();
-    autocompleteOutput.innerHTML = "";
-    const matchingFunctions = functions.filter((func) =>
-      func.toLowerCase().startsWith(searchTerm),
-    );
-    const displayedFunctions = matchingFunctions.slice(0, 5);
-    selectedIndex = -1;
-    Array.from(autocompleteOutput.children).forEach((child) =>
-      child.classList.remove("selected"),
-    );
-
-    const { left, top } = textarea.getBoundingClientRect();
-
-    const textareaStyle = window.getComputedStyle(textarea);
-    let lineHeight = parseInt(textareaStyle.lineHeight) || 16;
-    const paddingTop = parseInt(textareaStyle.paddingTop) || 0;
-    const borderTopWidth = parseInt(textareaStyle.borderTopWidth) || 0;
-
-    const x = left + textarea.selectionStart * 8;
-
-    let y =
-      top +
-      paddingTop +
-      borderTopWidth +
-      Math.floor(inputText.substring(0, cursorPosition).split("\n").length) *
-        lineHeight +
-      30;
-
-    autocompleteOutput.style.position = "absolute";
-    autocompleteOutput.style.left = `${x}px`;
-    autocompleteOutput.style.top = `${y}px`;
-    autocompleteOutput.style.zIndex = "1000";
-
-    displayedFunctions.forEach((func, index) => {
-      const span = document.createElement("span");
-      span.textContent = func;
-      span.addEventListener("click", () =>
-        selectFunction(func, dollarIndex, cursorPosition, inputText),
-      );
-      autocompleteOutput.appendChild(span);
-    });
-
-    clearTimeout(cursorInactiveTimeout);
-    cursorInactiveTimeout = setTimeout(hideAutocomplete, 10000);
-  }
-
-  function selectFunction(func, dollarIndex, cursorPosition, inputText) {
-    textarea.value =
-      inputText.substring(0, dollarIndex) +
-      func +
-      inputText.substring(cursorPosition);
-    textarea.selectionStart = textarea.selectionEnd = dollarIndex + func.length;
-    hideAutocomplete();
-    textarea.focus();
-  }
-
-  function handleArrowKeys(event) {
-    if (autocompleteOutput.children.length === 0) return;
-    if (event.key === "ArrowDown") {
-      event.preventDefault();
-      selectedIndex = Math.min(
-        selectedIndex + 1,
-        autocompleteOutput.children.length - 1,
-      );
-    } else if (event.key === "ArrowUp") {
-      event.preventDefault();
-      selectedIndex = Math.max(selectedIndex - 1, 0);
-    } else if (event.key === "Enter" && selectedIndex !== -1) {
-      event.preventDefault();
-      const selectedFunction =
-        autocompleteOutput.children[selectedIndex].textContent;
-      const inputText = textarea.value;
-      const cursorPosition = textarea.selectionStart;
-      let dollarIndex = inputText.substring(0, cursorPosition).lastIndexOf("$");
-      selectFunction(selectedFunction, dollarIndex, cursorPosition, inputText);
-      return;
-    }
-    highlightSelected();
-  }
-
-  function highlightSelected() {
-    Array.from(autocompleteOutput.children).forEach((child, index) => {
-      child.classList.toggle("selected", index === selectedIndex);
-    });
-  }
-
-  if (textarea) {
-    textarea.addEventListener("input", updateAutocomplete);
-    textarea.addEventListener("mouseup", updateAutocomplete);
-    textarea.addEventListener("keydown", (event) => {
-      if (
-        event.key === "ArrowDown" ||
-        event.key === "ArrowUp" ||
-        event.key === "Enter"
-      ) {
-        handleArrowKeys(event);
+      function hideAutocomplete() {
+        autocompleteOutput.innerHTML = "";
+        clearTimeout(cursorInactiveTimeout);
+        selectedIndex = -1;
+        Array.from(autocompleteOutput.children).forEach((child) =>
+          child.classList.remove("selected"),
+        );
       }
-    });
 
-    textarea.addEventListener("blur", () => {
-      setTimeout(hideAutocomplete, 200);
-    });
+      function updateAutocomplete() {
+        if (!autocompleteEnabled) {
+          hideAutocomplete();
+          return;
+        }
+        const inputText = textarea.value;
+        const cursorPosition = textarea.selectionStart;
+        let dollarIndex = inputText
+          .substring(0, cursorPosition)
+          .lastIndexOf("$");
+        if (dollarIndex === -1) {
+          hideAutocomplete();
+          return;
+        }
+        const searchTerm = inputText
+          .substring(dollarIndex, cursorPosition)
+          .toLowerCase();
+        autocompleteOutput.innerHTML = "";
+        const matchingFunctions = functions.filter((func) =>
+          func.toLowerCase().startsWith(searchTerm),
+        );
+        const displayedFunctions = matchingFunctions.slice(0, 5);
+        selectedIndex = -1;
+        Array.from(autocompleteOutput.children).forEach((child) =>
+          child.classList.remove("selected"),
+        );
 
-    document.addEventListener("click", (event) => {
-      if (
-        !autocompleteOutput.contains(event.target) &&
-        event.target !== textarea
-      ) {
+        const { left, top } = textarea.getBoundingClientRect();
+
+        const textareaStyle = window.getComputedStyle(textarea);
+        let lineHeight = parseInt(textareaStyle.lineHeight) || 16;
+        const paddingTop = parseInt(textareaStyle.paddingTop) || 0;
+        const borderTopWidth = parseInt(textareaStyle.borderTopWidth) || 0;
+
+        const x = left + textarea.selectionStart * 8;
+
+        let y =
+          top +
+          paddingTop +
+          borderTopWidth +
+          Math.floor(
+            inputText.substring(0, cursorPosition).split("\n").length,
+          ) *
+            lineHeight +
+          30;
+
+        autocompleteOutput.style.position = "absolute";
+        autocompleteOutput.style.left = `${x}px`;
+        autocompleteOutput.style.top = `${y}px`;
+        autocompleteOutput.style.zIndex = "1000";
+
+        displayedFunctions.forEach((func, index) => {
+          const span = document.createElement("span");
+          span.textContent = func;
+          span.addEventListener("click", () =>
+            selectFunction(func, dollarIndex, cursorPosition, inputText),
+          );
+          autocompleteOutput.appendChild(span);
+        });
+
+        clearTimeout(cursorInactiveTimeout);
+        cursorInactiveTimeout = setTimeout(hideAutocomplete, 10000);
+      }
+
+      function selectFunction(func, dollarIndex, cursorPosition, inputText) {
+        textarea.value =
+          inputText.substring(0, dollarIndex) +
+          func +
+          inputText.substring(cursorPosition);
+        textarea.selectionStart = textarea.selectionEnd =
+          dollarIndex + func.length;
         hideAutocomplete();
+        textarea.focus();
       }
-    });
-  }
+
+      function handleArrowKeys(event) {
+        if (autocompleteOutput.children.length === 0) return;
+        if (event.key === "ArrowDown") {
+          event.preventDefault();
+          selectedIndex = Math.min(
+            selectedIndex + 1,
+            autocompleteOutput.children.length - 1,
+          );
+        } else if (event.key === "ArrowUp") {
+          event.preventDefault();
+          selectedIndex = Math.max(selectedIndex - 1, 0);
+        } else if (event.key === "Enter" && selectedIndex !== -1) {
+          event.preventDefault();
+          const selectedFunction =
+            autocompleteOutput.children[selectedIndex].textContent;
+          const inputText = textarea.value;
+          const cursorPosition = textarea.selectionStart;
+          let dollarIndex = inputText
+            .substring(0, cursorPosition)
+            .lastIndexOf("$");
+          selectFunction(
+            selectedFunction,
+            dollarIndex,
+            cursorPosition,
+            inputText,
+          );
+          return;
+        }
+        highlightSelected();
+      }
+
+      function highlightSelected() {
+        Array.from(autocompleteOutput.children).forEach((child, index) => {
+          child.classList.toggle("selected", index === selectedIndex);
+        });
+      }
+
+      if (textarea) {
+        textarea.addEventListener("input", updateAutocomplete);
+        textarea.addEventListener("mouseup", updateAutocomplete);
+        textarea.addEventListener("keydown", (event) => {
+          if (
+            event.key === "ArrowDown" ||
+            event.key === "ArrowUp" ||
+            event.key === "Enter"
+          ) {
+            handleArrowKeys(event);
+          }
+        });
+
+        textarea.addEventListener("blur", () => {
+          setTimeout(hideAutocomplete, 200);
+        });
+
+        document.addEventListener("click", (event) => {
+          if (
+            !autocompleteOutput.contains(event.target) &&
+            event.target !== textarea
+          ) {
+            hideAutocomplete();
+          }
+        });
+      }
+    })
+    .catch((err) => console.error("Failed to load functions.json:", err));
 }
 
 function addTooltips() {
