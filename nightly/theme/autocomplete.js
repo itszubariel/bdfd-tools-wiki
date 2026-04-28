@@ -28,7 +28,7 @@ function autoSettingChange(buttonName, status) {
 
 // Main autocomplete
 function autocomplete() {
-  fetch("/src/tools/functions.json")
+  fetch("../tools/functions.json")
     .then((res) => res.json())
     .then((data) => {
       const functions = data.functions || [];
