@@ -887,13 +887,11 @@
 </style>
 <script src="../theme/autocomplete.js" defer></script>
 <script type="module">
-import { EditorView, keymap, lineNumbers } from 'https://esm.sh/@codemirror/view@6';
-import { EditorState, Compartment } from 'https://esm.sh/@codemirror/state@6';
+import { EditorView, keymap, lineNumbers, ViewPlugin, Decoration } from 'https://esm.sh/@codemirror/view@6';
+import { EditorState, Compartment, RangeSetBuilder } from 'https://esm.sh/@codemirror/state@6';
 import { defaultKeymap, history, historyKeymap } from 'https://esm.sh/@codemirror/commands@6';
 import { autocompletion, completeFromList, closeBrackets } from 'https://esm.sh/@codemirror/autocomplete@6';
-import { indentOnInput, bracketMatching, StreamLanguage } from 'https://esm.sh/@codemirror/language@6';
-import { tags } from 'https://esm.sh/@lezer/highlight@1';
-import { HighlightStyle, syntaxHighlighting } from 'https://esm.sh/@codemirror/language@6';
+import { indentOnInput, bracketMatching } from 'https://esm.sh/@codemirror/language@6';
 
 const base = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
 let completions = [];
@@ -907,29 +905,89 @@ try {
   }));
 } catch(e) { console.error('Failed to load functions_tag.json', e); }
 
+// ── Decoration-based syntax highlighter ──────────────────────────────────────
+let currentTheme = {
+  defaultText: '#dbdee1',
+  fallback:    '#a78bfa',
+  bracket:     '#f472b6',
+  semicolon:   '#fb923c',
+  number:      '#34d399',
+  functions:   {},
+};
+
+function uint32ToHex(n) {
+  const r = (n >> 16) & 0xff;
+  const g = (n >> 8)  & 0xff;
+  const b =  n        & 0xff;
+  return '#' + r.toString(16).padStart(2,'0') + g.toString(16).padStart(2,'0') + b.toString(16).padStart(2,'0');
+}
+
+function applyThemeJson(json) {
+  if (json.defaultTextHighlight?.color != null) currentTheme.defaultText = uint32ToHex(json.defaultTextHighlight.color);
+  if (json.fallbackHighlight?.color != null)    currentTheme.fallback    = uint32ToHex(json.fallbackHighlight.color);
+  if (json.bracketHighlight?.color != null)     currentTheme.bracket     = uint32ToHex(json.bracketHighlight.color);
+  if (json.semicolonHighlight?.color != null)   currentTheme.semicolon   = uint32ToHex(json.semicolonHighlight.color);
+  if (json.numberHighlight?.color != null)      currentTheme.number      = uint32ToHex(json.numberHighlight.color);
+  currentTheme.functions = {};
+  if (json.functionsHighlights) {
+    for (const [name, val] of Object.entries(json.functionsHighlights)) {
+      if (val?.color != null) currentTheme.functions[name] = uint32ToHex(val.color);
+    }
+  }
+}
+
+// Restore saved theme on load
+const HIGHLIGHT_KEY = 'bdfd_highlight_theme';
+const savedHighlight = localStorage.getItem(HIGHLIGHT_KEY);
+if (savedHighlight) {
+  try { applyThemeJson(JSON.parse(savedHighlight)); } catch(e) {}
+}
+
+// Mark cache keyed by color
+const markCache = {};
+function getMark(color) {
+  if (!markCache[color]) markCache[color] = Decoration.mark({ attributes: { style: `color:${color}` } });
+  return markCache[color];
+}
+
+function buildDecorations(view) {
+  const builder = new RangeSetBuilder();
+  const doc = view.state.doc;
+  const re = /(\$[a-zA-Z]+)|([\[\]])|(;)|(\d+)/g;
+  for (const { from, to } of view.visibleRanges) {
+    const text = doc.sliceString(from, to);
+    let m;
+    re.lastIndex = 0;
+    while ((m = re.exec(text)) !== null) {
+      const start = from + m.index;
+      const end   = start + m[0].length;
+      let color;
+      if      (m[1]) color = currentTheme.functions[m[1]] ?? currentTheme.fallback;
+      else if (m[2]) color = currentTheme.bracket;
+      else if (m[3]) color = currentTheme.semicolon;
+      else if (m[4]) color = currentTheme.number;
+      if (color) builder.add(start, end, getMark(color));
+    }
+  }
+  return builder.finish();
+}
+
+const bdscriptPlugin = ViewPlugin.fromClass(class {
+  constructor(view) { this.decorations = buildDecorations(view); }
+  update(update) {
+    if (update.docChanged || update.viewportChanged) this.decorations = buildDecorations(update.view);
+  }
+}, { decorations: v => v.decorations });
+
+function refreshHighlight() {
+  Object.keys(markCache).forEach(k => delete markCache[k]);
+  window.cmEditor.dispatch({ effects: [] });
+}
+
+// ── Compartments ─────────────────────────────────────────────────────────────
 const autocompleteCompartment = new Compartment();
 const lineWrappingCompartment = new Compartment();
-const lineNumbersCompartment = new Compartment();
-const highlightCompartment = new Compartment();
-
-// BDScript syntax highlighting
-const bdscriptLanguage = StreamLanguage.define({
-  token(stream) {
-    if (stream.match(/\$[a-zA-Z]+/)) return 'keyword';
-    if (stream.match(/[\[\]]/)) return 'bracket';
-    if (stream.eat(';')) return 'separator';
-    if (stream.match(/\d+/)) return 'number';
-    stream.next();
-    return null;
-  }
-});
-
-const bdscriptHighlightStyle = HighlightStyle.define([
-  { tag: tags.keyword,   color: '#a78bfa' },
-  { tag: tags.bracket,   color: '#f472b6' },
-  { tag: tags.separator, color: '#fb923c' },
-  { tag: tags.number,    color: '#34d399' },
-]);
+const lineNumbersCompartment  = new Compartment();
 
 const updateListener = EditorView.updateListener.of((update) => {
   if (update.docChanged) {
@@ -938,17 +996,16 @@ const updateListener = EditorView.updateListener.of((update) => {
     checkBrackets();
     bdscript2();
   }
-  // Update cursor position and line count on any change (doc or selection)
   if (update.docChanged || update.selectionSet) {
-    const state = update.state;
+    const state  = update.state;
     const cursor = state.selection.main.head;
-    const line = state.doc.lineAt(cursor);
-    const col = cursor - line.from + 1;
-    const totalLines = state.doc.lines;
+    const line   = state.doc.lineAt(cursor);
+    const col    = cursor - line.from + 1;
+    const total  = state.doc.lines;
     const cursorEl = document.getElementById('editor-cursor-pos');
-    const linesEl = document.getElementById('editor-total-lines');
+    const linesEl  = document.getElementById('editor-total-lines');
     if (cursorEl) cursorEl.textContent = `Ln ${line.number}, Col ${col}`;
-    if (linesEl) linesEl.textContent = `${totalLines} line${totalLines !== 1 ? 's' : ''}`;
+    if (linesEl)  linesEl.textContent  = `${total} line${total !== 1 ? 's' : ''}`;
   }
 });
 
@@ -962,16 +1019,14 @@ window.cmEditor = new EditorView({
       indentOnInput(),
       bracketMatching(),
       closeBrackets(),
-      bdscriptLanguage,
-      syntaxHighlighting(bdscriptHighlightStyle),
+      bdscriptPlugin,
       autocompleteCompartment.of(autocompletion({
         override: [completeFromList(completions)],
         activateOnTyping: true,
       })),
       lineWrappingCompartment.of([]),
-      highlightCompartment.of([]),
       EditorView.theme({
-        '&': { backgroundColor: 'hsl(0deg 0% 100% / 7%)', color: '#fff', borderRadius: '10px', height: '40rem' },
+        '&': { backgroundColor: 'hsl(0deg 0% 100% / 7%)', color: '#dbdee1', borderRadius: '10px', height: '40rem' },
         '.cm-scroller': { fontFamily: 'monospace', fontSize: '1.35rem', overflow: 'auto' },
         '.cm-content': { caretColor: '#fff' },
         '.cm-gutters': { backgroundColor: 'hsl(0deg 0% 100% / 5%)', color: 'hsl(0deg 0% 100% / 30%)', border: 'none', borderRadius: '10px 0 0 10px' },
@@ -991,12 +1046,10 @@ window.cmEditor = new EditorView({
 window._cmCompartments = { autocompleteCompartment, lineWrappingCompartment, lineNumbersCompartment };
 window._cmExtensions = { autocompletion, completeFromList, completions, lineNumbers, EditorView };
 
-// localStorage persistence — restore saved content on load
+// Restore saved editor content
 const saved = localStorage.getItem('bdfd_editor_content');
 if (saved) {
-  window.cmEditor.dispatch({
-    changes: { from: 0, to: window.cmEditor.state.doc.length, insert: saved }
-  });
+  window.cmEditor.dispatch({ changes: { from: 0, to: window.cmEditor.state.doc.length, insert: saved } });
   updateStats();
   checkBrackets();
   bdscript2();
@@ -1004,92 +1057,40 @@ if (saved) {
 
 // Fullscreen toggle
 window.toggleEditorFullscreen = function() {
-  const wrapper = document.getElementById('editor-fullscreen-wrapper');
+  const wrapper  = document.getElementById('editor-fullscreen-wrapper');
   const closeBtn = document.getElementById('editor-close-btn');
   const isFullscreen = wrapper.classList.toggle('editor-fullscreen');
   closeBtn.style.display = isFullscreen ? 'flex' : 'none';
   window.cmEditor.requestMeasure();
 };
 
-// Highlight theme import
-const HIGHLIGHT_KEY = 'bdfd_highlight_theme';
-
-function uint32ToHex(uint32) {
-  const r = (uint32 >> 16) & 0xff;
-  const g = (uint32 >> 8) & 0xff;
-  const b = uint32 & 0xff;
-  return '#' + r.toString(16).padStart(2,'0') + g.toString(16).padStart(2,'0') + b.toString(16).padStart(2,'0');
-}
-
-function buildHighlightExtension(themeJson) {
-  const tagDefs = [];
-
-  const baseMap = {
-    numberHighlight:   tags.number,
-    bracketHighlight:  tags.bracket,
-    semicolonHighlight: tags.separator,
-  };
-
-  for (const [key, tag] of Object.entries(baseMap)) {
-    if (themeJson[key] && typeof themeJson[key].color === 'number') {
-      tagDefs.push({ tag, color: uint32ToHex(themeJson[key].color) });
-    }
-  }
-
-  // Use the first function highlight color for keywords
-  if (themeJson.functionsHighlights) {
-    const vals = Object.values(themeJson.functionsHighlights);
-    if (vals.length > 0 && typeof vals[0].color === 'number') {
-      tagDefs.push({ tag: tags.keyword, color: uint32ToHex(vals[0].color) });
-    }
-  }
-
-  if (tagDefs.length === 0) return [];
-  return syntaxHighlighting(HighlightStyle.define(tagDefs));
-}
-
-// Apply saved theme on load
-const savedHighlight = localStorage.getItem(HIGHLIGHT_KEY);
-if (savedHighlight) {
-  try {
-    const ext = buildHighlightExtension(JSON.parse(savedHighlight));
-    window.cmEditor.dispatch({ effects: highlightCompartment.reconfigure(ext) });
-  } catch(e) { console.error('Failed to restore highlight theme', e); }
-}
-
+// Highlight theme modal
 window.openHighlightModal = function() {
-  const saved = localStorage.getItem(HIGHLIGHT_KEY);
-  const ta = document.getElementById('highlightThemeInput');
-  if (saved) ta.value = saved;
-  const modal = document.getElementById('highlightThemeModal');
-  modal.style.display = 'flex';
+  const s = localStorage.getItem(HIGHLIGHT_KEY);
+  if (s) document.getElementById('highlightThemeInput').value = s;
+  document.getElementById('highlightThemeModal').style.display = 'flex';
 };
 window.closeHighlightModal = function() {
   document.getElementById('highlightThemeModal').style.display = 'none';
   document.getElementById('highlightThemeError').textContent = '';
 };
-
 window.applyHighlightTheme = function() {
   const input = document.getElementById('highlightThemeInput');
   const errEl = document.getElementById('highlightThemeError');
   errEl.style.color = '';
   errEl.textContent = '';
   let parsed;
-  try {
-    parsed = JSON.parse(input.value.trim());
-  } catch(e) {
-    errEl.textContent = 'Invalid JSON — check your theme format.';
-    return;
-  }
-  const ext = buildHighlightExtension(parsed);
-  window.cmEditor.dispatch({ effects: highlightCompartment.reconfigure(ext) });
+  try { parsed = JSON.parse(input.value.trim()); }
+  catch(e) { errEl.textContent = 'Invalid JSON — check your theme format.'; return; }
+  applyThemeJson(parsed);
+  refreshHighlight();
   localStorage.setItem(HIGHLIGHT_KEY, input.value.trim());
   window.closeHighlightModal();
 };
-
 window.resetHighlightTheme = function() {
   localStorage.removeItem(HIGHLIGHT_KEY);
-  window.cmEditor.dispatch({ effects: highlightCompartment.reconfigure([]) });
+  currentTheme = { defaultText: '#dbdee1', fallback: '#a78bfa', bracket: '#f472b6', semicolon: '#fb923c', number: '#34d399', functions: {} };
+  refreshHighlight();
   document.getElementById('highlightThemeInput').value = '';
   window.closeHighlightModal();
 };
