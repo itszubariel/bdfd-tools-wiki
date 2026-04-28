@@ -1025,10 +1025,17 @@ $color[#673ab7]
     border: 1px solid rgba(255,255,255,0.1) !important;
     border-radius: 8px !important;
     box-shadow: 0 8px 24px rgba(0,0,0,0.5) !important;
+    max-width: 380px !important;
 }
 .cm-tooltip-autocomplete ul li {
     color: var(--text-secondary) !important;
-    padding: 0.4rem 0.75rem !important;
+    padding: 0.25rem 0.75rem !important;
+    font-size: 0.9rem !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+    overflow: hidden !important;
+    white-space: nowrap !important;
 }
 .cm-tooltip-autocomplete ul li[aria-selected] {
     background: hsl(0deg 0% 100% / 8%) !important;
@@ -1036,12 +1043,20 @@ $color[#673ab7]
 }
 .cm-completionLabel {
     color: #fff;
+    flex-shrink: 0;
 }
 .cm-completionDetail {
     color: rgba(255,255,255,0.35);
     font-style: normal;
-    font-size: 0.85em;
-    margin-left: 0.5rem;
+    font-size: 0.8em;
+    margin-left: 0.25rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 180px;
+}
+.cm-completionIcon {
+    display: none !important;
 }
 </style>
 <script src="../theme/autocomplete.js" defer></script>
