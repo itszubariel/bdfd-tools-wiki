@@ -2402,24 +2402,170 @@ function updateTimestamps() {
 // Render Discord markdown (basic support)
 function renderMarkdown(text) {
   if (!text) return "";
-  return text
-    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
-    .replace(/\*(.+?)\*/g, "<em>$1</em>")
-    .replace(/__(.+?)__/g, "<u>$1</u>")
-    .replace(/~~(.+?)~~/g, "<del>$1</del>")
-    .replace(
-      /`(.+?)`/g,
-      '<code style="background:#1e1f22;padding:0.1rem 0.3rem;border-radius:3px;">$1</code>',
-    )
-    .replace(
-      /^> (.+)$/gm,
-      '<blockquote style="border-left:4px solid #4e5058;padding-left:0.75rem;color:#b5bac1;">$1</blockquote>',
-    )
-    .replace(
-      /^# (.+)$/gm,
-      '<h1 style="font-size:1.5rem;font-weight:700;margin:0.5rem 0;">$1</h1>',
-    )
-    .replace(/\n/g, "<br>");
+
+  // Escape HTML first to prevent XSS
+  const escape = (s) =>
+    s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+  // Process line by line for block-level elements, then inline
+  const lines = text.split("\n");
+  const output = [];
+  let i = 0;
+
+  while (i < lines.length) {
+    const line = lines[i];
+
+    // Code block (```)
+    if (line.trimStart().startsWith("```")) {
+      const lang = line.trimStart().slice(3).trim();
+      const codeLines = [];
+      i++;
+      while (i < lines.length && !lines[i].trimStart().startsWith("```")) {
+        codeLines.push(escape(lines[i]));
+        i++;
+      }
+      output.push(
+        `<pre style="background:#1e1f22;border-radius:4px;padding:0.5rem 0.75rem;margin:0.25rem 0;overflow-x:auto;"><code style="font-family:monospace;font-size:0.875rem;color:#dbdee1;">${codeLines.join("\n")}</code></pre>`,
+      );
+      i++; // skip closing ```
+      continue;
+    }
+
+    // Heading # (H1)
+    if (/^# (.+)$/.test(line)) {
+      output.push(
+        `<h1 style="font-size:1.5rem;font-weight:700;margin:0.25rem 0;color:#fff;">${inlineMarkdown(escape(line.slice(2)))}</h1>`,
+      );
+      i++;
+      continue;
+    }
+
+    // Heading ## (H2)
+    if (/^## (.+)$/.test(line)) {
+      output.push(
+        `<h2 style="font-size:1.25rem;font-weight:700;margin:0.25rem 0;color:#fff;">${inlineMarkdown(escape(line.slice(3)))}</h2>`,
+      );
+      i++;
+      continue;
+    }
+
+    // Heading ### (H3)
+    if (/^### (.+)$/.test(line)) {
+      output.push(
+        `<h3 style="font-size:1rem;font-weight:700;margin:0.25rem 0;color:#fff;">${inlineMarkdown(escape(line.slice(4)))}</h3>`,
+      );
+      i++;
+      continue;
+    }
+
+    // Subtext -# (Discord's small text)
+    if (/^-# (.+)$/.test(line)) {
+      output.push(
+        `<span style="font-size:0.75rem;color:#80848e;">${inlineMarkdown(escape(line.slice(3)))}</span>`,
+      );
+      i++;
+      continue;
+    }
+
+    // Blockquote > (supports multi-line consecutive quotes)
+    if (/^> /.test(line) || line === ">") {
+      const quoteLines = [];
+      while (i < lines.length && (/^> /.test(lines[i]) || lines[i] === ">")) {
+        quoteLines.push(inlineMarkdown(escape(lines[i].replace(/^> ?/, ""))));
+        i++;
+      }
+      output.push(
+        `<div style="display:flex;gap:0;margin:0.1rem 0;"><div style="width:4px;min-width:4px;background:#4e5058;border-radius:4px;margin-right:0.75rem;"></div><div style="color:#dbdee1;">${quoteLines.join("<br>")}</div></div>`,
+      );
+      continue;
+    }
+
+    // Unordered list - item
+    if (/^[-*] (.+)$/.test(line)) {
+      const listItems = [];
+      while (i < lines.length && /^[-*] (.+)$/.test(lines[i])) {
+        listItems.push(
+          `<li style="margin:0.1rem 0;">${inlineMarkdown(escape(lines[i].replace(/^[-*] /, "")))}</li>`,
+        );
+        i++;
+      }
+      output.push(
+        `<ul style="margin:0.25rem 0;padding-left:1.25rem;list-style:disc;">${listItems.join("")}</ul>`,
+      );
+      continue;
+    }
+
+    // Ordered list 1. item
+    if (/^\d+\. (.+)$/.test(line)) {
+      const listItems = [];
+      while (i < lines.length && /^\d+\. (.+)$/.test(lines[i])) {
+        listItems.push(
+          `<li style="margin:0.1rem 0;">${inlineMarkdown(escape(lines[i].replace(/^\d+\. /, "")))}</li>`,
+        );
+        i++;
+      }
+      output.push(
+        `<ol style="margin:0.25rem 0;padding-left:1.25rem;">${listItems.join("")}</ol>`,
+      );
+      continue;
+    }
+
+    // Masked link [text](url)
+    // (handled in inlineMarkdown)
+
+    // Empty line → spacer
+    if (line.trim() === "") {
+      output.push(`<div style="height:0.5rem;"></div>`);
+      i++;
+      continue;
+    }
+
+    // Normal paragraph line
+    output.push(`<span>${inlineMarkdown(escape(line))}</span>`);
+    i++;
+  }
+
+  return output
+    .join("<br>")
+    .replace(/(<br>)+(<\/?(h[123]|ul|ol|pre|div))/g, "$2");
+}
+
+// Inline markdown (bold, italic, underline, strikethrough, code, spoiler, links)
+function inlineMarkdown(text) {
+  return (
+    text
+      // Inline code (must come first to avoid processing inside code)
+      .replace(
+        /`([^`]+)`/g,
+        '<code style="background:#1e1f22;padding:0.1rem 0.3rem;border-radius:3px;font-family:monospace;font-size:0.875rem;">$1</code>',
+      )
+      // Spoiler ||text||
+      .replace(
+        /\|\|(.+?)\|\|/g,
+        "<span style=\"background:#202225;color:transparent;border-radius:3px;padding:0 2px;cursor:pointer;\" onclick=\"this.style.color='#dbdee1';this.style.background='#36393f';\">$1</span>",
+      )
+      // Bold + Italic ***text***
+      .replace(/\*\*\*(.+?)\*\*\*/g, "<strong><em>$1</em></strong>")
+      // Bold **text**
+      .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+      // Italic *text* or _text_
+      .replace(/\*([^*]+)\*/g, "<em>$1</em>")
+      .replace(/_([^_]+)_/g, "<em>$1</em>")
+      // Underline __text__
+      .replace(/__(.+?)__/g, "<u>$1</u>")
+      // Strikethrough ~~text~~
+      .replace(/~~(.+?)~~/g, "<del>$1</del>")
+      // Masked link [text](url)
+      .replace(
+        /\[([^\]]+)\]\((https?:\/\/[^\)]+)\)/g,
+        '<a href="$2" style="color:#00aff4;text-decoration:none;" target="_blank">$1</a>',
+      )
+      // Plain URL
+      .replace(
+        /(?<![">])(https?:\/\/[^\s<]+)/g,
+        '<a href="$1" style="color:#00aff4;text-decoration:none;" target="_blank">$1</a>',
+      )
+  );
 }
 
 function updateNormalPreview() {
