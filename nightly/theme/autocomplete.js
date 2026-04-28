@@ -94,6 +94,7 @@ function autocomplete() {
           span.style.display = "flex";
           span.style.justifyContent = "space-between";
           span.style.gap = "1rem";
+          span.style.overflow = "hidden";
 
           const nameEl = document.createElement("span");
           nameEl.textContent = displayName;
@@ -105,7 +106,8 @@ function autocomplete() {
           previewEl.style.whiteSpace = "nowrap";
           previewEl.style.overflow = "hidden";
           previewEl.style.textOverflow = "ellipsis";
-          previewEl.style.maxWidth = "55%";
+          previewEl.style.maxWidth = "200px";
+          previewEl.style.flexShrink = "0";
           previewEl.style.display = "none";
 
           span.addEventListener("mouseenter", () => {
@@ -136,30 +138,25 @@ function autocomplete() {
           .split("\n").length;
         const cursorTop =
           rect.top + linesBeforeCursor * lineHeight - textarea.scrollTop;
-        const dropdownHeight = Math.min(displayedFunctions.length * 48, 300);
-        const viewportHeight = window.innerHeight;
-        const viewportWidth = window.innerWidth;
-        const spaceBelow = rect.bottom - cursorTop;
-        const spaceAbove = cursorTop - rect.top;
 
-        // Flip above cursor if more space above, clamped to viewport
-        let topPos;
-        if (spaceBelow < dropdownHeight + 8 && spaceAbove > spaceBelow) {
-          topPos = Math.max(8, cursorTop - dropdownHeight - 8);
-        } else {
-          topPos = Math.min(cursorTop, viewportHeight - dropdownHeight - 8);
-        }
+        const dropdownHeight = displayedFunctions.length * 48;
+        const oneLineBelow = cursorTop + lineHeight;
+        const oneLineAbove = cursorTop - dropdownHeight - lineHeight;
 
-        // Clamp left so dropdown never goes off the right edge
-        const dropdownWidth = Math.min(rect.width, 560);
-        const leftPos = Math.min(rect.left, viewportWidth - dropdownWidth - 8);
+        const topPos =
+          oneLineBelow + dropdownHeight < window.innerHeight
+            ? oneLineBelow
+            : Math.max(8, oneLineAbove);
+
+        const dropdownWidth = Math.min(rect.width, 480);
+        const leftPos = Math.min(rect.left, window.innerWidth - dropdownWidth - 8);
 
         autocompleteOutput.style.position = "fixed";
         autocompleteOutput.style.top = topPos + "px";
         autocompleteOutput.style.left = leftPos + "px";
-        autocompleteOutput.style.width = "auto";
-        autocompleteOutput.style.minWidth = "280px";
-        autocompleteOutput.style.maxWidth = dropdownWidth + "px";
+        autocompleteOutput.style.width = dropdownWidth + "px";
+        autocompleteOutput.style.minWidth = "";
+        autocompleteOutput.style.maxWidth = "";
         autocompleteOutput.style.bottom = "auto";
         autocompleteOutput.style.display = "block";
       };
