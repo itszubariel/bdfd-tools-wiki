@@ -1050,8 +1050,10 @@ const updateListener = EditorView.updateListener.of((update) => {
     const total  = state.doc.lines;
     const cursorEl = document.getElementById('editor-cursor-pos');
     const linesEl  = document.getElementById('editor-total-lines');
+    const charsEl  = document.getElementById('editor-char-count');
     if (cursorEl) cursorEl.textContent = `Ln ${line.number}, Col ${col}`;
     if (linesEl)  linesEl.textContent  = `${total} line${total !== 1 ? 's' : ''}`;
+    if (charsEl)  charsEl.textContent  = `${state.doc.length} chars`;
   }
 });
 
@@ -1060,6 +1062,7 @@ window.cmEditor = new EditorView({
     doc: '',
     extensions: [
       history(),
+      autoIndentCompartment.of(getAutoIndentExtension()),
       keymap.of([...defaultKeymap, ...historyKeymap]),
       lineNumbersCompartment.of(lineNumbers()),
       indentOnInput(),
@@ -1071,10 +1074,9 @@ window.cmEditor = new EditorView({
         activateOnTyping: true,
       })),
       lineWrappingCompartment.of([]),
-      autoIndentCompartment.of(getAutoIndentExtension()),
       EditorView.theme({
         '&': { backgroundColor: 'hsl(0deg 0% 100% / 7%)', color: '#dbdee1', borderRadius: '10px', height: '40rem' },
-        '.cm-scroller': { fontFamily: 'monospace', fontSize: '1.35rem', overflow: 'auto' },
+        '.cm-scroller': { fontFamily: 'monospace', fontSize: '1.5rem', overflow: 'auto' },
         '.cm-content': { caretColor: '#fff' },
         '.cm-gutters': { backgroundColor: 'hsl(0deg 0% 100% / 5%)', color: 'hsl(0deg 0% 100% / 30%)', border: 'none', borderRadius: '10px 0 0 10px' },
         '.cm-cursor': { borderLeftColor: '#fff' },
@@ -1220,6 +1222,7 @@ window.resetHighlightTheme = function() {
 			<div id="editor-statusbar">
 				<span id="editor-cursor-pos">Ln 1, Col 1</span>
 				<span id="editor-total-lines">1 line</span>
+				<span id="editor-char-count">0 chars</span>
 			</div>
 		</div>
 	 	<button class="fa fa-regular fa-paste clip-button" onclick="copyCodeText()" title="Copy" aria-label="Copy"></button>
