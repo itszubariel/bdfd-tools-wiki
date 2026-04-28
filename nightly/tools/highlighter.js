@@ -186,7 +186,8 @@
           item.className = "function-item";
           item.textContent = fn;
           item.onclick = function () {
-            theme[fn] = { color: "#8b5cf6", style: 0 };
+            const key = fn.includes("[") ? fn.split("[")[0] : fn;
+            theme[key] = { color: "#8b5cf6", style: 0 };
             renderFunctions();
             functionDropdown.classList.remove("active");
             localStorage.setItem("savedTheme", JSON.stringify(theme));
