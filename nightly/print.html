@@ -1179,6 +1179,7 @@ try {
 const autocompleteCompartment = new Compartment();
 const lineWrappingCompartment = new Compartment();
 const lineNumbersCompartment = new Compartment();
+const highlightCompartment = new Compartment();
 
 // BDScript syntax highlighting
 const bdscriptLanguage = StreamLanguage.define({
@@ -1237,6 +1238,7 @@ window.cmEditor = new EditorView({
         activateOnTyping: true,
       })),
       lineWrappingCompartment.of([]),
+      highlightCompartment.of([]),
       EditorView.theme({
         '&': { backgroundColor: 'hsl(0deg 0% 100% / 7%)', color: '#fff', borderRadius: '10px', height: '40rem' },
         '.cm-scroller': { fontFamily: 'monospace', fontSize: '1.35rem', overflow: 'auto' },
@@ -1257,8 +1259,6 @@ window.cmEditor = new EditorView({
 // Expose compartments for settings toggles
 window._cmCompartments = { autocompleteCompartment, lineWrappingCompartment, lineNumbersCompartment };
 window._cmExtensions = { autocompletion, completeFromList, completions, lineNumbers, EditorView };
-window._cmLang = { HighlightStyle, syntaxHighlighting };
-window._cmTags = { tags };
 
 // localStorage persistence — restore saved content on load
 const saved = localStorage.getItem('bdfd_editor_content');
@@ -1290,56 +1290,58 @@ function uint32ToHex(uint32) {
   return '#' + r.toString(16).padStart(2,'0') + g.toString(16).padStart(2,'0') + b.toString(16).padStart(2,'0');
 }
 
-function buildHighlightStyle(themeJson) {
-  const { HighlightStyle, syntaxHighlighting } = window._cmLang;
-  const { tags } = window._cmTags;
+function buildHighlightExtension(themeJson) {
+  const tagDefs = [];
 
-  const baseKeyMap = {
-    defaultTextHighlight: null,
-    fallbackHighlight: null,
-    numberHighlight: tags.number,
-    bracketHighlight: tags.bracket,
+  const baseMap = {
+    numberHighlight:   tags.number,
+    bracketHighlight:  tags.bracket,
     semicolonHighlight: tags.separator,
   };
 
-  const tagDefs = [];
-
-  // Base highlights
-  for (const [key, tag] of Object.entries(baseKeyMap)) {
-    if (tag && themeJson[key] && typeof themeJson[key].color === 'number') {
+  for (const [key, tag] of Object.entries(baseMap)) {
+    if (themeJson[key] && typeof themeJson[key].color === 'number') {
       tagDefs.push({ tag, color: uint32ToHex(themeJson[key].color) });
     }
   }
 
-  // Function highlights → keyword tag
+  // Use the first function highlight color for keywords
   if (themeJson.functionsHighlights) {
-    // We can't map individual functions to tags, so use keyword color from first entry
-    const colors = Object.values(themeJson.functionsHighlights);
-    if (colors.length > 0 && typeof colors[0].color === 'number') {
-      tagDefs.push({ tag: tags.keyword, color: uint32ToHex(colors[0].color) });
+    const vals = Object.values(themeJson.functionsHighlights);
+    if (vals.length > 0 && typeof vals[0].color === 'number') {
+      tagDefs.push({ tag: tags.keyword, color: uint32ToHex(vals[0].color) });
     }
   }
 
-  if (tagDefs.length === 0) return null;
+  if (tagDefs.length === 0) return [];
   return syntaxHighlighting(HighlightStyle.define(tagDefs));
 }
 
-const highlightCompartment = new Compartment();
-
 // Apply saved theme on load
-const savedTheme = localStorage.getItem(HIGHLIGHT_KEY);
-if (savedTheme) {
+const savedHighlight = localStorage.getItem(HIGHLIGHT_KEY);
+if (savedHighlight) {
   try {
-    const ext = buildHighlightStyle(JSON.parse(savedTheme));
-    if (ext) {
-      window.cmEditor.dispatch({ effects: highlightCompartment.reconfigure(ext) });
-    }
-  } catch(e) {}
+    const ext = buildHighlightExtension(JSON.parse(savedHighlight));
+    window.cmEditor.dispatch({ effects: highlightCompartment.reconfigure(ext) });
+  } catch(e) { console.error('Failed to restore highlight theme', e); }
 }
+
+window.openHighlightModal = function() {
+  const saved = localStorage.getItem(HIGHLIGHT_KEY);
+  const ta = document.getElementById('highlightThemeInput');
+  if (saved) ta.value = saved;
+  const modal = document.getElementById('highlightThemeModal');
+  modal.style.display = 'flex';
+};
+window.closeHighlightModal = function() {
+  document.getElementById('highlightThemeModal').style.display = 'none';
+  document.getElementById('highlightThemeError').textContent = '';
+};
 
 window.applyHighlightTheme = function() {
   const input = document.getElementById('highlightThemeInput');
   const errEl = document.getElementById('highlightThemeError');
+  errEl.style.color = '';
   errEl.textContent = '';
   let parsed;
   try {
@@ -1348,26 +1350,17 @@ window.applyHighlightTheme = function() {
     errEl.textContent = 'Invalid JSON — check your theme format.';
     return;
   }
-  const ext = buildHighlightStyle(parsed);
-  if (!ext) {
-    errEl.textContent = 'No valid highlight entries found in theme.';
-    return;
-  }
+  const ext = buildHighlightExtension(parsed);
   window.cmEditor.dispatch({ effects: highlightCompartment.reconfigure(ext) });
   localStorage.setItem(HIGHLIGHT_KEY, input.value.trim());
-  errEl.style.color = 'hsl(120deg 60% 50%)';
-  errEl.textContent = '✓ Theme applied!';
-  setTimeout(() => { errEl.textContent = ''; errEl.style.color = ''; }, 2000);
+  window.closeHighlightModal();
 };
 
 window.resetHighlightTheme = function() {
   localStorage.removeItem(HIGHLIGHT_KEY);
   window.cmEditor.dispatch({ effects: highlightCompartment.reconfigure([]) });
   document.getElementById('highlightThemeInput').value = '';
-  const errEl = document.getElementById('highlightThemeError');
-  errEl.style.color = 'hsl(120deg 60% 50%)';
-  errEl.textContent = '✓ Reset to default.';
-  setTimeout(() => { errEl.textContent = ''; errEl.style.color = ''; }, 2000);
+  window.closeHighlightModal();
 };
 </script>
 <div id="stats-container">
@@ -1477,21 +1470,30 @@ window.resetHighlightTheme = function() {
     <button onclick="changeCodeLines()" id="changeCodeLines">Line Number</button>
   </div>
   <hr>
-  <div class="setting-item" style="flex-direction:column;align-items:flex-start;gap:0.5rem;">
-    <p style="margin:0;">Import a custom code highlight theme from <a href="tools/../tools/highlighter.html" target="_blank">Code Highlighter</a>. Paste the JSON below and click Apply.</p>
-    <div style="display:flex;gap:0.5rem;width:100%;margin-top:0.25rem;">
-      <textarea id="highlightThemeInput" rows="3" placeholder='{"defaultTextHighlight":{"color":...},"functionsHighlights":{...}}' style="flex:1;padding:0.5rem;background:hsl(0deg 0% 100% / 7%);border:1px solid hsl(0deg 0% 100% / 15%);border-radius:8px;color:#fff;font-size:0.85rem;font-family:monospace;resize:vertical;outline:none;"></textarea>
-      <div style="display:flex;flex-direction:column;gap:0.4rem;">
-        <button onclick="applyHighlightTheme()" style="width:6rem;height:auto;padding:0.5rem;font-size:0.9rem;">Apply</button>
-        <button onclick="resetHighlightTheme()" style="width:6rem;height:auto;padding:0.5rem;font-size:0.9rem;background:linear-gradient(to left, rgb(255 255 255 / 40%), rgb(192 1 1 / 75%));">Reset</button>
-      </div>
-    </div>
-    <div id="highlightThemeError" style="color:var(--error);font-size:0.85rem;min-height:1rem;"></div>
+  <div class="setting-item">
+    <p>Import a custom code highlight theme from <a href="tools/../tools/highlighter.html" target="_blank">Code Highlighter</a>.</p>
+    <button onclick="openHighlightModal()" id="importHighlightButton">Import Theme</button>
   </div>
   <div class="setting-item">
     <p id="internetConnection">Loading...</p>
   </div>
 </details>
+<!-- Highlight theme import modal -->
+<div id="highlightThemeModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:10000;align-items:center;justify-content:center;">
+  <div style="background:var(--card-bg);border-radius:12px;padding:1.5rem;width:90%;max-width:500px;box-shadow:0 10px 40px rgba(0,0,0,0.6);border:1px solid rgba(255,255,255,0.08);">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+      <strong style="font-size:1.1rem;">Import Highlight Theme</strong>
+      <button onclick="closeHighlightModal()" style="background:none;border:none;color:rgba(255,255,255,0.6);font-size:1.3rem;cursor:pointer;padding:0;line-height:1;">✕</button>
+    </div>
+    <p style="font-size:0.9rem;color:rgba(255,255,255,0.6);margin-bottom:0.75rem;">Generate a theme using the <a href="tools/../tools/highlighter.html" target="_blank" style="color:var(--link-color);">Code Highlighter</a>, then paste the JSON here.</p>
+    <textarea id="highlightThemeInput" rows="6" placeholder='{"defaultTextHighlight":{"color":4288341353,"style":0},"functionsHighlights":{"$if":{"color":4288905212,"style":0}}}' style="width:100%;box-sizing:border-box;padding:0.75rem;background:hsl(0deg 0% 100% / 7%);border:1px solid hsl(0deg 0% 100% / 15%);border-radius:8px;color:#fff;font-size:0.85rem;font-family:monospace;resize:vertical;outline:none;"></textarea>
+    <div id="highlightThemeError" style="color:var(--error);font-size:0.85rem;min-height:1.2rem;margin-top:0.4rem;"></div>
+    <div style="display:flex;gap:0.75rem;margin-top:1rem;justify-content:flex-end;">
+      <button onclick="resetHighlightTheme()" style="padding:0.5rem 1.25rem;background:linear-gradient(to left, rgb(255 255 255 / 40%), rgb(192 1 1 / 75%));border:none;border-radius:8px;color:#fff;cursor:pointer;font-size:0.95rem;">Reset</button>
+      <button onclick="applyHighlightTheme()" style="padding:0.5rem 1.25rem;background:linear-gradient(to right, rgb(255 255 255 / 40%), rgb(1 192 36 / 75%));border:none;border-radius:8px;color:#fff;cursor:pointer;font-size:0.95rem;">Apply</button>
+    </div>
+  </div>
+</div>
 <details id="tips">
   <summary>Tips</summary>
 	<em>*Italics*</em>
