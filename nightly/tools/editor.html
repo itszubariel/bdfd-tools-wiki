@@ -1083,18 +1083,45 @@ window.applyHighlightTheme = function() {
   const errEl = document.getElementById('highlightThemeError');
   errEl.style.color = '';
   errEl.textContent = '';
+  if (!input.value.trim()) {
+    errEl.textContent = 'Please paste a JSON theme first.';
+    return;
+  }
   let parsed;
   try { parsed = JSON.parse(input.value.trim()); }
   catch(e) { errEl.textContent = 'Invalid JSON — check your theme format.'; return; }
   applyThemeJson(parsed);
-  refreshHighlight();
+  // Clear mark cache and force full re-render by scrolling viewport
+  Object.keys(markCache).forEach(k => delete markCache[k]);
+  window.cmEditor.dispatch({
+    effects: highlightPluginCompartment.reconfigure(
+      ViewPlugin.fromClass(class {
+        constructor(view) { this.decorations = buildDecorations(view); }
+        update(update) {
+          if (update.docChanged || update.viewportChanged) this.decorations = buildDecorations(update.view);
+        }
+      }, { decorations: v => v.decorations })
+    ),
+  });
   localStorage.setItem(HIGHLIGHT_KEY, input.value.trim());
-  window.closeHighlightModal();
+  errEl.style.color = 'hsl(120deg 60% 50%)';
+  errEl.textContent = '✓ Theme applied!';
+  setTimeout(() => { errEl.textContent = ''; errEl.style.color = ''; window.closeHighlightModal(); }, 1200);
 };
 window.resetHighlightTheme = function() {
   localStorage.removeItem(HIGHLIGHT_KEY);
   currentTheme = { defaultText: '#dbdee1', fallback: '#a78bfa', bracket: '#f472b6', semicolon: '#fb923c', number: '#34d399', functions: {} };
-  refreshHighlight();
+  Object.keys(markCache).forEach(k => delete markCache[k]);
+  window.cmEditor.dispatch({
+    effects: highlightPluginCompartment.reconfigure(
+      ViewPlugin.fromClass(class {
+        constructor(view) { this.decorations = buildDecorations(view); }
+        update(update) {
+          if (update.docChanged || update.viewportChanged) this.decorations = buildDecorations(update.view);
+        }
+      }, { decorations: v => v.decorations })
+    ),
+  });
   document.getElementById('highlightThemeInput').value = '';
   window.closeHighlightModal();
 };
