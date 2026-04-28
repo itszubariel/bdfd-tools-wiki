@@ -182,6 +182,11 @@ if (window.playground_copyable) {
 		if (window.search && window.search.hasFocus()) {
 			return;
 		}
+		// Don't intercept arrow keys when user is typing in an input, textarea, or select
+		const tag = document.activeElement && document.activeElement.tagName;
+		if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || document.activeElement.isContentEditable) {
+			return;
+		}
 		var html = document.querySelector("html");
 
 		function next() {
