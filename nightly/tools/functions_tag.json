@@ -1,0 +1,2000 @@
+{
+  "functions": [
+    {
+      "tag": "$addActionRow[ID;(Container ID)]",
+      "description": "Adds an action row to put buttons in. Components v2 feature."
+    },
+    {
+      "tag": "$addButtonCV2[Button ID/URL;Label;Style;Disabled;Emoji;Action row ID / Section ID]",
+      "description": "Adds a button to the message. Components v2 feature."
+    },
+    {
+      "tag": "$addButton[New row;Button ID/URL;Label;Style;(Disabled;Emoji;Message ID)]",
+      "description": "Adds button to the response. Check wiki for examples."
+    },
+    {
+      "tag": "$addChannelSelect[Select Menu ID;Placeholder;Min Values;Max Values;Disabled;Action Row ID;(Channel Types)]",
+      "description": "Adds a channel select menu to the message. Components v2 feature."
+    },
+    {
+      "tag": "$addCmdReactions[Emoji;...]",
+      "description": "Allows you to auto-react to your message"
+    },
+    {
+      "tag": "$addContainer[ID;(Color;Spoiler)]",
+      "description": "Adds a container component to the message. Components v2 feature."
+    },
+    {
+      "tag": "$addEmoji[Name;Url;Return emoji]",
+      "description": "Adds emoji to the server and if <return> is set to 'yes' the newly added emoji is returned"
+    },
+    {
+      "tag": "$addField[Name;Value;(Inline;Index)]",
+      "description": "Adds field to embed. The third arguments sets if the field may be inline"
+    },
+    {
+      "tag": "$addMediaGalleryItem[Media URL;Description;Spoiler;Gallery ID]",
+      "description": "Adds a media item to a media gallery. Components v2 feature."
+    },
+    {
+      "tag": "$addMediaGallery[ID;(Container ID)]",
+      "description": "Adds a media gallery component to the message. Use $addMediaGalleryItem to add items to it. Components v2 feature."
+    },
+    {
+      "tag": "$addMentionableSelect[Select Menu ID;Placeholder;Min Values;Max Values;Disabled;Action Row ID]",
+      "description": "Adds a mentionable select menu to the message (allows selecting users and roles). Components v2 feature."
+    },
+    {
+      "tag": "$addMessageReactions[Channel ID;Message ID;Emoji;...]",
+      "description": "Allows you to add reactions to a specific message"
+    },
+    {
+      "tag": "$addReactions[Emoji;...]",
+      "description": "Allows you to autoreact to the bot's response"
+    },
+    {
+      "tag": "$addRoleSelect[Select Menu ID;Placeholder;Min Values;Max Values;Disabled;Action Row ID]",
+      "description": "Adds a role select menu to the message (allows selecting roles only). Components v2 feature."
+    },
+    {
+      "tag": "$addSection[ID;(Container ID)]",
+      "description": "Adds a section component to the message. Requires adding a button or a thumbnail. Components v2 feature."
+    },
+    {
+      "tag": "$addSelectMenuOption[Menu option ID;Label;Value;Description;(Default;Emoji;Message ID)]",
+      "description": "Adds select menu option to a select menu. Check wiki for examples."
+    },
+    {
+      "tag": "$addSeparator[(Divider;Spacing;Container ID)]",
+      "description": "Adds a separator component to the message. Components v2 feature."
+    },
+    {
+      "tag": "$addStringSelectOption[Label;Value;Description;Emoji;Default;Select Menu ID]",
+      "description": "Adds an option to a string select menu. Must be called after $addStringSelect."
+    },
+    {
+      "tag": "$addStringSelect[Select Menu ID;Placeholder;Min Values;Max Values;Disabled;Action Row ID]",
+      "description": "Adds a string select menu to the message with custom options. Use $addStringSelectOption to add options. Components v2 feature."
+    },
+    {
+      "tag": "$addTextDisplay[Content;(Container/Section ID)]",
+      "description": "Adds a text display component to the message. Supports markdown formatting. Components v2 feature."
+    },
+    {
+      "tag": "$addTextInput[Text Input ID;Style;Label;(Minimum length;Maximum length;Required;Value;Placeholder)]",
+      "description": "Adds a new text input to a modal. Check wiki for examples."
+    },
+    {
+      "tag": "$addThumbnail[Image URL;Image description;Spoiler;Section ID]",
+      "description": "Adds a thumbnail component to a section. Components v2 feature."
+    },
+    {
+      "tag": "$addTimestamp",
+      "description": "Adds timestamp to the embed"
+    },
+    {
+      "tag": "$addTimestamp[(Index)]",
+      "description": "Adds timestamp to the specified embed"
+    },
+    {
+      "tag": "$addUserSelect[Select Menu ID;Placeholder;Min Values;Max Values;Disabled;Action Row ID]",
+      "description": "Adds a user select menu to the message (allows selecting users only). Components v2 feature."
+    },
+    {
+      "tag": "$afkChannelID",
+      "description": "Returns the ID of the server's AFK channel"
+    },
+    {
+      "tag": "$afkTimeout[(Guild ID)]",
+      "description": "Returns the AFK timeout in seconds"
+    },
+    {
+      "tag": "$aiAgent[Prompt;(System prompt;Functions;Response token limit)]",
+      "description": "Prompt AI with Discord context, optional system prompt, and BDScript functions it can call as tools (agentic, up to 10 iterations)"
+    },
+    {
+      "tag": "$aiDecideWithCtx[Question]",
+      "description": "Ask AI to make a true/false decision using Discord message context"
+    },
+    {
+      "tag": "$aiDecide[Content;Question]",
+      "description": "Ask AI to make a true/false decision"
+    },
+    {
+      "tag": "$aiQuota",
+      "description": "Get remaining AI quota for this bot"
+    },
+    {
+      "tag": "$aiWithCtx[Prompt;(System prompt;Response token limit)]",
+      "description": "Prompt AI with Discord message context"
+    },
+    {
+      "tag": "$ai[Prompt;(System prompt;Response token limit)]",
+      "description": "Prompt AI"
+    },
+    {
+      "tag": "$allMembersCount",
+      "description": "Returns number of users from every server that your bot is in"
+    },
+    {
+      "tag": "$allowMention",
+      "description": "Disables replacing mentions in $message to text"
+    },
+    {
+      "tag": "$allowRoleMentions[Role ID;...]",
+      "description": "Configures what role mentions can be pinged by the bot's reply. Can be left empty to disable pings"
+    },
+    {
+      "tag": "$allowUserMentions[User ID;...]",
+      "description": "Configures what user mentions can be pinged by the bot's reply. Can be left empty to disable pings"
+    },
+    {
+      "tag": "$alternativeParsing",
+      "description": ""
+    },
+    {
+      "tag": "$and[Condition;...]",
+      "description": "Returns true if every provided expression is true"
+    },
+    {
+      "tag": "$appendOptionSuggestion[Label;Value]",
+      "description": "Can be only used inside $onAutoComplete[] callback. Adds suggestion which will be shown to the user. (Max 25)"
+    },
+    {
+      "tag": "$argCount[Message]",
+      "description": "Counts how many arguments is in the message"
+    },
+    {
+      "tag": "$argsCheck[Argument count;Error message]",
+      "description": "Restricts number of arguments that can be used in the command. If you want to allow users to use 3 args and above, you can use this: '>3' or if you want to allow users to use 4 args and below, you can use this `<4`, etc"
+    },
+    {
+      "tag": "$async[Name]",
+      "description": "Can be only used in BDScript 2. Starts async scope block (check wiki for examples). It's an experimental feature which may cause undefined behaviour!"
+    },
+    {
+      "tag": "$authorAvatar",
+      "description": "Return Author's avatar URL"
+    },
+    {
+      "tag": "$authorID",
+      "description": "Returns ID of the message Author"
+    },
+    {
+      "tag": "$authorIcon[Image url;(Index)]",
+      "description": "Adds icon to embed author"
+    },
+    {
+      "tag": "$authorOfMessage[Channel ID;Message ID]",
+      "description": "Returns ID of the message's author"
+    },
+    {
+      "tag": "$authorURL[Url;(Index)]",
+      "description": "Adds URL to embed author"
+    },
+    {
+      "tag": "$author[Text;(Index)]",
+      "description": "Adds text to embed author"
+    },
+    {
+      "tag": "$autoCompleteOptionName",
+      "description": "Can be only used inside $onAutoComplete[] callback. Returns focused option's name"
+    },
+    {
+      "tag": "$autoCompleteOptionValue",
+      "description": "Can be only used inside $onAutoComplete[] callback. Returns currently being typed option value"
+    },
+    {
+      "tag": "$awaitFunc[Command name;(User ID;Channel ID)]",
+      "description": "Allows you to run awaited command. Check wiki for examples."
+    },
+    {
+      "tag": "$awaitReactions[<Command name;Reaction>;...]",
+      "description": "ONLY FOR PREMIUM BOTS.\nAllows you to run awaited command triggered by reactions. Check wiki for examples."
+    },
+    {
+      "tag": "$await[Name]",
+      "description": "Can be only used in BDScript 2. Awaits for an async scope (check wiki for examples)"
+    },
+    {
+      "tag": "$ban",
+      "description": "Ban mentioned user."
+    },
+    {
+      "tag": "$banID",
+      "description": "Uses user ID to ban"
+    },
+    {
+      "tag": "$banID[Reason;(User ID)]",
+      "description": "Uses user ID to ban"
+    },
+    {
+      "tag": "$ban[Reason]",
+      "description": "Ban mentioned user with reason."
+    },
+    {
+      "tag": "$blackListIDs[User ID;...;Error message]",
+      "description": "Users with their ID in blacklist can't execute the command"
+    },
+    {
+      "tag": "$blackListRolesIDs[Role ID;...;Error message]",
+      "description": "Roles in blacklist can't execute the command"
+    },
+    {
+      "tag": "$blackListRoles[Role name;...;Error message]",
+      "description": "Roles in blacklist can't execute the command"
+    },
+    {
+      "tag": "$blackListServers[Server ID;...;Error message]",
+      "description": "Command can not be used in provided servers"
+    },
+    {
+      "tag": "$blackListUsers[Username;...;Error message]",
+      "description": "Users with their name in blacklist can't execute the command"
+    },
+    {
+      "tag": "$boostCount",
+      "description": "Returns the guild's number of nitro boosts"
+    },
+    {
+      "tag": "$boostCount[Guild ID]",
+      "description": "Returns the guild's number of nitro boosts"
+    },
+    {
+      "tag": "$boostLevel",
+      "description": "Returns the current boost level of the server"
+    },
+    {
+      "tag": "$botCommands[Separator]",
+      "description": "Returns all bot commands separated by provided separator"
+    },
+    {
+      "tag": "$botID",
+      "description": "Returns the bot's ID"
+    },
+    {
+      "tag": "$botLeave",
+      "description": "Bot is forced to leave the server"
+    },
+    {
+      "tag": "$botLeave[Server ID]",
+      "description": "Bot is forced to leave the server"
+    },
+    {
+      "tag": "$botListDescription[Description]",
+      "description": "Command description for Bot Designer List"
+    },
+    {
+      "tag": "$botListHide",
+      "description": "Hides this command from Bot Designer List"
+    },
+    {
+      "tag": "$botNode",
+      "description": "Returns the bot's node number"
+    },
+    {
+      "tag": "$botOwnerID",
+      "description": "Returns the bot owner ID"
+    },
+    {
+      "tag": "$botTyping",
+      "description": "Shows information in discord that your bot is currently typing"
+    },
+    {
+      "tag": "$byteCount[Text]",
+      "description": "Counts amount of bytes"
+    },
+    {
+      "tag": "$c[Comment]",
+      "description": "Can be used to comment your code."
+    },
+    {
+      "tag": "$calculate[Expression]",
+      "description": "Calculates math expression, e.g. \"2+3/2**(2+1)\""
+    },
+    {
+      "tag": "$catch",
+      "description": "Can be only used in BDScript 2. Starts catch block (check wiki for examples)"
+    },
+    {
+      "tag": "$categoryChannels[Category ID;Separator;(Option)]",
+      "description": "List channel property under given category. The default property is name.\nThe 'count' option does not list anything, instead it will return the number of channels under the given category"
+    },
+    {
+      "tag": "$categoryCount",
+      "description": "Returns the category count in the current guild"
+    },
+    {
+      "tag": "$categoryCount[Guild ID]",
+      "description": "Returns the category count in a guild"
+    },
+    {
+      "tag": "$categoryID[Category Name]",
+      "description": "Returns category ID for a given category name"
+    },
+    {
+      "tag": "$ceil[number]",
+      "description": "Returns rounded up number to the nearest integer"
+    },
+    {
+      "tag": "$changeCooldownTime[Time-days;Time-hours;Time-minutes;Time-seconds]",
+      "description": "Changes %time-d%, %time-h%, %time-m%, %time-s% for cooldown commands"
+    },
+    {
+      "tag": "$changeUsernameWithID[User ID;Username]",
+      "description": "Allows you to change user's username by using userID"
+    },
+    {
+      "tag": "$changeUsername[Username]",
+      "description": "Lets you change mentioned user's username"
+    },
+    {
+      "tag": "$channelCount",
+      "description": "Returns count of channels from current server"
+    },
+    {
+      "tag": "$channelExists[Channel ID]",
+      "description": "Checks if channel exists"
+    },
+    {
+      "tag": "$channelID",
+      "description": "Returns channel ID of current channel"
+    },
+    {
+      "tag": "$channelIDFromName[Channel name]",
+      "description": "Returns the channel's ID from the name"
+    },
+    {
+      "tag": "$channelID[Channel name]",
+      "description": "Returns Channel ID for given name. Works on categories too"
+    },
+    {
+      "tag": "$channelName[Channel ID]",
+      "description": "Returns channel name"
+    },
+    {
+      "tag": "$channelNames[Separator;(Guild ID)]",
+      "description": "List all channel names separated by given separator"
+    },
+    {
+      "tag": "$channelPosition",
+      "description": "Returns the current channel position"
+    },
+    {
+      "tag": "$channelPosition[Channel ID]",
+      "description": "Returns the channel position"
+    },
+    {
+      "tag": "$channelSendMessage[Channel ID;Message]",
+      "description": "Sends message to provided channel"
+    },
+    {
+      "tag": "$channelTopic",
+      "description": "Returns current channel topic"
+    },
+    {
+      "tag": "$channelTopic[Channel ID]",
+      "description": "Returns channel topic"
+    },
+    {
+      "tag": "$channelType[Channel ID]",
+      "description": "Returns channel type"
+    },
+    {
+      "tag": "$charCount[Text]",
+      "description": "Counts amount of characters"
+    },
+    {
+      "tag": "$checkCondition[Condition]",
+      "description": "Checks if condition is true or false. Possible options: equal (==), not equal (!=), greater/lesser (> or <), greater/lesser and equal (>= or <=)"
+    },
+    {
+      "tag": "$checkContains[Text;...]",
+      "description": "Checks if provided text contains one of the provided words"
+    },
+    {
+      "tag": "$checkUserPerms[User ID;Permissions;...]",
+      "description": "Command returns 'true' if a user has all of the provided permissions otherwise 'false' is returned."
+    },
+    {
+      "tag": "$clear",
+      "description": "Clears messages"
+    },
+    {
+      "tag": "$clearReactions[Channel ID;Message ID;Emoji;...]",
+      "description": "Removed reaction from provided message. If !all is provided instead of emoji every emoji is removed"
+    },
+    {
+      "tag": "$clear[Amount;(User ID;Remove pinned)]",
+      "description": "Clears <amount> last messages. If userID is set it will remove messages that were wrote only by this user."
+    },
+    {
+      "tag": "$closeTicket[Error message]",
+      "description": "Closes ticket"
+    },
+    {
+      "tag": "$colorRole[Color]",
+      "description": "Changes color of mentioned role"
+    },
+    {
+      "tag": "$color[Color;(Index)]",
+      "description": "Adds color to embed"
+    },
+    {
+      "tag": "$commandFolder",
+      "description": "Returns command folder name"
+    },
+    {
+      "tag": "$commandName",
+      "description": "Returns command name"
+    },
+    {
+      "tag": "$commandTrigger",
+      "description": "Returns command trigger"
+    },
+    {
+      "tag": "$commandsCount",
+      "description": "Returns amount of commands"
+    },
+    {
+      "tag": "$cooldown[Duration;Error message]",
+      "description": "Sets a command cool down"
+    },
+    {
+      "tag": "$createChannel[Name;Type;(Category ID)]",
+      "description": "Allows you to create channel. If you add 'category ID', channel will be created under this category. Types are 'text', 'voice' and 'category'"
+    },
+    {
+      "tag": "$createRole[Role name;Color;(Display role;Mentionable)]",
+      "description": "Creates role. If 'display role' is set to 'yes', role will be visible in discord's right panel"
+    },
+    {
+      "tag": "$creationDate[User ID/Role ID/Message ID/Server ID;(Format)]",
+      "description": "Returns creation date of the user account / message / role / etc"
+    },
+    {
+      "tag": "$cropText[Text;Max characters limit;Ending]",
+      "description": "Crops provided text. If text is cropped then <ending> is added at the end of the text."
+    },
+    {
+      "tag": "$customEmoji[Emoji name]",
+      "description": "Returns custom emoji"
+    },
+    {
+      "tag": "$customID",
+      "description": "Can be only used in $onInteraction callback. Returns custom ID of an interaction"
+    },
+    {
+      "tag": "$customImage[Custom image tag]",
+      "description": "ONLY FOR PREMIUM BOTS. Returns image previously saved in the app"
+    },
+    {
+      "tag": "$date",
+      "description": "Returns current date"
+    },
+    {
+      "tag": "$day",
+      "description": "Returns current day"
+    },
+    {
+      "tag": "$defer",
+      "description": "Defers the interaction (components/slash commands)"
+    },
+    {
+      "tag": "$deleteChannelsByName[Channel name;...]",
+      "description": "Allows you to delete channels by using their names"
+    },
+    {
+      "tag": "$deleteChannels[Channel ID;...]",
+      "description": "Allows you to delete channels by using their IDs"
+    },
+    {
+      "tag": "$deleteIn[Time]",
+      "description": "Deletes bot's response after given time"
+    },
+    {
+      "tag": "$deleteMessage[Channel ID;Message ID]",
+      "description": "Deletes a message"
+    },
+    {
+      "tag": "$deleteRole[Role ID]",
+      "description": "Deletes specified role"
+    },
+    {
+      "tag": "$deletecommand",
+      "description": "Deletes the command message"
+    },
+    {
+      "tag": "$description[Message;(Index)]",
+      "description": "Adds description to an embed"
+    },
+    {
+      "tag": "$disableInnerSpaceRemoval",
+      "description": "Disables the removal of multiple spaces from within the message"
+    },
+    {
+      "tag": "$disableSpecialEscaping",
+      "description": "Only for advanced users! Disables special character escaping"
+    },
+    {
+      "tag": "$discriminator[User ID]",
+      "description": "Returns user's discriminator. If userID is empty it will return author's discriminator"
+    },
+    {
+      "tag": "$displayName",
+      "description": "Display name of the author of the message"
+    },
+    {
+      "tag": "$displayName[User ID]",
+      "description": "Display name for the given user ID"
+    },
+    {
+      "tag": "$divide[number;...]",
+      "description": "Returns the division of entered numbers"
+    },
+    {
+      "tag": "$dm",
+      "description": "Sends message to the DM channel of the user that run this command"
+    },
+    {
+      "tag": "$dmChannelID[User ID]",
+      "description": "Returns channel ID of a direct message channel to specified user"
+    },
+    {
+      "tag": "$dm[User ID;...]",
+      "description": "Sends message to the DM channel of given User ID. If User ID is empty, a mentioned user will be DMed instead"
+    },
+    {
+      "tag": "$editButton[Button ID/URL;Label;Style;(Disabled;Emoji;Message ID)]",
+      "description": "Edits already existing button. Check wiki for examples."
+    },
+    {
+      "tag": "$editChannelPerms[Channel ID;User ID/RoleID;Permission;...]",
+      "description": "Changes permission for mentioned users/roles in this particular channel. '+' before permission's name means 'allow', '-' means 'deny', '/' means neutral permission."
+    },
+    {
+      "tag": "$editEmbedIn[Time;(Title;Message;Footer;Color)]",
+      "description": "Edits embed after given time"
+    },
+    {
+      "tag": "$editIn[Time;New message]",
+      "description": "Edits bot's response after given time"
+    },
+    {
+      "tag": "$editMessage[Channel ID;Message ID;Content;(Title;Description;Color;Footer)]",
+      "description": "Edits contents of a message"
+    },
+    {
+      "tag": "$editSelectMenuOption[Menu option ID;Label;Value;Description;(Default;Emoji;Message ID)]",
+      "description": "Edits select menu option. Check wiki for examples."
+    },
+    {
+      "tag": "$editSelectMenu[Menu ID;Min;Max;(Placeholder;Message ID)]",
+      "description": "Edits select menu. Check wiki for examples."
+    },
+    {
+      "tag": "$editSplitText[Index;Value]",
+      "description": "Removes element from $textSplit values."
+    },
+    {
+      "tag": "$editThread[Thread ID;(Name;Archived;Archive duration;Locked;Slowmode)]",
+      "description": "Edits a thread. (you can use !unchanged as argument if you don't want to change a field)"
+    },
+    {
+      "tag": "$else",
+      "description": "Starts else block (check wiki for examples)"
+    },
+    {
+      "tag": "$elseif[Condition]",
+      "description": "Can be only used in BDScript 2. Starts elseif block (check wiki for examples)"
+    },
+    {
+      "tag": "$embedSuppressErrors[Title;Error message;(Color;Author;Footer;Footer icon)]",
+      "description": "Sends embedded error in case of an error. Not needed options you can leave empty."
+    },
+    {
+      "tag": "$embeddedURL[Url;(Index)]",
+      "description": "Adds embedded URL to an embed"
+    },
+    {
+      "tag": "$emojiExists[Emoji ID]",
+      "description": "Returns true if emoji exists, otherwise returns false"
+    },
+    {
+      "tag": "$emojiName[Emoji ID]",
+      "description": "Returns the name of the custom emoji"
+    },
+    {
+      "tag": "$emoteCount",
+      "description": "returns amount of emotes in server"
+    },
+    {
+      "tag": "$enableDecimals[Enable]",
+      "description": "Enables decimals for math functions"
+    },
+    {
+      "tag": "$enabled[Enabled;Error message]",
+      "description": "If this is set to 'no', command won't be executed"
+    },
+    {
+      "tag": "$endasync",
+      "description": "Can be only used in BDScript 2. Ends async scope block (check wiki for examples)"
+    },
+    {
+      "tag": "$endif",
+      "description": "Ends if and else blocks (check wiki for examples)"
+    },
+    {
+      "tag": "$endtry",
+      "description": "Can be only used in BDScript 2. Ends try and catch blocks (check wiki for examples)"
+    },
+    {
+      "tag": "$ephemeral",
+      "description": "Makes ephemeral slash command response"
+    },
+    {
+      "tag": "$error[Type]",
+      "description": "Can be only used inside $catch block. Returns information about the error. Check wiki for more information."
+    },
+    {
+      "tag": "$eval[BDScript source code]",
+      "description": "Can be only used in BDScript 2. SHOULD BE USED WITH CAUTION!!!. Evaluates the provided BDScript code"
+    },
+    {
+      "tag": "$executionTime",
+      "description": "Returns execution time of command"
+    },
+    {
+      "tag": "$findChannel[Channel ID/Name/Mention]",
+      "description": "Checks if channel exists and returns channelID"
+    },
+    {
+      "tag": "$findRole[Role ID/Name/Mention]",
+      "description": "Checks if role exists and returns roleID"
+    },
+    {
+      "tag": "$findUser[User ID/Username/Mention;(Fallback to author ID)]",
+      "description": "Returns userID. If <yes> is provided as a second argument and a user is not found the function returns authorID."
+    },
+    {
+      "tag": "$floor[number]",
+      "description": "Returns rounded down number to the nearest integer"
+    },
+    {
+      "tag": "$footerIcon[Icon url;(Index)]",
+      "description": "Adds icon to embed's footer"
+    },
+    {
+      "tag": "$footer[Text;(Index)]",
+      "description": "Adds text to embed's footer"
+    },
+    {
+      "tag": "$getAttachments[(Index)]",
+      "description": "Returns the URLs of attachments in the message"
+    },
+    {
+      "tag": "$getBanReason[User ID;(Guild ID)]",
+      "description": "Retrieves ban reason"
+    },
+    {
+      "tag": "$getBotInvite",
+      "description": "Returns invitation url for your bot"
+    },
+    {
+      "tag": "$getChannelSelectChannelCount",
+      "description": "Returns the count of selected channels from a channel select interaction. Use inside $onInteraction callback."
+    },
+    {
+      "tag": "$getChannelSelectChannelID[Index]",
+      "description": "Returns the channel ID at the specified index from a channel select interaction. Use inside $onInteraction callback."
+    },
+    {
+      "tag": "$getChannelSelectChannelIDs[Separator;(Limit)]",
+      "description": "Returns all selected channel IDs from a channel select interaction, joined by a separator. Use inside $onInteraction callback."
+    },
+    {
+      "tag": "$getChannelVar[Name;(Channel ID)]",
+      "description": "Returns the variable's value. It's a channel variable, it means that this variable is assigned to a channel"
+    },
+    {
+      "tag": "$getCooldown[Cooldown type]",
+      "description": "Returns current cooldown in seconds"
+    },
+    {
+      "tag": "$getCustomStatus[User ID]",
+      "description": "Get user's custom status text"
+    },
+    {
+      "tag": "$getEmbedData[Channel ID;Message ID;Embed index;Type]",
+      "description": "Returns data from the message's embed for the given message ID"
+    },
+    {
+      "tag": "$getInviteInfo[Code;Info kind]",
+      "description": "Gets information about provided invite code"
+    },
+    {
+      "tag": "$getLeaderboardPosition[Variable type;Variable name;Sort;(ID)]",
+      "description": "Get position in Leaderboard for given variable"
+    },
+    {
+      "tag": "$getLeaderboardValue[Variable type;Variable name;Sort;Position;(Return type)]",
+      "description": "Get username and variable value for given position in Leaderboard"
+    },
+    {
+      "tag": "$getMentionableSelectUserCount",
+      "description": "Returns the count of selected users from a mentionable select interaction. Use inside $onInteraction callback."
+    },
+    {
+      "tag": "$getMentionableSelectUserID[Index]",
+      "description": "Returns the user ID at the specified index from a mentionable select interaction. Use inside $onInteraction callback."
+    },
+    {
+      "tag": "$getMentionableSelectUserIDs[Separator;(Limit)]",
+      "description": "Returns all selected user IDs from a mentionable select interaction, joined by a separator. Use inside $onInteraction callback."
+    },
+    {
+      "tag": "$getMessage[Channel ID;Message ID;(Type)]",
+      "description": "Returns data of the message for the given message ID"
+    },
+    {
+      "tag": "$getReactions[Channel ID;Message ID;Separator;Emoji]",
+      "description": "Returns list of users separated by <Separator> that reacted to message"
+    },
+    {
+      "tag": "$getRoleColor[Role ID]",
+      "description": "Returns color of the role"
+    },
+    {
+      "tag": "$getRoleSelectRoleCount",
+      "description": "Returns the count of selected roles from a role select interaction. Use inside $onInteraction callback."
+    },
+    {
+      "tag": "$getRoleSelectRoleID[Index]",
+      "description": "Returns the role ID at the specified index from a role select interaction. Use inside $onInteraction callback."
+    },
+    {
+      "tag": "$getRoleSelectRoleIDs[Separator;(Limit)]",
+      "description": "Returns all selected role IDs from a role select interaction, joined by a separator. Use inside $onInteraction callback."
+    },
+    {
+      "tag": "$getServerInvite",
+      "description": "Returns invitation url for current server"
+    },
+    {
+      "tag": "$getServerInvite[Server ID]",
+      "description": "Returns invitation url for provided server"
+    },
+    {
+      "tag": "$getServerVar[Name;(Server ID)]",
+      "description": "Returns the Variable's value. It's a server variable, it means that this variable is assigned to server"
+    },
+    {
+      "tag": "$getSlowmode[(Channel ID)]",
+      "description": "Returns the slowmode of a given channel"
+    },
+    {
+      "tag": "$getStringSelectCount",
+      "description": "Returns the count of selected values from a string select interaction. Use inside $onInteraction callback."
+    },
+    {
+      "tag": "$getStringSelectValue[Index]",
+      "description": "Returns the selected value at the specified index from a string select interaction. Use inside $onInteraction callback."
+    },
+    {
+      "tag": "$getStringSelectValues[Separator;(Limit)]",
+      "description": "Returns all selected values from a string select interaction, joined by a separator. Use inside $onInteraction callback."
+    },
+    {
+      "tag": "$getTextSplitIndex[Value]",
+      "description": "Retrieves index from the provided value. Returns -1 if it couldn't find the index"
+    },
+    {
+      "tag": "$getTextSplitLength",
+      "description": "Returns length of $textSplit"
+    },
+    {
+      "tag": "$getTimestamp",
+      "description": "Returns unix timestamp (in seconds)"
+    },
+    {
+      "tag": "$getTimestamp[Time unit]",
+      "description": "Returns unix timestamp in selected unit"
+    },
+    {
+      "tag": "$getUserSelectUserCount",
+      "description": "Returns the count of selected users from a user select interaction. Use inside $onInteraction callback."
+    },
+    {
+      "tag": "$getUserSelectUserID[Index]",
+      "description": "Returns the user ID at the specified index from a user select interaction. Use inside $onInteraction callback."
+    },
+    {
+      "tag": "$getUserSelectUserIDs[Separator;(Limit)]",
+      "description": "Returns all selected user IDs from a user select interaction, joined by a separator. Use inside $onInteraction callback."
+    },
+    {
+      "tag": "$getUserStatus[User ID]",
+      "description": "Gets provided user's presence (the user has to be in the guild)"
+    },
+    {
+      "tag": "$getUserVar[Name;(User ID;Guild ID)]",
+      "description": "Returns the Variable's value. It's a user variable, it means that this variable is assigned to user that used this command"
+    },
+    {
+      "tag": "$getVar[Name;(User ID)]",
+      "description": "Returns the global variable's value"
+    },
+    {
+      "tag": "$giveRole[Role/user ID;(Role ID)]",
+      "description": "Gives role to mentioned users or to the user that has its ID provided in this command"
+    },
+    {
+      "tag": "$globalCooldown[Duration;Error message]",
+      "description": "Sets a global command cool down"
+    },
+    {
+      "tag": "$globalUserLeaderboard[Variable name;(Sort)]",
+      "description": "Generates Leaderboard for given global user variable. 'asc' stands for ascending and 'desc' stands for descending. default is 'desc'"
+    },
+    {
+      "tag": "$guildBanner[(Guild ID)]",
+      "description": "Returns the URL of the server's banner"
+    },
+    {
+      "tag": "$guildExists[Guild ID]",
+      "description": "Checks if guild/server exists"
+    },
+    {
+      "tag": "$guildID",
+      "description": "Returns ID of the guild"
+    },
+    {
+      "tag": "$guildID[Name]",
+      "description": "Uses guild's name to retrieve its ID. (Your bot has to be in this guild)."
+    },
+    {
+      "tag": "$hasRole[User ID;Role ID]",
+      "description": "Checks if user has provided role"
+    },
+    {
+      "tag": "$highestRole",
+      "description": "Returns id of the highest role in the current guild"
+    },
+    {
+      "tag": "$highestRoleWithPerms[Permission;...]",
+      "description": "Returns the highest role in the server that has all the provided permissions"
+    },
+    {
+      "tag": "$highestRole[User ID]",
+      "description": "Returns id of the highest user's role"
+    },
+    {
+      "tag": "$hostingExpireTime",
+      "description": "Returns expire time for the hosting"
+    },
+    {
+      "tag": "$hostingExpireTime[Unix timestamp]",
+      "description": "If `yes` is provided in the first argument, the function returns expire time in UNIX timestamp"
+    },
+    {
+      "tag": "$hour",
+      "description": "Current hour"
+    },
+    {
+      "tag": "$httpAddHeader[Header name;Value]",
+      "description": "Adds HTTP header"
+    },
+    {
+      "tag": "$httpDelete[Url;(Body)]",
+      "description": "HTTP DELETE request"
+    },
+    {
+      "tag": "$httpGetHeader[Header Key]",
+      "description": "Retives given header from HTTP request response"
+    },
+    {
+      "tag": "$httpGet[Url]",
+      "description": "HTTP GET request"
+    },
+    {
+      "tag": "$httpPatch[Url;(Body)]",
+      "description": "HTTP PATCH request"
+    },
+    {
+      "tag": "$httpPost[Url;(Body)]",
+      "description": "HTTP POST request"
+    },
+    {
+      "tag": "$httpPut[Url;(Body)]",
+      "description": "HTTP PUT request"
+    },
+    {
+      "tag": "$httpRemoveHeader[Header name]",
+      "description": "Removes HTTP header"
+    },
+    {
+      "tag": "$httpResult",
+      "description": "Retrieves text value from HTTP request"
+    },
+    {
+      "tag": "$httpResult[JSON Key;...]",
+      "description": "Retrieves JSON from HTTP request"
+    },
+    {
+      "tag": "$httpStatus",
+      "description": "Retrives response status code from HTTP request response"
+    },
+    {
+      "tag": "$hypesquad[User ID]",
+      "description": "Returns an empty string or a lowercase name of the house the user is in"
+    },
+    {
+      "tag": "$if[Condition]",
+      "description": "Starts if statement block (check wiki for examples)"
+    },
+    {
+      "tag": "$ignoreChannels[Channel ID;...;Error message]",
+      "description": "Command executed only in channel not on the list"
+    },
+    {
+      "tag": "$ignoreLinks",
+      "description": "Ignores image links in the message"
+    },
+    {
+      "tag": "$ignoreTriggerCase",
+      "description": "ONLY FOR PREMIUM BOTS. This functions makes command trigger not case sensitive. For example: !help and !HeLp will work."
+    },
+    {
+      "tag": "$image[Image url;(Index)]",
+      "description": "Adds image to embed"
+    },
+    {
+      "tag": "$input[Text Input ID]",
+      "description": "Retrieves input from modal. Check wiki for examples."
+    },
+    {
+      "tag": "$isAdmin[User ID]",
+      "description": "Checks if user is administrator"
+    },
+    {
+      "tag": "$isBanned[User ID]",
+      "description": "Returns 'true' if user is banned, otherwise it returns 'false'. Requires 'BAN_MEMBERS' permission"
+    },
+    {
+      "tag": "$isBoolean[Text]",
+      "description": "Returns true if the provided text is equal to true, false, yes, or no, Otherwise it returns false"
+    },
+    {
+      "tag": "$isBooster[(User ID;Guild ID)]",
+      "description": "Returns if user is boosting guild with the nitro"
+    },
+    {
+      "tag": "$isBot[User ID]",
+      "description": "Checks if given userID belongs to a bot. Returns 'true' if user is a bot or 'false' if user isn't a bot"
+    },
+    {
+      "tag": "$isEmojiAnimated[Emoji ID]",
+      "description": "Returns true if emoji is animated"
+    },
+    {
+      "tag": "$isHoisted[Role ID]",
+      "description": "Checks if role is hoisted"
+    },
+    {
+      "tag": "$isInteger[text]",
+      "description": "Checks if given value is an integer. Returns true or false"
+    },
+    {
+      "tag": "$isMentionable[Role ID]",
+      "description": "Checks if role is mentionable"
+    },
+    {
+      "tag": "$isMentioned[User ID]",
+      "description": "Checks if a user is mentioned in the message"
+    },
+    {
+      "tag": "$isMessageEdited[ChannelID;MessageID]",
+      "description": "Returns true if the message has been edited"
+    },
+    {
+      "tag": "$isNSFW[Channel ID]",
+      "description": "Checks if the channel is NSFW"
+    },
+    {
+      "tag": "$isNumber[Value]",
+      "description": "Checks if given value is a number. Returns true or false"
+    },
+    {
+      "tag": "$isSlash",
+      "description": "Returns 'true' if it's a slash command or 'false' if it's a normal command"
+    },
+    {
+      "tag": "$isTicket[(Channel ID)]",
+      "description": "Check if the current or given channel is a ticket"
+    },
+    {
+      "tag": "$isTimedOut[User ID]",
+      "description": "Check if given user is timed out"
+    },
+    {
+      "tag": "$isUserDMEnabled[User ID]",
+      "description": "Checks if user has DM enabled. This function checks if DM is enabled by trying to send an empty message"
+    },
+    {
+      "tag": "$isValidHex[Hex value]",
+      "description": "Checks if hex value is valid"
+    },
+    {
+      "tag": "$joinSplitText[Separator]",
+      "description": "Joins $textSplit values with provided <separator>"
+    },
+    {
+      "tag": "$jsonArrayAppend[Key;...;Value]",
+      "description": "Append a value at the end of a specific JSON array"
+    },
+    {
+      "tag": "$jsonArrayCount[Key;...]",
+      "description": "Count the elements in a JSON array"
+    },
+    {
+      "tag": "$jsonArrayIndex[Key;...;Value]",
+      "description": "Get array index of a given value. Returns -1 if not found. Returns empty if no json function was executed or $jsonClear was executed"
+    },
+    {
+      "tag": "$jsonArrayPop[Key;...]",
+      "description": "Pop a value from a JSON array (remove the last value)"
+    },
+    {
+      "tag": "$jsonArrayReverse[Key;...]",
+      "description": "Reverse a specific JSON array"
+    },
+    {
+      "tag": "$jsonArrayShift[Key;...]",
+      "description": "Shift a JSON array to the left (remove the first value)."
+    },
+    {
+      "tag": "$jsonArraySort[Key;...]",
+      "description": "Sort a specific JSON array"
+    },
+    {
+      "tag": "$jsonArrayUnshift[Key;...;Value]",
+      "description": "Unshift a JSON array. Adds the value in the front of the array"
+    },
+    {
+      "tag": "$jsonArray[Key;...]",
+      "description": "Mark a specific JSON key as an array"
+    },
+    {
+      "tag": "$jsonClear",
+      "description": "Clears current custom JSON value"
+    },
+    {
+      "tag": "$jsonExists[Key;...]",
+      "description": "Check if the specific JSON key exists in the current JSON object. Returns an empty string if no json function was executed or $jsonClear was executed"
+    },
+    {
+      "tag": "$jsonJoinArray[Key;...;Separator]",
+      "description": "Join a JSON array under the specified key with the given separator. Returns empty if no json function was executed or $jsonClear was executed"
+    },
+    {
+      "tag": "$jsonParse[JSON string]",
+      "description": "Parse a JSON string into a object"
+    },
+    {
+      "tag": "$jsonPretty[(Indent length)]",
+      "description": "Turns custom JSON into a pretty string value. Returns an empty string if no json function was executed or $jsonClear was executed"
+    },
+    {
+      "tag": "$jsonSetString[Key;...;Value]",
+      "description": "Set the a JSON value at a specific key. Always sets this key to a string value"
+    },
+    {
+      "tag": "$jsonSet[Key;...;Value]",
+      "description": "Set the a JSON value at a specific key"
+    },
+    {
+      "tag": "$jsonStringify",
+      "description": "Turns custom JSON into a string value. Returns an empty string if no json function was executed or $jsonClear was executed"
+    },
+    {
+      "tag": "$jsonUnset[Key;...]",
+      "description": "Unset a specific JSON key"
+    },
+    {
+      "tag": "$json[Key;...]",
+      "description": "Get a JSON value from a specific key.\nReturns an empty string if the value is a null, or the key does not exist, or no json function was executed, or $jsonClear was executed"
+    },
+    {
+      "tag": "$kick",
+      "description": "Kicks the user that runs the command"
+    },
+    {
+      "tag": "$kickMention",
+      "description": "Kicks the mentioned user. Person running the command and the bot have to have the permission to kick users"
+    },
+    {
+      "tag": "$kickMention[Reason]",
+      "description": "Kicks the mentioned user with reason. Person running the command and the bot have to have the permission to kick users"
+    },
+    {
+      "tag": "$kick[User ID;(Reason)]",
+      "description": "Uses user ID to kick user. Optionally you can provide reason"
+    },
+    {
+      "tag": "$lastMessageID",
+      "description": "Returns ID of the last message in a specified channel"
+    },
+    {
+      "tag": "$lastPinTimestamp",
+      "description": "Returns the timestamp of when the last message was pinned in the channel"
+    },
+    {
+      "tag": "$linesCount[(Text)]",
+      "description": "Returns the number of lines in the provided text"
+    },
+    {
+      "tag": "$listVar[(Separator)]",
+      "description": "Returns a list of all variable names for this bot"
+    },
+    {
+      "tag": "$logQuota",
+      "description": "Get remaining log quota for this bot"
+    },
+    {
+      "tag": "$log[Log message;(Log level)]",
+      "description": "Log event to bot logs"
+    },
+    {
+      "tag": "$lowestRole",
+      "description": "Returns id of the lowest role in the current guild"
+    },
+    {
+      "tag": "$lowestRoleWithPerms[Permission;...]",
+      "description": "Returns the lowest role in the server that has all the provided permissions"
+    },
+    {
+      "tag": "$lowestRole[User ID]",
+      "description": "Returns id of the lowest user's role"
+    },
+    {
+      "tag": "$max[A;B;...]",
+      "description": "Returns the biggest number from the provided numbers"
+    },
+    {
+      "tag": "$membersCount",
+      "description": "returns count of members of the server"
+    },
+    {
+      "tag": "$membersCount[Presence]",
+      "description": "Returns count of members with specific presence"
+    },
+    {
+      "tag": "$mentionedChannels[Mention number;(Return channel)]",
+      "description": "Works the same way as $mentioned but instead of returning user's IDs, it returns channel's id."
+    },
+    {
+      "tag": "$mentionedRoles[Mention number]",
+      "description": "Works the same way as $mentioned but instead of returning user's IDs, it returns role's id"
+    },
+    {
+      "tag": "$mentioned[Mention number;(Return author)]",
+      "description": "Returns User ID for given mention. If 'yes' is set and there is no mentions, function returns authorID of the message."
+    },
+    {
+      "tag": "$message",
+      "description": "User message without the command"
+    },
+    {
+      "tag": "$messageEditedTimestamp[ChannelID;MessageID]",
+      "description": "Returns the message edited timestamp of the message"
+    },
+    {
+      "tag": "$messageID",
+      "description": "Returns ID of the message"
+    },
+    {
+      "tag": "$message[Argument number;(Argument name)]",
+      "description": "Returns argument from message for given number or argument name"
+    },
+    {
+      "tag": "$min[A;B;...]",
+      "description": "Returns the smallest number from the provided numbers"
+    },
+    {
+      "tag": "$minute",
+      "description": "Current minute"
+    },
+    {
+      "tag": "$modifyChannelPerms[Channel ID;Permission/(User ID/RoleID);...]",
+      "description": "Changes permission for mentioned users/roles in this particular channel. '+' before permission's name means 'allow', '-' means 'deny', '/' means neutral permission."
+    },
+    {
+      "tag": "$modifyChannel[Channel ID;(Name;Description;Nsfw;Position;Category ID)]",
+      "description": "Allows you to modify channel. For example, you can use it to change the channel's position. (you can use !unchanged as argument if you don't want to change this field)"
+    },
+    {
+      "tag": "$modifyRolePerms[Role ID;Permission;...]",
+      "description": "Changes permission for provided role."
+    },
+    {
+      "tag": "$modifyRole[Role ID;(Role name;Color;Display role;Mentionable)]",
+      "description": "Modifies existing role. If 'display role' is set to 'yes', role will be visible in discord's right panel. (you can use !unchanged as argument if you don't want to change this field)"
+    },
+    {
+      "tag": "$modulo[A;B]",
+      "description": "Returns the rest from division of A and B"
+    },
+    {
+      "tag": "$month",
+      "description": "Returns current month"
+    },
+    {
+      "tag": "$multi[number;...]",
+      "description": "Returns the multiplication of entered numbers"
+    },
+    {
+      "tag": "$mute[Muted]",
+      "description": "Mutes the mentioned users. 'Muted' should be the name of the muted role (case sensitive)"
+    },
+    {
+      "tag": "$newModal[Modal ID;Title]",
+      "description": "Creates a new modal. Only one modal can be used in a command. Check wiki for examples."
+    },
+    {
+      "tag": "$newSelectMenu[Menu ID;Min;Max;(Placeholder;Message ID)]",
+      "description": "Adds select menu to a message. Check wiki for examples."
+    },
+    {
+      "tag": "$newTicket[Category name/ID;No question message;In ticket message;Message to user;Error message;(Ticket number;(yes/no) return ID of the ticket message)]",
+      "description": "Creates new ticket in provided category. You can use {channel} and {subject}. If you leave 'categoryID/name' empty it will generate Tickets category for you"
+    },
+    {
+      "tag": "$nickname",
+      "description": "Nickname of the author of the message"
+    },
+    {
+      "tag": "$nickname[User ID]",
+      "description": "Nickname for the given user ID"
+    },
+    {
+      "tag": "$noMentionMessage",
+      "description": "User message without the command and mentions"
+    },
+    {
+      "tag": "$noMentionMessage[Argument number]",
+      "description": "Returns argument from message for given number"
+    },
+    {
+      "tag": "$nodeVersion",
+      "description": "Get current node version"
+    },
+    {
+      "tag": "$nodeVersion[Node Number]",
+      "description": "Get version of given node"
+    },
+    {
+      "tag": "$nomention",
+      "description": "Disables default user mention"
+    },
+    {
+      "tag": "$numberSeparator[Number;(Separator)]",
+      "description": "Separates thousands in the number"
+    },
+    {
+      "tag": "$onlyAdmin[Error message]",
+      "description": "Allows you to make command executable only by roles that have administrator permission"
+    },
+    {
+      "tag": "$onlyBotChannelPerms[Channel ID;Permission;...;Error message]",
+      "description": "Command can only be executed if the bot has all of the provided permissions in a given channel"
+    },
+    {
+      "tag": "$onlyBotPerms[Permission;...;Error message]",
+      "description": "Command can be executed if bot has all of the provided permissions"
+    },
+    {
+      "tag": "$onlyForCategories[Category ID;...;Error message]",
+      "description": "Only for given categories command can be executed"
+    },
+    {
+      "tag": "$onlyForChannels[Channel ID;...;Error message]",
+      "description": "Only for given channels command can be executed"
+    },
+    {
+      "tag": "$onlyForIDs[User ID;...;Error message]",
+      "description": "Only for this userIDs command can be executed"
+    },
+    {
+      "tag": "$onlyForRoleIDs[Role ID;...;Error message]",
+      "description": "Only for this roles command can be executed"
+    },
+    {
+      "tag": "$onlyForRoles[Role name;...;Error message]",
+      "description": "Only for this roles command can be executed"
+    },
+    {
+      "tag": "$onlyForServers[Server ID;...;Error message]",
+      "description": "Command can be only used in provided servers"
+    },
+    {
+      "tag": "$onlyForUsers[Username;...;Error message]",
+      "description": "Only this users are able to use this commands"
+    },
+    {
+      "tag": "$onlyIfMessageContains[Message;Word;...;Error message]",
+      "description": "Checks if provided message contains every provided word. If it does not contain these words command won't be executed."
+    },
+    {
+      "tag": "$onlyIf[Condition;Error message]",
+      "description": "Command can be used only if values are equal (==) or not equal (!=) or one of them is bigger (> or <) or one of them is equal or bigger (>= or <=)"
+    },
+    {
+      "tag": "$onlyNSFW[Error message]",
+      "description": "Allows you to make command executable only in NSFW channels"
+    },
+    {
+      "tag": "$onlyPerms[Permission;...;Error message]",
+      "description": "Command can be executed if user has all of the provided permissions"
+    },
+    {
+      "tag": "$optOff[Functions to be executed]",
+      "description": "Can be only used in BDScript 2. Executes functions with turned off optimizations (should be used only by advanced users)"
+    },
+    {
+      "tag": "$or[Condition;...]",
+      "description": "Returns true if at least one of the provided expressions is true"
+    },
+    {
+      "tag": "$parentID",
+      "description": "Returns the current channel's category ID"
+    },
+    {
+      "tag": "$parentID[Channel ID]",
+      "description": "Returns category ID for a given channel"
+    },
+    {
+      "tag": "$pinMessage",
+      "description": "Pins the message"
+    },
+    {
+      "tag": "$pinMessage[Channel ID;Message ID]",
+      "description": "Pins the message"
+    },
+    {
+      "tag": "$ping",
+      "description": "Returns delay in milliseconds"
+    },
+    {
+      "tag": "$premiumExpireTime",
+      "description": "Returns expire time for the premium"
+    },
+    {
+      "tag": "$premiumExpireTime[(Unix timestamp)]",
+      "description": "If `yes` is provided in the first argument, the function returns expire time in UNIX timestamp"
+    },
+    {
+      "tag": "$publishMessage[Channel ID;Message ID]",
+      "description": "Publishes a message from announcement channel"
+    },
+    {
+      "tag": "$random",
+      "description": "Returns random number from 0-9"
+    },
+    {
+      "tag": "$randomCategoryID[(Guild ID)]",
+      "description": "Returns random category id from the current server or the provided server"
+    },
+    {
+      "tag": "$randomChannelID",
+      "description": "Returns random channel id from the current server"
+    },
+    {
+      "tag": "$randomGuildID",
+      "description": "Returns random guild id"
+    },
+    {
+      "tag": "$randomMention",
+      "description": "Returns random user mention from the server"
+    },
+    {
+      "tag": "$randomRoleID[(Guild ID)]",
+      "description": "Returns random role id from the current server or the provided server"
+    },
+    {
+      "tag": "$randomString[Length]",
+      "description": "Returns random string"
+    },
+    {
+      "tag": "$randomText[Text;...]",
+      "description": "Returns random text from provided data"
+    },
+    {
+      "tag": "$randomUser",
+      "description": "Returns random username from the server"
+    },
+    {
+      "tag": "$randomUserID",
+      "description": "Returns random user id from the server"
+    },
+    {
+      "tag": "$random[Min;Max]",
+      "description": "Returns random number from min to max"
+    },
+    {
+      "tag": "$registerGuildCommands",
+      "description": "Registers all guild slash commands in the current guild"
+    },
+    {
+      "tag": "$registerGuildCommands[Slash command name;...]",
+      "description": "Registers provided guild slash commands in the current guild (slash command doesn't need to be enabled or marked as guild command)"
+    },
+    {
+      "tag": "$removeAllComponents",
+      "description": "Removes all components from the current message"
+    },
+    {
+      "tag": "$removeAllComponents[Message ID]",
+      "description": "Removes all components from a message"
+    },
+    {
+      "tag": "$removeButtons",
+      "description": "Removes all buttons from the current message"
+    },
+    {
+      "tag": "$removeButtons[Message ID]",
+      "description": "Removes all buttons from a message"
+    },
+    {
+      "tag": "$removeComponent[Custom ID;(Message ID)]",
+      "description": "Removes a component from a message"
+    },
+    {
+      "tag": "$removeContains[Word;...;Amount]",
+      "description": "Removes messages that contains provided words. It will remove <amount> last messages (replace 'amount' with number) (max 100 messages)"
+    },
+    {
+      "tag": "$removeEmoji[Emoji ID]",
+      "description": "Remove custom emoji with given its id"
+    },
+    {
+      "tag": "$removeLinks",
+      "description": "Removes links"
+    },
+    {
+      "tag": "$removeLinks[Text]",
+      "description": "Removes links from provided text"
+    },
+    {
+      "tag": "$removeSplitTextElement[Index]",
+      "description": "Removes element from $textSplit values."
+    },
+    {
+      "tag": "$repeatMessage[Amount;Message]",
+      "description": "Repeats given message. You can choose how many times message can be repeated (max 10 times)"
+    },
+    {
+      "tag": "$replaceText[Text;Sample;New;(Amount)]",
+      "description": "Replaces 'sample' from 'text' to 'new' 'how many' times. Set 'how many' to -1 to replace everything"
+    },
+    {
+      "tag": "$repliedMessageID",
+      "description": "Returns ID of a replied message. If message is not a reply, nothing is returned"
+    },
+    {
+      "tag": "$repliedMessageID[Channel ID;Message ID]",
+      "description": "Returns ID of a replied message. If message is not a reply, nothing is returned"
+    },
+    {
+      "tag": "$reply",
+      "description": "Replies to the user's command"
+    },
+    {
+      "tag": "$replyIn[Time]",
+      "description": "Bot's reply for this command will be delayed for given <time>"
+    },
+    {
+      "tag": "$reply[Channel ID;Message ID]",
+      "description": "Replies to the specified message"
+    },
+    {
+      "tag": "$resetChannelVar[Name]",
+      "description": "Resets variable for every channel"
+    },
+    {
+      "tag": "$resetServerVar[Name]",
+      "description": "Resets variable for every server"
+    },
+    {
+      "tag": "$resetUserVar[Name;(User ID)]",
+      "description": "Resets variable for every user or just one user if <user ID> is specified"
+    },
+    {
+      "tag": "$roleCount",
+      "description": "Returns count of roles in the server"
+    },
+    {
+      "tag": "$roleExists[Role ID]",
+      "description": "Checks if role exists"
+    },
+    {
+      "tag": "$roleGrant[user ID;+/-Role ID;...]",
+      "description": "Gives or removes roles from the provided user. In front of RoleID use '+' to add the role or '-' to remove it"
+    },
+    {
+      "tag": "$roleID[Role name]",
+      "description": "Returns role ID of role with given name"
+    },
+    {
+      "tag": "$roleInfo[Message]",
+      "description": "Lets you write role's information."
+    },
+    {
+      "tag": "$roleName[Role ID]",
+      "description": "Returns role name"
+    },
+    {
+      "tag": "$roleNames",
+      "description": "Returns names of all roles in the server"
+    },
+    {
+      "tag": "$rolePerms[Guild ID;Role ID;(Separator)]",
+      "description": "Returns a list of permissions for a role with custom separator"
+    },
+    {
+      "tag": "$rolePosition[Role ID]",
+      "description": "Returns position of the role in the server."
+    },
+    {
+      "tag": "$round[Number;(Decimal place)]",
+      "description": "Rounds up the provided number"
+    },
+    {
+      "tag": "$rulesChannelID[(Guild ID)]",
+      "description": "Returns rules channel ID"
+    },
+    {
+      "tag": "$scriptLanguage",
+      "description": "Returns the name of scripting language used by the command"
+    },
+    {
+      "tag": "$second",
+      "description": "Current second"
+    },
+    {
+      "tag": "$sendEmbedMessage[Channel ID;Content;(Title;Title URL;Description;Color;Author;Author icon;Footer;Footer icon;Thumbnail;Image;Add timestamp;Return ID)]",
+      "description": "Sends embed message to provided channel. Not needed fields can be left empty"
+    },
+    {
+      "tag": "$sendMessage[Message;(Return ID)]",
+      "description": "Sends message and optionally returns the message ID"
+    },
+    {
+      "tag": "$sendNotification[Message;(Image URL)]",
+      "description": "Sends notification to your mobile phone"
+    },
+    {
+      "tag": "$serverChannelExists[Channel ID]",
+      "description": "Checks if the channel exists in the guild"
+    },
+    {
+      "tag": "$serverCooldown[Duration;Error message]",
+      "description": "Sets a server command cool down"
+    },
+    {
+      "tag": "$serverCount",
+      "description": "Amount of servers that your bot's in"
+    },
+    {
+      "tag": "$serverDescription",
+      "description": "Returns the current server's description"
+    },
+    {
+      "tag": "$serverDescription[Guild ID]",
+      "description": "Returns the server's description"
+    },
+    {
+      "tag": "$serverEmojis[Guild ID;Separator]",
+      "description": "Returns server's emojis separated by the provided separator"
+    },
+    {
+      "tag": "$serverIcon",
+      "description": "Returns server's icon"
+    },
+    {
+      "tag": "$serverIcon[Server ID]",
+      "description": "Returns server's icon for given serverID"
+    },
+    {
+      "tag": "$serverInfo[Message;(Thumbnail)]",
+      "description": "Lets you write server's information"
+    },
+    {
+      "tag": "$serverLeaderboard[Variable name;(Sort)]",
+      "description": "Generates Leaderboard for given server variable. 'asc' stands for ascending and 'desc' stands for descending. default is 'desc'"
+    },
+    {
+      "tag": "$serverName[Server ID]",
+      "description": "Returns name of the guild/server"
+    },
+    {
+      "tag": "$serverNames",
+      "description": "Returns only 10 names of servers that your bot's in"
+    },
+    {
+      "tag": "$serverNames[Amount;Separator]",
+      "description": "Returns server names. You can set amount to -1 if you want to return everything"
+    },
+    {
+      "tag": "$serverOwner",
+      "description": "Returns ID of the server's owner"
+    },
+    {
+      "tag": "$serverOwner[Guild ID]",
+      "description": "Returns ID of the server's owner"
+    },
+    {
+      "tag": "$serverRegion",
+      "description": "returns server's region"
+    },
+    {
+      "tag": "$serverVerificationLvl",
+      "description": "returns server's verification level"
+    },
+    {
+      "tag": "$setChannelVar[Name;Value;(Channel ID)]",
+      "description": "Sets value to given variable. It's a channel variable, it means that this variable is assigned to channel"
+    },
+    {
+      "tag": "$setServerVar[Name;Value;(Server ID)]",
+      "description": "Sets value to given variable. It's a server variable, it means that this variable is assigned to server"
+    },
+    {
+      "tag": "$setUserRoles[User ID;Role ID;...]",
+      "description": "Overrides all roles of the given user."
+    },
+    {
+      "tag": "$setUserVar[Name;Value;(User ID;Guild ID)]",
+      "description": "Sets value to given variable. It's a user variable, it means that this variable is assigned to user that used this command"
+    },
+    {
+      "tag": "$setVar[Name;Value;(User ID)]",
+      "description": "Sets the value to given variable. It's a global variable, it means that this variable can be accessed in every server by every user"
+    },
+    {
+      "tag": "$shardID",
+      "description": "Returns the id of the currently used shard"
+    },
+    {
+      "tag": "$shardID[Guild ID]",
+      "description": "Returns the shard id for the provided guild"
+    },
+    {
+      "tag": "$slashCommandsCount",
+      "description": "Returns amount of slash commands"
+    },
+    {
+      "tag": "$slashID",
+      "description": "Returns ID of provided slash command"
+    },
+    {
+      "tag": "$slashID[Slash command name]",
+      "description": "Returns ID of a slash command"
+    },
+    {
+      "tag": "$slowmode[Channel ID;Slowmode time]",
+      "description": "Sets slow mode for provided channel"
+    },
+    {
+      "tag": "$sort[Number;...;Direction;Return amount;Separator]",
+      "description": "Sorts provided numbers. Amount of numbers can be set to -1 if you'd like to return every number"
+    },
+    {
+      "tag": "$splitText[Index]",
+      "description": "Returns value from saved $textSplit. Index can be a number or '<' for first value or '>' for last value"
+    },
+    {
+      "tag": "$sqrt[number]",
+      "description": "Returns the square root of the input number"
+    },
+    {
+      "tag": "$startThread[Name;Channel ID;Message ID;(Archive duration;Return thread/channel ID)]",
+      "description": "Starts a new thread"
+    },
+    {
+      "tag": "$stop",
+      "description": "Can be only used in BDScript 2. Stops command execution"
+    },
+    {
+      "tag": "$sub[number;...]",
+      "description": "Returns the subtraction of entered numbers"
+    },
+    {
+      "tag": "$sum[number;...]",
+      "description": "Returns the sum of entered numbers"
+    },
+    {
+      "tag": "$suppressErrorLogging",
+      "description": "Disable error logging"
+    },
+    {
+      "tag": "$suppressErrors",
+      "description": "Blocks sending any error messages"
+    },
+    {
+      "tag": "$suppressErrors[Error message]",
+      "description": "Blocks sending any error messages and sends a provided custom error"
+    },
+    {
+      "tag": "$systemChannelID",
+      "description": "Returns the ID of the server's system channel"
+    },
+    {
+      "tag": "$takeRole[Role/user ID;(Role ID)]",
+      "description": "Takes role from mentioned users"
+    },
+    {
+      "tag": "$textSplit[SomeSEPARATORtext;Separator]",
+      "description": "Splits text by <SEPARATOR> and saves it temporary for later"
+    },
+    {
+      "tag": "$threadAddMember[Thread ID;User ID]",
+      "description": "Adds user to a thread"
+    },
+    {
+      "tag": "$threadMessageCount",
+      "description": "Returns the total number of messages in the current thread"
+    },
+    {
+      "tag": "$threadRemoveMember[Thread ID;User ID]",
+      "description": "Removes user from a thread"
+    },
+    {
+      "tag": "$threadUserCount",
+      "description": "Returns the total number of users in the current thread"
+    },
+    {
+      "tag": "$thumbnail[Image url;(Index)]",
+      "description": "Adds thumbnail to embed"
+    },
+    {
+      "tag": "$time[Timezone]",
+      "description": "Changes timezone for date/time commands"
+    },
+    {
+      "tag": "$timeout[Duration;(User ID)]",
+      "description": "Timeouts the mentioned users, or the user provided in 'User ID', for a certain 'Duration' (max 28 days)"
+    },
+    {
+      "tag": "$title[Title;(Index)]",
+      "description": "Adds title to an embed"
+    },
+    {
+      "tag": "$toLowercase[Text]",
+      "description": "Changes provided text to lowercase"
+    },
+    {
+      "tag": "$toTitleCase[Text]",
+      "description": "Changes first character of every word to uppercase"
+    },
+    {
+      "tag": "$toUppercase[Text]",
+      "description": "Changes provided text to uppercase"
+    },
+    {
+      "tag": "$trimContent",
+      "description": "Removes duplicate spaces from incoming message content"
+    },
+    {
+      "tag": "$trimSpace[Text]",
+      "description": "Removes space from the start and end of the provided text"
+    },
+    {
+      "tag": "$try",
+      "description": "Can be only used in BDScript 2. Starts try block (check wiki for examples)"
+    },
+    {
+      "tag": "$tts",
+      "description": "Marks the message as TTS"
+    },
+    {
+      "tag": "$unban",
+      "description": "Unbans user by using their username"
+    },
+    {
+      "tag": "$unbanID",
+      "description": "Unbans user by using their ID. ID is taken from the last part of the command"
+    },
+    {
+      "tag": "$unbanID[User ID]",
+      "description": "Unbans user by using their ID."
+    },
+    {
+      "tag": "$unescape[text]",
+      "description": "Unescapes special characters like `;`"
+    },
+    {
+      "tag": "$unmute[Muted]",
+      "description": "Unmutes the mentioned users. 'Muted' should be the name of the muted role (case sensitive)"
+    },
+    {
+      "tag": "$unpinMessage[Channel ID;Message ID]",
+      "description": "Unpins the message"
+    },
+    {
+      "tag": "$unregisterGuildCommands",
+      "description": "Unregisters all enabled slash commands in the current guild"
+    },
+    {
+      "tag": "$unregisterGuildCommands[Slash command name;...]",
+      "description": "Unregisters provided guild slash commands from the current guild"
+    },
+    {
+      "tag": "$untimeout[(User ID)]",
+      "description": "Untimeouts the mentioned users, or the user provided in 'User ID'"
+    },
+    {
+      "tag": "$uptime",
+      "description": "Returns your bot's uptime"
+    },
+    {
+      "tag": "$url[Mode;Text]",
+      "description": "Encodes or decodes url"
+    },
+    {
+      "tag": "$useChannel[Channel ID]",
+      "description": "Sends every message to chosen channel"
+    },
+    {
+      "tag": "$usedEmoji",
+      "description": "Can be used in awaited commands triggered by reaction. Returns emoji used by user."
+    },
+    {
+      "tag": "$userAvatar[User ID]",
+      "description": "Returns avatar URL for given user ID"
+    },
+    {
+      "tag": "$userBadges[User ID;(Separator)]",
+      "description": "Returns a list of user badges separated by a space or the given separator"
+    },
+    {
+      "tag": "$userBannerColor[User ID]",
+      "description": "Returns the banner color of the given user. Returns empty string if no banner color is set"
+    },
+    {
+      "tag": "$userBanner[User ID]",
+      "description": "Returns user banner if user has one"
+    },
+    {
+      "tag": "$userExists[User ID]",
+      "description": "Checks if user exists"
+    },
+    {
+      "tag": "$userID[Username#discriminator or username]",
+      "description": "Gets userID from username#discriminator or just username"
+    },
+    {
+      "tag": "$userInfo[Message]",
+      "description": "Lets you write mentioned user's information"
+    },
+    {
+      "tag": "$userJoinedDiscord[User ID;(Format)]",
+      "description": "Returns date when given user joined discord. You can also give your own date format"
+    },
+    {
+      "tag": "$userJoined[User ID;(Format)]",
+      "description": "Returns date when given user joined the guild. You can also give your own date format"
+    },
+    {
+      "tag": "$userLeaderboard[Variable name;(Sort)]",
+      "description": "Generates Leaderboard for given user variable. 'asc' stands for ascending and 'desc' stands for descending. default is 'desc'"
+    },
+    {
+      "tag": "$userPerms[User ID;Return amount;Separator]",
+      "description": "Returns user permissions. Amount to return can be set to -1 if you'd like to return every permission"
+    },
+    {
+      "tag": "$userReacted[Channel ID;Message ID;User ID;Emoji]",
+      "description": "Checks if user reacted to message"
+    },
+    {
+      "tag": "$userRoles[User ID]",
+      "description": "Returns user's roles"
+    },
+    {
+      "tag": "$userServerAvatar[User ID]",
+      "description": "Returns server avatar URL for given user ID"
+    },
+    {
+      "tag": "$username",
+      "description": "Username of the author of the message"
+    },
+    {
+      "tag": "$username[User ID]",
+      "description": "Username for the given user ID"
+    },
+    {
+      "tag": "$varExistError[Name;Error message]",
+      "description": "Returns custom error if variable does not exist"
+    },
+    {
+      "tag": "$varExists[Name]",
+      "description": "Returns 'true' if variable exists or 'false' if it doesn't exist"
+    },
+    {
+      "tag": "$var[Name;(Value)]",
+      "description": "Can be only used in BDScript 2. It can be used to save a value temporarily. It doesn't require setting up a new variable in the app. The data is removed after the command is executed. If value is provided the variable is set otherwise the value is retrieved."
+    },
+    {
+      "tag": "$variablesCount[Type]",
+      "description": "Shows you amount of variables for given type"
+    },
+    {
+      "tag": "$voiceUserLimit[(Voice Channel ID)]",
+      "description": "Returns the user limit of a voice channel"
+    },
+    {
+      "tag": "$webhookAvatarURL[Webhook url;Avatar url]",
+      "description": "Sets webhook avatar URL"
+    },
+    {
+      "tag": "$webhookColor[Webhook url;Color]",
+      "description": "Adds color to webhook embed"
+    },
+    {
+      "tag": "$webhookContent[Webhook url;Text]",
+      "description": "Adds content to a new webhook message"
+    },
+    {
+      "tag": "$webhookCreate[ChannelID;Username;(Avatar)]",
+      "description": "Creates a new webhook and returns its URL"
+    },
+    {
+      "tag": "$webhookDelete[Webhook url]",
+      "description": "Deletes a webhook"
+    },
+    {
+      "tag": "$webhookDescription[Webhook url;Description]",
+      "description": "Adds description to webhook embed"
+    },
+    {
+      "tag": "$webhookFooter[Webhook url;Footer]",
+      "description": "Adds footer to webhook embed"
+    },
+    {
+      "tag": "$webhookSend[Webhook url;(Content;Title;Title URL;Description;Color;Author;Author Icon;Footer;Footer Icon;Thumbnail;Image;Add Timestamp)]",
+      "description": "Sends a message as a webhook. Not needed fields can be left empty."
+    },
+    {
+      "tag": "$webhookTitle[Webhook url;Title]",
+      "description": "Adds title to webhook embed"
+    },
+    {
+      "tag": "$webhookUsername[Webhook url;Username]",
+      "description": "Sets webhook username"
+    },
+    {
+      "tag": "$year",
+      "description": "Returns current year"
+    }
+  ]
+}
