@@ -1524,12 +1524,12 @@ window.resetHighlightTheme = function() {
       <strong style="font-size:1.1rem;">Import Highlight Theme</strong>
       <button onclick="closeHighlightModal()" style="background:none;border:none;color:rgba(255,255,255,0.6);font-size:1.3rem;cursor:pointer;padding:0;line-height:1;">✕</button>
     </div>
-    <p style="font-size:0.9rem;color:rgba(255,255,255,0.6);margin-bottom:0.75rem;">Generate a theme using the <a href="tools/../tools/highlighter.html" target="_blank" style="color:var(--link-color);">Code Highlighter</a>, then paste the JSON here.</p>
-    <textarea id="highlightThemeInput" rows="6" placeholder='{"defaultTextHighlight":{"color":4288341353,"style":0},"functionsHighlights":{"$if":{"color":4288905212,"style":0}}}' style="width:100%;box-sizing:border-box;padding:0.75rem;background:hsl(0deg 0% 100% / 7%);border:1px solid hsl(0deg 0% 100% / 15%);border-radius:8px;color:#fff;font-size:0.85rem;font-family:monospace;resize:vertical;outline:none;"></textarea>
-    <div id="highlightThemeError" style="color:var(--error);font-size:0.85rem;min-height:1.2rem;margin-top:0.4rem;"></div>
+    <p style="font-size:1rem;color:rgba(255,255,255,0.7);margin-bottom:0.75rem;">Generate a theme using the <a href="tools/../tools/highlighter.html" target="_blank" style="color:var(--link-color);">Code Highlighter</a>, then paste the JSON here.</p>
+    <textarea id="highlightThemeInput" rows="6" placeholder='{"defaultTextHighlight":{"color":4288341353,"style":0},"functionsHighlights":{"$if":{"color":4288905212,"style":0}}}' style="width:100%;box-sizing:border-box;padding:0.75rem;background:hsl(0deg 0% 100% / 7%);border:1px solid hsl(0deg 0% 100% / 15%);border-radius:8px;color:#fff;font-size:1rem;font-family:inherit;resize:vertical;outline:none;"></textarea>
+    <div id="highlightThemeError" style="color:var(--error);font-size:1rem;min-height:1.2rem;margin-top:0.4rem;"></div>
     <div style="display:flex;gap:0.75rem;margin-top:1rem;justify-content:flex-end;">
-      <button onclick="resetHighlightTheme()" style="padding:0.5rem 1.25rem;background:linear-gradient(to left, rgb(255 255 255 / 40%), rgb(192 1 1 / 75%));border:none;border-radius:8px;color:#fff;cursor:pointer;font-size:0.95rem;">Reset</button>
-      <button onclick="applyHighlightTheme()" style="padding:0.5rem 1.25rem;background:linear-gradient(to right, rgb(255 255 255 / 40%), rgb(1 192 36 / 75%));border:none;border-radius:8px;color:#fff;cursor:pointer;font-size:0.95rem;">Apply</button>
+      <button onclick="resetHighlightTheme()" style="padding:0.5rem 1.25rem;background:linear-gradient(to left, rgb(255 255 255 / 40%), rgb(192 1 1 / 75%));border:none;border-radius:8px;color:#fff;cursor:pointer;font-size:1rem;">Reset</button>
+      <button onclick="applyHighlightTheme()" style="padding:0.5rem 1.25rem;background:linear-gradient(to right, rgb(255 255 255 / 40%), rgb(1 192 36 / 75%));border:none;border-radius:8px;color:#fff;cursor:pointer;font-size:1rem;">Apply</button>
     </div>
   </div>
 </div>
