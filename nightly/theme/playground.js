@@ -406,20 +406,64 @@ function updateCloseAllButton() {
   }
 }
 
+let editorValidationTimer;
+let lastEditorValidationText = "";
+
+function scheduleBdscriptValidation(text) {
+  if (lastEditorValidationText === text) return;
+  lastEditorValidationText = text;
+
+  clearTimeout(editorValidationTimer);
+  editorValidationTimer = setTimeout(() => validateBdscriptCode(text), 500);
+}
+
+async function validateBdscriptCode(text) {
+  const errorMessageElement = document.getElementById("error-message");
+  if (!errorMessageElement) return;
+
+  errorMessageElement.innerHTML = "";
+  if (!text.trim()) return;
+
+  try {
+    const response = await fetch("https://api.bdtools.xyz/bdscript-checker", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code: text }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`BDScript checker returned ${response.status}`);
+    }
+
+    const data = await response.json();
+    const firstError = data?.errors?.[0];
+
+    if (firstError?.message) {
+      callError(
+        `Error: ${firstError.function || "BDScript"} at line ${firstError.line || "?"}: ${firstError.message}`,
+      );
+    }
+  } catch (error) {
+    console.error("BDScript checker failed", error);
+  }
+}
+
 function checkBrackets() {
   const text = window.cmEditor ? window.cmEditor.state.doc.toString() : "";
   const textBytes = new TextEncoder().encode(text).length;
   let dollarCount = 0;
   let openBrackets = 0;
   let closeBrackets = 0;
-  let lastOpenBracketLine = -1;
 
   const errorMessageElement = document.getElementById("error-message");
-  errorMessageElement.innerHTML = "";
-  errorMessageElement.style.color = "black";
+  if (errorMessageElement) {
+    errorMessageElement.innerHTML = "";
+    errorMessageElement.style.color = "black";
+  }
 
   if (textBytes > 65536) {
     callError("Error: Text exceeds allowed size (65536 bytes).");
+    return;
   }
 
   if (text.indexOf("$") === -1 && text.length > 2000) {
@@ -439,15 +483,6 @@ function checkBrackets() {
         }
       } else if (line[j] === "[") {
         openBrackets++;
-        lastOpenBracketLine = i + 1;
-        if (j + 1 < line.length && line[j + 1] === "]") {
-          if (openBrackets <= dollarCount) {
-            callError(
-              `Warning: Empty brackets [] detected on line ${i + 1}.`,
-              "warn",
-            );
-          }
-        }
       } else if (line[j] === "]" && (j === 0 || line[j - 1] !== "\\")) {
         closeBrackets++;
       }
@@ -457,13 +492,7 @@ function checkBrackets() {
   document.getElementById("openCount").textContent = openBrackets;
   document.getElementById("closeCount").textContent = closeBrackets;
 
-  if (openBrackets <= dollarCount) {
-    if (closeBrackets < openBrackets) {
-      callError(
-        `Error: Not all open brackets are closed. Last opened on line ${lastOpenBracketLine}.`,
-      );
-    }
-  }
+  scheduleBdscriptValidation(text);
 }
 
 let caseSensitive = false;
