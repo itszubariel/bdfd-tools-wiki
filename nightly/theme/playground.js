@@ -423,6 +423,7 @@ function scheduleBdscriptValidation(text) {
 function formatValidationError(error, isWarning = false) {
   if (!error) return "";
   if (typeof error === "string") return error;
+  if (error.plain) return error.message || "";
 
   const functionName = error.function || error.functionName || "BDScript";
   const line = error.line != null ? error.line : "?";
@@ -561,13 +562,10 @@ function runBdscript2Validation(text) {
     return [];
   }
 
-  const beforeKeyword = text.split(firstKeyword)[0];
-  const line = beforeKeyword.split("\n").length;
   return [
     {
-      function: firstKeyword,
-      line,
-      message: "Function is only available in BDScript2",
+      message: `Function ${firstKeyword} is only available in BDScript2`,
+      plain: true,
     },
   ];
 }
@@ -998,12 +996,7 @@ function typeScript() {
     slashStart: "Slash command name must start with /",
   };
 
-  const formatSlashError = (message) =>
-    formatValidationError({
-      function: nameInputVal && nameInputVal.startsWith("/") ? nameInputVal : "SlashCommand",
-      line: 1,
-      message,
-    });
+  const formatSlashError = (message) => `Error: ${message}`;
 
   deleteError(formatSlashError(errorMessages.regex));
   deleteError(formatSlashError(errorMessages.empty));
@@ -1128,15 +1121,10 @@ function bdscript2() {
     const firstKeyword = bdscript2Keywords.find((keyword) =>
       scriptText.includes(keyword),
     );
-    callError(
-      formatValidationError({
-        function: firstKeyword,
-        line: "?",
-        message: "Function is only available in BDScript2",
-      }),
-    );
+    callError(`Function ${firstKeyword} is only available in BDScript2`, "error", true);
   }
 }
+
 
 function editorAreaButtons() {
   const scriptDiv = document.querySelector(".scriptdiv");
