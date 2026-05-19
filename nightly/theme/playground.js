@@ -442,7 +442,7 @@ function displayValidationErrors(errors, origin = "code") {
 
   errors.slice(0, 5).forEach((error) => {
     if (!error) return;
-    callValidationError(error, false, origin);
+    callValidationError(error, true, origin);
   });
 }
 
@@ -1116,6 +1116,10 @@ function bdscript2() {
   const containsBDScript2Keywords = bdscript2Keywords.some((keyword) =>
     scriptText.includes(keyword),
   );
+
+  bdscript2Keywords.forEach((keyword) => {
+    deleteError(`Error: Function ${keyword} is only available in BDScript2`);
+  });
 
   if (containsBDScript2Keywords && scriptLanguage !== "bds2") {
     const firstKeyword = bdscript2Keywords.find((keyword) =>
