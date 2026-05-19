@@ -417,6 +417,36 @@ function scheduleBdscriptValidation(text) {
   editorValidationTimer = setTimeout(() => validateBdscriptCode(text), 500);
 }
 
+function formatValidationError(error, isWarning = false) {
+  if (!error) return "";
+  if (typeof error === "string") return error;
+
+  const functionName = error.function || error.functionName || "BDScript";
+  const line = error.line != null ? error.line : "?";
+  const message = error.message || "";
+  if (isWarning) {
+    return `Warning: ${message}`;
+  }
+  return `Error: ${functionName} at line ${line}: ${message}`;
+}
+
+function displayValidationErrors(errors) {
+  const errorMessageElement = document.getElementById("error-message");
+  if (!errorMessageElement) return;
+  errorMessageElement.innerHTML = "";
+
+  if (!Array.isArray(errors) || errors.length === 0) return;
+
+  errors.slice(0, 5).forEach((error) => {
+    if (!error) return;
+    if (error.type === "warn") {
+      callError(formatValidationError(error, true), "warn");
+    } else {
+      callError(formatValidationError(error), "error");
+    }
+  });
+}
+
 function runLocalBracketValidation(text) {
   let dollarCount = 0;
   let openBrackets = 0;
@@ -438,7 +468,12 @@ function runLocalBracketValidation(text) {
         lastOpenBracketLine = i + 1;
         if (j + 1 < line.length && line[j + 1] === "]") {
           if (openBrackets <= dollarCount) {
-            warnings.push(`Warning: Empty brackets [] detected on line ${i + 1}.`);
+            warnings.push({
+              function: "BDScript",
+              line: i + 1,
+              message: "Empty brackets [] detected.",
+              type: "warn",
+            });
           }
         }
       } else if (line[j] === "]" && (j === 0 || line[j - 1] !== "\\")) {
@@ -448,9 +483,11 @@ function runLocalBracketValidation(text) {
   }
 
   if (openBrackets <= dollarCount && closeBrackets < openBrackets) {
-    errors.push(
-      `Error: Not all open brackets are closed. Last opened on line ${lastOpenBracketLine}.`,
-    );
+    errors.push({
+      function: "BDScript",
+      line: lastOpenBracketLine,
+      message: `Not all open brackets are closed. Last opened on line ${lastOpenBracketLine}.`,
+    });
   }
 
   return { openBrackets, closeBrackets, warnings, errors };
@@ -464,7 +501,7 @@ async function validateBdscriptCode(text) {
   if (!text.trim()) return;
 
   try {
-    const response = await fetch("http://localhost:8888/bdscript-checker", {
+    const response = await fetch("https://api.bdtools.xyz/bdscript-checker", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ code: text }),
@@ -475,18 +512,12 @@ async function validateBdscriptCode(text) {
     }
 
     const data = await response.json();
-    const firstError = data?.errors?.[0];
-
-    if (firstError?.message) {
-      callError(
-        `Error: ${firstError.function || "BDScript"} at line ${firstError.line || "?"}: ${firstError.message}`,
-      );
-    }
+    const errors = Array.isArray(data?.errors) ? data.errors.slice(0, 5) : [];
+    displayValidationErrors(errors);
   } catch (error) {
     console.error("BDScript checker failed", error);
     const localResult = runLocalBracketValidation(text);
-    localResult.warnings.forEach((warning) => callError(warning, "warn"));
-    localResult.errors.forEach((errorMessage) => callError(errorMessage));
+    displayValidationErrors([...localResult.warnings, ...localResult.errors]);
   }
 }
 
@@ -1006,7 +1037,13 @@ function bdscript2() {
     const firstKeyword = bdscript2Keywords.find((keyword) =>
       scriptText.includes(keyword),
     );
-    callError(`Function ${firstKeyword} is only available in BDScript2`);
+    callError(
+      formatValidationError({
+        function: firstKeyword,
+        line: "?",
+        message: "Function is only available in BDScript2",
+      }),
+    );
   }
 }
 
