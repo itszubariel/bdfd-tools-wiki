@@ -417,6 +417,45 @@ function scheduleBdscriptValidation(text) {
   editorValidationTimer = setTimeout(() => validateBdscriptCode(text), 500);
 }
 
+function runLocalBracketValidation(text) {
+  let dollarCount = 0;
+  let openBrackets = 0;
+  let closeBrackets = 0;
+  let lastOpenBracketLine = -1;
+  let warnings = [];
+  let errors = [];
+
+  const lines = text.split("\n");
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    for (let j = 0; j < line.length; j++) {
+      if (line[j] === "$") {
+        if (j + 1 < line.length && /[a-zA-Z]/.test(line[j + 1])) {
+          dollarCount++;
+        }
+      } else if (line[j] === "[") {
+        openBrackets++;
+        lastOpenBracketLine = i + 1;
+        if (j + 1 < line.length && line[j + 1] === "]") {
+          if (openBrackets <= dollarCount) {
+            warnings.push(`Warning: Empty brackets [] detected on line ${i + 1}.`);
+          }
+        }
+      } else if (line[j] === "]" && (j === 0 || line[j - 1] !== "\\")) {
+        closeBrackets++;
+      }
+    }
+  }
+
+  if (openBrackets <= dollarCount && closeBrackets < openBrackets) {
+    errors.push(
+      `Error: Not all open brackets are closed. Last opened on line ${lastOpenBracketLine}.`,
+    );
+  }
+
+  return { openBrackets, closeBrackets, warnings, errors };
+}
+
 async function validateBdscriptCode(text) {
   const errorMessageElement = document.getElementById("error-message");
   if (!errorMessageElement) return;
@@ -445,6 +484,9 @@ async function validateBdscriptCode(text) {
     }
   } catch (error) {
     console.error("BDScript checker failed", error);
+    const localResult = runLocalBracketValidation(text);
+    localResult.warnings.forEach((warning) => callError(warning, "warn"));
+    localResult.errors.forEach((errorMessage) => callError(errorMessage));
   }
 }
 
