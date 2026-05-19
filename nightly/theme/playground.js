@@ -464,7 +464,7 @@ async function validateBdscriptCode(text) {
   if (!text.trim()) return;
 
   try {
-    const response = await fetch("https://api.bdtools.xyz/bdscript-checker", {
+    const response = await fetch("http://localhost:8888/bdscript-checker", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ code: text }),
