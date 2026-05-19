@@ -330,8 +330,10 @@ function updateErrorVisibility() {
   }
 }
 
-function callError(message, type = "error", unique = false) {
+function callError(message, type = "error", unique = false, origin = "code") {
   const errorMessageElement = document.getElementById("error-message");
+
+  if (!errorMessageElement) return;
 
   if (unique) {
     for (let i = 0; i < errorMessageElement.children.length; i++) {
@@ -344,6 +346,7 @@ function callError(message, type = "error", unique = false) {
   let closeAllButton = document.getElementById("close-all-errors-btn");
   const errorDiv = document.createElement("div");
   errorDiv.style.display = "block";
+  errorDiv.dataset.origin = origin;
 
   if (type === "warn") {
     errorDiv.style.color = "orange";
@@ -430,24 +433,46 @@ function formatValidationError(error, isWarning = false) {
   return `Error: ${functionName} at line ${line}: ${message}`;
 }
 
-function displayValidationErrors(errors) {
+function displayValidationErrors(errors, origin = "code") {
   const errorMessageElement = document.getElementById("error-message");
   if (!errorMessageElement) return;
-  errorMessageElement.innerHTML = "";
 
   if (!Array.isArray(errors) || errors.length === 0) return;
 
   errors.slice(0, 5).forEach((error) => {
     if (!error) return;
-    if (error.type === "warn") {
-      callError(formatValidationError(error, true), "warn");
-    } else {
-      callError(formatValidationError(error), "error");
-    }
+    callValidationError(error, false, origin);
   });
 }
 
+function callValidationError(error, unique = false, origin = "code") {
+  const isWarning = error.type === "warn";
+  callError(
+    formatValidationError(error, isWarning),
+    isWarning ? "warn" : "error",
+    unique,
+    origin,
+  );
+}
+
+function deleteValidationError(error) {
+  deleteError(formatValidationError(error, error.type === "warn"));
+}
+
+function clearValidationErrors(origin = "code") {
+  const errorMessageElement = document.getElementById("error-message");
+  if (!errorMessageElement) return;
+
+  for (let i = errorMessageElement.children.length - 1; i >= 0; i--) {
+    const child = errorMessageElement.children[i];
+    if (child.dataset && child.dataset.origin === origin) {
+      child.remove();
+    }
+  }
+}
+
 function runLocalBracketValidation(text) {
+  const textBytes = new TextEncoder().encode(text).length;
   let dollarCount = 0;
   let openBrackets = 0;
   let closeBrackets = 0;
@@ -482,43 +507,108 @@ function runLocalBracketValidation(text) {
     }
   }
 
-  if (openBrackets <= dollarCount && closeBrackets < openBrackets) {
-    errors.push({
+  if (textBytes > 65536) {
+    warnings.unshift({
       function: "BDScript",
-      line: lastOpenBracketLine,
-      message: `Not all open brackets are closed. Last opened on line ${lastOpenBracketLine}.`,
+      line: "?",
+      message: "Text exceeds allowed size (65536 bytes).",
+      type: "warn",
+    });
+  }
+
+  if (text.indexOf("$") === -1 && text.length > 2000) {
+    warnings.unshift({
+      function: "BDScript",
+      line: "?",
+      message: "Character limit exceeded (2000) for messages without functions.",
+      type: "warn",
+    });
+  }
+
+  return { openBrackets, closeBrackets, warnings, errors };
+
+  if (text.indexOf("$") === -1 && text.length > 2000) {
+    warnings.unshift({
+      function: "BDScript",
+      line: "?",
+      message: "Character limit exceeded (2000) for messages without functions.",
+      type: "warn",
     });
   }
 
   return { openBrackets, closeBrackets, warnings, errors };
 }
 
-async function validateBdscriptCode(text) {
-  const errorMessageElement = document.getElementById("error-message");
-  if (!errorMessageElement) return;
+function runBdscript2Validation(text) {
+  const languageSelect = document.querySelector('select[name="language"]');
+  const scriptLanguage = languageSelect ? languageSelect.value : "";
+  const bdscript2Keywords = [
+    "$try",
+    "$endtry",
+    "$catch",
+    "$async",
+    "$endasync",
+    "$eval",
+    "$error",
+    "$optOff",
+    "$elseif",
+    "$stop",
+    "$var",
+  ];
 
-  errorMessageElement.innerHTML = "";
+  const firstKeyword = bdscript2Keywords.find((keyword) => text.includes(keyword));
+  if (!firstKeyword || scriptLanguage === "bds2") {
+    return [];
+  }
+
+  const beforeKeyword = text.split(firstKeyword)[0];
+  const line = beforeKeyword.split("\n").length;
+  return [
+    {
+      function: firstKeyword,
+      line,
+      message: "Function is only available in BDScript2",
+    },
+  ];
+}
+
+function validateBdscriptCode(text) {
   if (!text.trim()) return;
 
-  try {
-    const response = await fetch("https://api.bdtools.xyz/bdscript-checker", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ code: text }),
-    });
+  clearValidationErrors("local");
+  clearValidationErrors("api");
 
-    if (!response.ok) {
-      throw new Error(`BDScript checker returned ${response.status}`);
-    }
+  const localResult = runLocalBracketValidation(text);
+  const bdscript2Errors = runBdscript2Validation(text);
 
-    const data = await response.json();
-    const errors = Array.isArray(data?.errors) ? data.errors.slice(0, 5) : [];
-    displayValidationErrors(errors);
-  } catch (error) {
-    console.error("BDScript checker failed", error);
-    const localResult = runLocalBracketValidation(text);
-    displayValidationErrors([...localResult.warnings, ...localResult.errors]);
+  displayValidationErrors(localResult.warnings, "local");
+  displayValidationErrors(localResult.errors, "local");
+  displayValidationErrors(bdscript2Errors, "local");
+
+  const hasLocalErrors = localResult.errors.length > 0 || bdscript2Errors.length > 0;
+  if (hasLocalErrors) {
+    return;
   }
+
+  fetch("https://api.bdtools.xyz/bdscript-checker", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ code: text }),
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`BDScript checker returned ${response.status}`);
+      }
+      return response.json();
+    })
+    .then((data) => {
+      const errors = Array.isArray(data?.errors) ? data.errors.slice(0, 5) : [];
+      displayValidationErrors(errors, "api");
+    })
+    .catch((error) => {
+      console.error("BDScript checker failed", error);
+      callError("API call failed", "error", false, "api");
+    });
 }
 
 function checkBrackets() {
@@ -528,22 +618,12 @@ function checkBrackets() {
   let openBrackets = 0;
   let closeBrackets = 0;
 
-  const errorMessageElement = document.getElementById("error-message");
-  if (errorMessageElement) {
-    errorMessageElement.innerHTML = "";
-    errorMessageElement.style.color = "black";
-  }
-
   if (textBytes > 65536) {
-    callError("Error: Text exceeds allowed size (65536 bytes).");
-    return;
+    // Leave validation to validateBdscriptCode so that API errors show after local errors.
   }
 
   if (text.indexOf("$") === -1 && text.length > 2000) {
-    callError(
-      "Warning: Character limit exceeded (2000) for messages without functions.",
-      "warn",
-    );
+    // Leave validation to validateBdscriptCode so that API errors show after local errors.
   }
 
   const lines = text.split("\n");
@@ -911,18 +991,25 @@ function typeScript() {
   const nameLabel = document.getElementById("scriptType");
 
   const errorMessages = {
-    empty: "Error: Name cannot be empty.",
-    regex: "Error: Slash command name must contain only English letters.",
-    length: "Error: Slash command name exceeds 32 characters.",
-    invalidCallback: "Error: Invalid callback name.",
-    slashStart: "Error: Slash command name must start with /",
+    empty: "Name cannot be empty.",
+    regex: "Slash command name must contain only English letters.",
+    length: "Slash command name exceeds 32 characters.",
+    invalidCallback: "Invalid callback name.",
+    slashStart: "Slash command name must start with /",
   };
 
-  deleteError(errorMessages.regex);
-  deleteError(errorMessages.empty);
-  deleteError(errorMessages.length);
-  deleteError(errorMessages.invalidCallback);
-  deleteError(errorMessages.slashStart);
+  const formatSlashError = (message) =>
+    formatValidationError({
+      function: nameInputVal && nameInputVal.startsWith("/") ? nameInputVal : "SlashCommand",
+      line: 1,
+      message,
+    });
+
+  deleteError(formatSlashError(errorMessages.regex));
+  deleteError(formatSlashError(errorMessages.empty));
+  deleteError(formatSlashError(errorMessages.length));
+  deleteError(formatSlashError(errorMessages.invalidCallback));
+  deleteError(formatSlashError(errorMessages.slashStart));
 
   const callbackKeywords = [
     "$awaitedCommand",
@@ -940,12 +1027,12 @@ function typeScript() {
 
   if (selectValue !== "file") {
     if (!nameInputVal) {
-      callError(errorMessages.empty, "error", true);
+      callError(formatSlashError(errorMessages.empty), "error", true);
     } else {
-      deleteError(errorMessages.empty);
+      deleteError(formatSlashError(errorMessages.empty));
     }
   } else {
-    deleteError(errorMessages.empty);
+    deleteError(formatSlashError(errorMessages.empty));
   }
 
   let commandType = "Command";
@@ -955,30 +1042,34 @@ function typeScript() {
   } else if (selectValue === "callback") {
     commandType = " • Callback";
     if (!callbackKeywords.some((keyword) => nameInputVal.startsWith(keyword))) {
-      callError(errorMessages.invalidCallback, "error", true);
+      callError(
+        formatSlashError(errorMessages.invalidCallback),
+        "error",
+        true,
+      );
     } else {
-      deleteError(errorMessages.invalidCallback);
+      deleteError(formatSlashError(errorMessages.invalidCallback));
     }
   } else if (selectValue === "slash") {
     commandType = " • Slash Command";
 
     if (!nameInputVal.startsWith("/")) {
-      callError(errorMessages.slashStart, "error", true);
+      callError(formatSlashError(errorMessages.slashStart), "error", true);
     } else {
-      deleteError(errorMessages.slashStart);
+      deleteError(formatSlashError(errorMessages.slashStart));
 
       const nameToCheck = nameInputVal.substring(1);
       const regex = /^[a-z-]+$/;
 
       if (!regex.test(nameToCheck)) {
-        callError(errorMessages.regex, "error", true);
+        callError(formatSlashError(errorMessages.regex), "error", true);
       } else {
-        deleteError(errorMessages.regex);
+        deleteError(formatSlashError(errorMessages.regex));
       }
       if (nameInputVal.length > 32) {
-        callError(errorMessages.length, "error", true);
+        callError(formatSlashError(errorMessages.length), "error", true);
       } else {
-        deleteError(errorMessages.length);
+        deleteError(formatSlashError(errorMessages.length));
       }
     }
   } else if (selectValue === "auto") {
@@ -990,14 +1081,14 @@ function typeScript() {
     } else if (nameInputVal.startsWith("/")) {
       commandType = " • Slash Command";
       if (!regex.test(nameToCheck)) {
-        callError(errorMessages.regex, "error", true);
+        callError(formatSlashError(errorMessages.regex), "error", true);
       } else {
-        deleteError(errorMessages.regex);
+        deleteError(formatSlashError(errorMessages.regex));
       }
       if (nameInputVal.length > 32) {
-        callError(errorMessages.length, "error", true);
+        callError(formatSlashError(errorMessages.length), "error", true);
       } else {
-        deleteError(errorMessages.length);
+        deleteError(formatSlashError(errorMessages.length));
       }
     } else {
       commandType = " • Command";
