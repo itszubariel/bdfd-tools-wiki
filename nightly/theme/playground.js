@@ -411,6 +411,8 @@ function updateCloseAllButton() {
 
 let editorValidationTimer;
 let lastEditorValidationText = "";
+let bdscriptApiCache = new Map();
+let bdscriptApiAbortController = null;
 
 function scheduleBdscriptValidation(text) {
   if (lastEditorValidationText === text) return;
@@ -588,10 +590,22 @@ function validateBdscriptCode(text) {
     return;
   }
 
+  if (bdscriptApiCache.has(text)) {
+    const cachedErrors = bdscriptApiCache.get(text);
+    displayValidationErrors(cachedErrors, "api");
+    return;
+  }
+
+  if (bdscriptApiAbortController) {
+    bdscriptApiAbortController.abort();
+  }
+  bdscriptApiAbortController = new AbortController();
+
   fetch("https://api.bdtools.xyz/bdscript-checker", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ code: text }),
+    signal: bdscriptApiAbortController.signal,
   })
     .then((response) => {
       if (!response.ok) {
@@ -601,9 +615,11 @@ function validateBdscriptCode(text) {
     })
     .then((data) => {
       const errors = Array.isArray(data?.errors) ? data.errors.slice(0, 5) : [];
+      bdscriptApiCache.set(text, errors);
       displayValidationErrors(errors, "api");
     })
     .catch((error) => {
+      if (error.name === "AbortError") return;
       console.error("BDScript checker failed", error);
       callError("API call failed", "error", false, "api");
     });
