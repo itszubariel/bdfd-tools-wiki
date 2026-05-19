@@ -1125,7 +1125,12 @@ function bdscript2() {
     const firstKeyword = bdscript2Keywords.find((keyword) =>
       scriptText.includes(keyword),
     );
-    callError(`Function ${firstKeyword} is only available in BDScript2`, "error", true);
+    callError(
+      `Function ${firstKeyword} is only available in BDScript2`,
+      "error",
+      true,
+      "local",
+    );
   }
 }
 
