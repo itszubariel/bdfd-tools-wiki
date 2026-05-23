@@ -1995,50 +1995,6 @@
     {
       "tag": "$year",
       "description": "Returns current year"
-    },
-    {
-      "tag": "$onJoined[channel ID]",
-      "description": "Triggers command when user joins server"
-    },
-    {
-      "tag": "$onLeave[channel ID]",
-      "description": "Triggers command when user leaves server"
-    },
-    {
-      "tag": "$onMessageDelete[channel ID]",
-      "description": "Triggers command when user deletes message"
-    },
-    {
-      "tag": "$onBanAdd[channel ID]",
-      "description": "Triggers command when user is banned from the server"
-    },
-    {
-      "tag": "$onBanRemove[channel ID]",
-      "description": "Triggers command when user is unbanned from the server"
-    },
-    {
-      "tag": "$alwaysReply",
-      "description": "Makes command get triggered by every message"
-    },
-    {
-      "tag": "$messageContains[word;...]",
-      "description": "Command gets triggered every time message contains one of the provided words"
-    },
-    {
-      "tag": "$awaitedCommand[name;(filter)]",
-      "description": "Used for awaited functions."
-    },
-    {
-      "tag": "$reaction[name]",
-      "description": "Used for awaited reactions."
-    },
-    {
-      "tag": "$onInteraction[custom ID]",
-      "description": "Triggered by a component interaction. For example: a user pressing a button"
-    },
-    {
-      "tag": "$onInteraction",
-      "description": "Triggered by a component interaction. For example: a user pressing a button"
     }
   ]
 }

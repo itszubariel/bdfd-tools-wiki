@@ -372,19 +372,14 @@
 <pre><code>$nomention
 $sendMessage[[%{DOL}%Hello\\; this is pretty cool\\; right%{DOL}%\\]]
 </code></pre>
-<pre><code class="language-discord yaml">- user_id: 860384146778226699
-  username: Zubariel
-  color: "#ffffff"
-  content: |
-    !example
-- user_id: 1009018156494368798
-  username: BDFD Support
-  color: "#378afa"
-  bot: true
-  verified: true
-  content: |
-    [$Hello; this is pretty cool; right$]
-</code></pre>
+<discord-messages>
+    <discord-message role-color="#ffffff" author="Zubariel">
+        !example
+    </discord-message>
+    <discord-message role-color="#378afa" bot verified author="BDFD Support">
+        [$Hello; this is pretty cool; right$]
+    </discord-message>
+</discord-messages>
 <div id="admonition-how-to-use" class="admonition admonish-question" role="note" aria-labelledby="admonition-how-to-use-title">
 <div class="admonition-title">
 <div id="admonition-how-to-use-title">

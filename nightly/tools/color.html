@@ -422,21 +422,19 @@
 $description[⬅️ Border color hex]
 $color[#673ab7]
 </code></pre>
-<pre><code class="language-discord yaml">- user_id: 803569638084313098
-  username: RainbowKey
-  color: "#E67E22"
-  content: |
-    !example
-- user_id: 1009018156494368798
-  username: BDFD Support
-  color: "#378afa"
-  bot: true
-  verified: true
-  content: &lt;none&gt;
-  embed:
-    description: ⬅️ Border color hex
-    color: "#673ab7"
-</code></pre>
+<discord-messages>
+    <discord-message role-color="#E67E22" author="RainbowKey">
+        !example
+    </discord-message>
+    <discord-message role-color="#378afa" bot verified author="BDFD Support">
+        <none>
+        <discord-embed slot="embeds" color="#673ab7">
+            <discord-embed-description slot="description">
+                ⬅️ Border color hex
+            </discord-embed-description>
+        </discord-embed>
+    </discord-message>
+</discord-messages>
 <div id="admonition-what-is-this" class="admonition admonish-question" role="note" aria-labelledby="admonition-what-is-this-title">
 <div class="admonition-title">
 <div id="admonition-what-is-this-title">

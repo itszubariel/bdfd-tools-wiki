@@ -433,21 +433,19 @@
 $description[⬅️ Border color hex]
 $color[#673ab7]
 </code></pre>
-<pre><code class="language-discord yaml">- user_id: 803569638084313098
-  username: RainbowKey
-  color: "#E67E22"
-  content: |
-    !example
-- user_id: 1009018156494368798
-  username: BDFD Support
-  color: "#378afa"
-  bot: true
-  verified: true
-  content: &lt;none&gt;
-  embed:
-    description: ⬅️ Border color hex
-    color: "#673ab7"
-</code></pre>
+<discord-messages>
+    <discord-message role-color="#E67E22" author="RainbowKey">
+        !example
+    </discord-message>
+    <discord-message role-color="#378afa" bot verified author="BDFD Support">
+        <none>
+        <discord-embed slot="embeds" color="#673ab7">
+            <discord-embed-description slot="description">
+                ⬅️ Border color hex
+            </discord-embed-description>
+        </discord-embed>
+    </discord-message>
+</discord-messages>
 <div id="admonition-what-is-this" class="admonition admonish-question" role="note" aria-labelledby="admonition-what-is-this-title">
 <div class="admonition-title">
 <div id="admonition-what-is-this-title">
@@ -3047,19 +3045,14 @@ input[type="checkbox"] {
 <pre><code>$nomention
 Unix date: &lt;t:1917043200:D&gt;
 </code></pre>
-<pre><code class="language-discord yaml">- user_id: 803569638084313098
-  username: RainbowKey
-  color: "#E67E22"
-  content: |
-    !example
-- user_id: 1009018156494368798
-  username: BDFD Support
-  color: "#378afa"
-  bot: true
-  verified: true
-  content: |
-    Unix date: &lt;div class="discord-time-mark"&gt;January 10, 2030&lt;/div&gt;
-</code></pre>
+<discord-messages>
+    <discord-message author="RainbowKey" role-color="#E67E22">
+        !example
+    </discord-message>
+    <discord-message verified role-color="#378afa" author="BDFD Support" bot>
+        Unix date: <div class="discord-time-mark">January 10, 2030</div>
+    </discord-message>
+</discord-messages>
 <div id="admonition-example" class="admonition admonish-example" role="note" aria-labelledby="admonition-example-title">
 <div class="admonition-title">
 <div id="admonition-example-title">
@@ -3253,19 +3246,14 @@ Unix date: &lt;t:1917043200:D&gt;
 <pre><code>$nomention
 $sendMessage[[%{DOL}%Hello\\; this is pretty cool\\; right%{DOL}%\\]]
 </code></pre>
-<pre><code class="language-discord yaml">- user_id: 860384146778226699
-  username: Zubariel
-  color: "#ffffff"
-  content: |
-    !example
-- user_id: 1009018156494368798
-  username: BDFD Support
-  color: "#378afa"
-  bot: true
-  verified: true
-  content: |
-    [$Hello; this is pretty cool; right$]
-</code></pre>
+<discord-messages>
+    <discord-message role-color="#ffffff" author="Zubariel">
+        !example
+    </discord-message>
+    <discord-message role-color="#378afa" bot verified author="BDFD Support">
+        [$Hello; this is pretty cool; right$]
+    </discord-message>
+</discord-messages>
 <div id="admonition-how-to-use" class="admonition admonish-question" role="note" aria-labelledby="admonition-how-to-use-title">
 <div class="admonition-title">
 <div id="admonition-how-to-use-title">
@@ -3934,7 +3922,7 @@ select.form-input option {
 <div class="picker-container">
 	<h2 id="normal-embed-builder"><a class="header" href="#normal-embed-builder">Normal Embed Builder</a></h2>
   	<p>Fill text input fields below to generate embed code.</p>
-   <div class="form-group">
+<div class="form-group">
      <label>Author</label>
      <div class="form-row">
        <input id="authorName" class="form-input" placeholder="Author Name">
@@ -3942,18 +3930,18 @@ select.form-input option {
        <input id="authorUrl" class="form-input" placeholder="Author URL">
      </div>
    </div>
-   <div class="form-group">
+<div class="form-group">
      <label>Title</label>
      <div class="form-row">
        <input id="title" class="form-input" placeholder="Title">
        <input id="titleUrl" class="form-input" placeholder="Title URL">
      </div>
    </div>
-   <div class="form-group">
+<div class="form-group">
      <label>Description</label>
      <textarea id="description" class="form-input form-textarea" placeholder="Description..."></textarea>
    </div>
-   <div class="form-group">
+<div class="form-group">
      <label>Media &amp; Style</label>
      <div class="form-row">
        <input id="thumbnail" class="form-input" placeholder="Thumbnail URL">
@@ -3961,7 +3949,7 @@ select.form-input option {
        <input id="color" class="form-input" placeholder="#ffffff">
      </div>
    </div>
-   <div class="form-group">
+<div class="form-group">
      <label>Footer</label>
      <div class="form-row">
        <input id="footer" class="form-input" placeholder="Footer Text">
@@ -3972,20 +3960,20 @@ select.form-input option {
        <span>Add Timestamp</span>
      </label>
    </div>
-   <div class="flex-buttons">
+<div class="flex-buttons">
      <button id="addField" class="add-field-btn">+ Field</button>
      <button id="addButton" class="add-field-btn">+ Button</button>
      <button id="addSelect" class="add-field-btn">+ Select Menu</button>
      <button id="addModal" class="add-field-btn">+ Modal</button>
    </div>
-   <div id="dynamicFields"></div>
-   <div class="btn-row">
+<div id="dynamicFields"></div>
+<div class="btn-row">
      <button id="generateBtn" class="generate-btn">Generate</button>
      <button id="copyBtn" class="copy-btn">Copy Output</button>
      <button id="clearBtn" class="clear-btn">Clear All</button>
    </div>
-   <!-- Live Preview -->
-   <div class="picker-container">
+<!-- Live Preview -->
+<div class="picker-container">
      <h2 id="live-preview"><a class="header" href="#live-preview">Live Preview</a></h2>
      <div class="preview-wrap">
        <div id="normalPreview" class="preview-message">
@@ -4003,7 +3991,7 @@ select.form-input option {
        </div>
      </div>
    </div>
-   <div id="output" class="output">Generated code appears here...</div>
+<div id="output" class="output">Generated code appears here...</div>
    <div class="char-count" id="charCount">0 characters</div>
    <div class="error" id="error"></div>
 </div>
@@ -4012,8 +4000,8 @@ select.form-input option {
 <div class="picker-container">
   <h2 id="send-embed-builder"><a class="header" href="#send-embed-builder">Send Embed Builder</a></h2>
   <p>Fill text input fields below to generate a <code>$sendEmbedMessage</code> call.</p>
-  <!-- Destination -->
-  <div class="form-group">
+<!-- Destination -->
+<div class="form-group">
     <label>Destination</label>
     <div class="form-row">
       <div style="display:flex;flex-direction:column;gap:0.4rem;">
@@ -4026,29 +4014,29 @@ select.form-input option {
       </div>
     </div>
   </div>
-  <!-- Author -->
-  <div class="form-group">
+<!-- Author -->
+<div class="form-group">
     <label>Author</label>
     <div class="form-row">
       <input id="s_authorName" class="form-input" placeholder="Author Name">
       <input id="s_authorIcon" class="form-input" placeholder="Author Icon URL">
     </div>
   </div>
-  <!-- Title -->
-  <div class="form-group">
+<!-- Title -->
+<div class="form-group">
     <label>Title</label>
     <div class="form-row">
       <input id="s_title" class="form-input" placeholder="Title">
       <input id="s_titleUrl" class="form-input" placeholder="Title URL">
     </div>
   </div>
-  <!-- Description -->
-  <div class="form-group">
+<!-- Description -->
+<div class="form-group">
     <label>Description</label>
     <textarea id="s_description" class="form-input form-textarea" placeholder="Description..."></textarea>
   </div>
-  <!-- Media & Style -->
-  <div class="form-group">
+<!-- Media & Style -->
+<div class="form-group">
     <label>Media &amp; Style</label>
     <div class="form-row">
       <input id="s_thumbnail" class="form-input" placeholder="Thumbnail URL">
@@ -4056,8 +4044,8 @@ select.form-input option {
       <input id="s_color" class="form-input" placeholder="#ffffff">
     </div>
   </div>
-  <!-- Footer -->
-  <div class="form-group">
+<!-- Footer -->
+<div class="form-group">
     <label>Footer</label>
     <div class="form-row">
       <input id="s_footer" class="form-input" placeholder="Footer Text">
@@ -4072,13 +4060,13 @@ select.form-input option {
       <span>Return Message ID</span>
     </label>
   </div>
-  <div class="btn-row">
+<div class="btn-row">
     <button id="s_generateBtn" class="generate-btn">Generate</button>
     <button id="s_copyBtn" class="copy-btn">Copy Output</button>
     <button id="s_clearBtn" class="clear-btn">Clear All</button>
   </div>
-  <!-- Live Preview -->
-  <div class="picker-container">
+<!-- Live Preview -->
+<div class="picker-container">
     <h2 id="live-preview-1"><a class="header" href="#live-preview-1">Live Preview</a></h2>
     <div class="preview-wrap">
       <div id="sendPreview" class="preview-message">
@@ -4096,7 +4084,7 @@ select.form-input option {
       </div>
     </div>
   </div>
-  <div id="s_output" class="output">Generated code appears here...</div>
+<div id="s_output" class="output">Generated code appears here...</div>
   <div class="char-count" id="s_charCount">0 characters</div>
   <div class="error" id="s_error"></div>
 </div>
@@ -4108,8 +4096,8 @@ select.form-input option {
 <div class="picker-container">
   <h2 id="compv2-builder"><a class="header" href="#compv2-builder">CompV2 Builder</a></h2>
   <p>Add components below to generate Components V2 code.</p>
-  <!-- Add Components card -->
-  <div class="form-group">
+<!-- Add Components card -->
+<div class="form-group">
     <label>Add Components</label>
     <div class="flex-buttons" id="cv2AddButtons">
       <button class="add-field-btn" id="cv2AddContainer">+ Container</button>
@@ -4127,16 +4115,16 @@ select.form-input option {
       <button class="add-field-btn" id="cv2AddMentionable">+ Mentionable Select</button>
     </div>
   </div>
-  <!-- Dynamic component cards go here -->
-  <div id="cv2Components"></div>
-  <!-- Output -->
-  <div class="btn-row">
+<!-- Dynamic component cards go here -->
+<div id="cv2Components"></div>
+<!-- Output -->
+<div class="btn-row">
     <button id="cv2GenerateBtn" class="generate-btn">Generate</button>
     <button id="cv2CopyBtn" class="copy-btn">Copy Output</button>
     <button id="cv2ClearBtn" class="clear-btn">Clear All</button>
   </div>
-  <!-- Live Preview -->
-  <div class="picker-container">
+<!-- Live Preview -->
+<div class="picker-container">
     <h2 id="live-preview-2"><a class="header" href="#live-preview-2">Live Preview</a></h2>
     <div class="preview-wrap">
       <div id="cv2Preview" class="preview-message">
@@ -4154,7 +4142,7 @@ select.form-input option {
       </div>
     </div>
   </div>
-  <div id="cv2Output" class="output">Generated code appears here...</div>
+<div id="cv2Output" class="output">Generated code appears here...</div>
   <div class="char-count" id="cv2CharCount">0 characters</div>
   <div class="error" id="cv2Error"></div>
 </div>
@@ -4188,22 +4176,19 @@ $title[Hello]
 $description[Welcome to embed builder.]
 $color[#673ab7]
 </code></pre>
-<pre><code class="language-discord yaml">- user_id: 860384146778226699
-  username: Zubariel
-  color: "#ffffff"
-  content: |
-    !example
-- user_id: 1009018156494368798
-  username: BDFD Support
-  color: "#378afa"
-  bot: true
-  verified: true
-  content: &lt;none&gt;
-  embed:
-    title: Hello
-    description: Welcome to embed builder.
-    color: "#673ab7"
-</code></pre>
+<discord-messages>
+    <discord-message author="Zubariel" role-color="#ffffff">
+        !example
+    </discord-message>
+    <discord-message bot author="BDFD Support" verified role-color="#378afa">
+        <none>
+        <discord-embed slot="embeds" embed-title="Hello" color="#673ab7">
+            <discord-embed-description slot="description">
+                Welcome to embed builder.
+            </discord-embed-description>
+        </discord-embed>
+    </discord-message>
+</discord-messages>
 <div id="admonition-how-it-works" class="admonition admonish-question" role="note" aria-labelledby="admonition-how-it-works-title">
 <div class="admonition-title">
 <div id="admonition-how-it-works-title">

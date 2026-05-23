@@ -27,7 +27,11 @@
     "$addUserSelect[]",
     "$afkChannelID",
     "$afkTimeout[]",
+    "$aiAgent[]",
+    "$aiDecideWithCtx[]",
+    "$aiDecide[]",
     "$aiQuota",
+    "$aiWithCtx[]",
     "$ai[]",
     "$allMembersCount",
     "$allowMention",
@@ -284,6 +288,7 @@
     "$lastMessageID",
     "$lastPinTimestamp",
     "$linesCount[]",
+    "$listVar[]",
     "$logQuota",
     "$log[]",
     "$lowestRole",
@@ -493,6 +498,17 @@
     "$webhookSend[]",
     "$webhookTitle[]",
     "$webhookUsername[]",
-    "$year"
+    "$year",
+    "$onJoined[]",
+    "$onLeave[]",
+    "$onMessageDelete[]",
+    "$onBanAdd[]",
+    "$onBanRemove[]",
+    "$alwaysReply",
+    "$messageContains[]",
+    "$awaitedCommand[]",
+    "$reaction[]",
+    "$onInteraction[]",
+    "$onInteraction"
   ]
 }
